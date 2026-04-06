@@ -1,0 +1,7 @@
+.env
+firebase-credentials.json
+data/kacamak.db
+logs/*.log
+__pycache__/
+*.pyc
+.DS_Store

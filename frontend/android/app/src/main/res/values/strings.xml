@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Kaçamak</string>
+    <string name="title_activity_main">Kaçamak</string>
+    <string name="package_name">com.kacamak.app</string>
+    <string name="custom_url_scheme">com.kacamak.app</string>
+</resources>

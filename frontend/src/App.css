@@ -1,0 +1,99 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #1B1F3B;
+  --bg2: rgba(255,255,255,0.08);
+  --bg3: rgba(255,255,255,0.06);
+  --accent: #FF6B35;
+  --accent2: #F7C948;
+  --success: #2EC4B6;
+  --text: #FFFFFF;
+  --text2: rgba(255,255,255,0.5);
+  --text3: rgba(255,255,255,0.4);
+  --border: rgba(255,255,255,0.1);
+  --radius: 16px;
+  --font: system-ui, -apple-system, sans-serif;
+  --max-w: 430px;
+}
+
+@media (min-width: 768px) {
+  :root { --max-w: 500px; }
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-weight: 400;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app { min-height: 100vh; }
+
+.page-constrained {
+  max-width: var(--max-w);
+  margin: 0 auto;
+}
+
+/* === Detay 3-kolon layout === */
+.detay-cols {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  padding: 20px 24px 32px;
+  align-items: flex-start;
+}
+
+@media (min-width: 768px) {
+  .detay-cols {
+    flex-direction: row;
+    padding: 24px 40px 32px;
+  }
+  .detay-col-sol { flex: 1; min-width: 0; }
+  .detay-col-orta { flex: 1.8; min-width: 0; }
+  .detay-col-sag { display: none; }
+}
+
+@media (min-width: 1025px) {
+  .detay-col-sag { display: block !important; flex: 1; min-width: 0; }
+}
+
+/* Detay sticky bar — kolonun altinda degil, tam genislik */
+.detay-sticky-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 40px 16px;
+  background: linear-gradient(transparent, rgba(27,31,59,0.97) 30%);
+  backdrop-filter: blur(12px);
+  z-index: 50;
+}
+
+.detay-sticky-bar .detay-sticky-inner {
+  display: flex;
+  gap: 12px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+@media (max-width: 767px) {
+  .detay-sticky-bar { padding: 12px 20px 16px; }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

@@ -1,0 +1,7 @@
+flask
+flask-cors
+requests
+anthropic
+python-dotenv
+apscheduler
+firebase-admin
