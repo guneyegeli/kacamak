@@ -26,6 +26,7 @@ SEHIR_ISIMLERI = {
 }
 
 
+# Hero fotoğraf arama terimleri — sadece spesifik landmark isimleri
 IATA_ARAMA_TERIMLERI = {
     "IST": "Hagia Sophia Istanbul",
     "SAW": "Hagia Sophia Istanbul",
@@ -46,7 +47,11 @@ IATA_ARAMA_TERIMLERI = {
     "MXP": "Milan Cathedral Duomo",
     "AYT": "Antalya old town Kaleici",
     "ADB": "Izmir clock tower Konak",
-    "ESB": "Anitkabir Ankara",
+    "ESB": "Anitkabir mausoleum",
+    "ANK": "Anitkabir mausoleum",
+    "DLM": "Oludeniz beach Fethiye",
+    "NAV": "Cappadocia balloon",
+    "BJV": "Bodrum castle harbor",
     "BKK": "Grand Palace Bangkok",
     "HND": "Tokyo Tower Shibuya",
     "ICN": "Gyeongbokgung Palace Seoul",
@@ -70,6 +75,19 @@ IATA_ARAMA_TERIMLERI = {
     "SSH": "Sharm el Sheikh Red Sea coral",
 }
 
+# Sabit fotoğraflar — API'ye bağımlı olmadan her zaman doğru sonuç
+_ANITKABIR = {
+    "url_kucuk": "https://images.unsplash.com/photo-1728157213837-9a69929258bf?w=400&q=80",
+    "url_orta": "https://images.unsplash.com/photo-1728157213837-9a69929258bf?w=1080&q=80",
+    "url_buyuk": "https://images.unsplash.com/photo-1728157213837-9a69929258bf?w=1920&q=80",
+    "fotograf": "Cengiz Özarpat",
+    "link": "https://unsplash.com/photos/8rhOrDVsNKM",
+}
+SABIT_FOTOLAR = {
+    "ANK": [_ANITKABIR],
+    "ESB": [_ANITKABIR],
+}
+
 
 def sehir_adi(destinasyon: str) -> str:
     return SEHIR_ISIMLERI.get(destinasyon, destinasyon)
@@ -77,6 +95,10 @@ def sehir_adi(destinasyon: str) -> str:
 
 @lru_cache(maxsize=200)
 def foto_getir(destinasyon: str, adet: int = 3) -> list:
+    # Sabit fotoğraf varsa öncelikle onu döndür
+    if destinasyon in SABIT_FOTOLAR:
+        return SABIT_FOTOLAR[destinasyon]
+
     if not ACCESS_KEY:
         return []
 
@@ -114,6 +136,61 @@ def foto_getir(destinasyon: str, adet: int = 3) -> list:
         return []
 
 
+# Galeri için destinasyona özel çoklu arama terimleri — spesifik landmark isimleri
+_ANKARA_GALERI = [
+    "Anitkabir mausoleum",
+    "Ankara castle",
+    "Kocatepe Camii mosque",
+    "Atakule tower Ankara",
+]
+_KAPADOKYA_GALERI = [
+    "Cappadocia balloon",
+    "Goreme fairy chimneys",
+    "Cappadocia underground city",
+    "Uchisar castle Cappadocia",
+]
+_DALAMAN_GALERI = [
+    "Oludeniz beach Fethiye",
+    "Dalyan Iztuzu beach",
+    "Saklikent gorge Fethiye",
+    "Kayakoy ghost village",
+]
+GALERI_TERIMLERI = {
+    "ANK": _ANKARA_GALERI,
+    "ESB": _ANKARA_GALERI,
+    "NAV": _KAPADOKYA_GALERI,
+    "DLM": _DALAMAN_GALERI,
+}
+
+
 @lru_cache(maxsize=100)
 def galeri_getir(destinasyon: str, adet: int = 6) -> list:
+    ozel_terimler = GALERI_TERIMLERI.get(destinasyon)
+    if ozel_terimler and ACCESS_KEY:
+        sonuclar = []
+        for terim in ozel_terimler:
+            if len(sonuclar) >= adet:
+                break
+            try:
+                r = requests.get(f"{BASE}/search/photos", params={
+                    "query": terim,
+                    "per_page": 1,
+                    "orientation": "landscape",
+                    "content_filter": "high",
+                }, headers={
+                    "Authorization": f"Client-ID {ACCESS_KEY}"
+                }, timeout=5)
+                if r.ok:
+                    data = r.json().get("results", [])
+                    for p in data[:1]:
+                        sonuclar.append({
+                            "url_kucuk": p["urls"]["small"],
+                            "url_orta": p["urls"]["regular"],
+                            "url_buyuk": p["urls"]["full"],
+                            "fotograf": p["user"]["name"],
+                            "link": p["links"]["html"],
+                        })
+            except Exception:
+                continue
+        return sonuclar
     return foto_getir(destinasyon, adet)

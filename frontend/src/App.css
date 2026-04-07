@@ -85,6 +85,25 @@ html, body {
   .detay-sticky-bar { padding: 12px 20px 16px; }
 }
 
+/* === Ana sayfa Yurtiçi/Yurtdışı grid === */
+.firsatlar-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.firsatlar-kolon {
+  min-width: 0;
+  flex: 1;
+}
+
+@media (min-width: 768px) {
+  .firsatlar-grid {
+    flex-direction: row;
+    gap: 24px;
+  }
+}
+
 @keyframes slideDown {
   from { transform: translateY(-100%); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }

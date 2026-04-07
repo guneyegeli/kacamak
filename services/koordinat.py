@@ -44,6 +44,49 @@ SEHIR_KOORDINATLARI = {
 }
 
 
+# IATA → Türkçe şehir adı (itinerary, bildirim, UI için)
+SEHIR_ADLARI = {
+    # Türkiye
+    "IST": "İstanbul", "SAW": "İstanbul", "ADB": "İzmir", "AYT": "Antalya",
+    "ESB": "Ankara", "ADA": "Adana", "DLM": "Dalaman", "BJV": "Bodrum",
+    "NAV": "Nevşehir", "GZP": "Trabzon", "TZX": "Trabzon", "GZT": "Gaziantep",
+    "VAN": "Van", "ERZ": "Erzurum", "TRS": "Trabzon", "SZF": "Samsun",
+    "IZM": "İzmir", "ANK": "Ankara", "COV": "Konya", "DIY": "Diyarbakır",
+    # Rusya
+    "MOW": "Moskova", "LED": "St. Petersburg", "KRR": "Krasnodar", "AER": "Soçi",
+    "MRV": "Mineralnye Vody", "MCX": "Mahaçkale", "KZN": "Kazan", "RMO": "Rostov",
+    "SVX": "Yekaterinburg", "GRV": "Grozny", "OGZ": "Vladikavkaz",
+    "CEK": "Çelyabinsk", "UFA": "Ufa", "PEE": "Perm", "GOJ": "Nijniy Novgorod",
+    "OMS": "Omsk", "KJA": "Krasnoyarsk", "TJM": "Tümen", "KGD": "Kaliningrad",
+    "RTW": "Saratov", "OVB": "Novosibirsk", "KUF": "Samara",
+    # Avrupa
+    "PAR": "Paris", "CDG": "Paris", "BCN": "Barselona", "ROM": "Roma", "FCO": "Roma",
+    "ATH": "Atina", "BUD": "Budapeşte", "PRG": "Prag", "VIE": "Viyana",
+    "BER": "Berlin", "AMS": "Amsterdam", "LHR": "Londra", "LON": "Londra",
+    "LIS": "Lizbon", "MAD": "Madrid", "MXP": "Milano", "MUC": "Münih",
+    "DUB": "Dublin", "CPH": "Kopenhag", "OSL": "Oslo", "ARN": "Stockholm",
+    "HEL": "Helsinki", "ZRH": "Zürih", "BRU": "Brüksel", "WAW": "Varşova",
+    "BEG": "Belgrad", "TGD": "Podgorica", "TIV": "Tivat", "SKD": "Semerkand",
+    # Kafkasya / Orta Doğu
+    "TBS": "Tiflis", "GYD": "Bakü", "BAK": "Bakü", "GNJ": "Gence",
+    "JED": "Cidde", "MED": "Medine", "DXB": "Dubai", "DOH": "Doha",
+    "TLV": "Tel Aviv", "BEY": "Beyrut",
+    # Kuzey Afrika
+    "CAI": "Kahire", "SSH": "Şarm El Şeyh", "CMN": "Kazablanka", "TUN": "Tunus",
+    # Orta Asya
+    "TAS": "Taşkent", "BSZ": "Bişkek", "NQZ": "Nursultan", "ALA": "Almatı",
+    "MSQ": "Minsk", "CIT": "Şımkent", "OSS": "Oş", "ECN": "Lefkoşa",
+    # Uzak
+    "BKK": "Bangkok", "HND": "Tokyo", "ICN": "Seul", "SIN": "Singapur",
+    "JFK": "New York", "LAX": "Los Angeles",
+}
+
+
+def sehir_adi_getir(iata_kodu: str) -> str:
+    """IATA kodundan Türkçe şehir adı döndürür. Bulamazsa kodu döndürür."""
+    return SEHIR_ADLARI.get(iata_kodu.upper(), iata_kodu)
+
+
 def koordinat_getir(iata_kodu: str) -> dict | None:
     return SEHIR_KOORDINATLARI.get(iata_kodu.upper())
 

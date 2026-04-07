@@ -27,4 +27,6 @@ export const api = {
   videolar: (dest) => fetch(`${BASE}/api/videolar/${dest}`).then(r => r.json()),
   alternatifTarihler: (id) => fetch(`${BASE}/api/firsatlar/${id}/alternatifler`).then(r => r.json()),
   benzerFirsatlar: (id) => fetch(`${BASE}/api/firsatlar/${id}/benzer`).then(r => r.json()),
+  itineraryOlustur: (id) => fetch(`${BASE}/api/firsat/${id}/itinerary-olustur`, { method: 'POST' }).then(r => r.json()),
+  kanalVideo: (dest) => fetch(`${BASE}/api/kanal-video/${dest}`).then(r => r.json()),
 }

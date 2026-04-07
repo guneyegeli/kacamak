@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { api } from '../services/api'
+import { generateAllLinks } from '../utils/affiliateLinks'
 
 const tarihFormat = (tarih) => {
   if (!tarih) return ''
@@ -26,21 +27,34 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
   const [galeri, setGaleri] = useState([])
   const [aktiviteler, setAktiviteler] = useState([])
   const [harita, setHarita] = useState(null)
-  const [videolar, setVideolar] = useState([])
   const [benzer, setBenzer] = useState([])
   const [altTarihler, setAltTarihler] = useState([])
   const [buyukFoto, setBuyukFoto] = useState(null)
+  const [kanalVideo, setKanalVideo] = useState(null)
+
+  const [itUretiliyor, setItUretiliyor] = useState(false)
 
   useEffect(() => {
     if (!firsat?.id) return
-    setDetay(null); setYukleniyor(true)
-    setFoto(null); setGaleri([]); setVideolar([]); setBenzer([]); setAltTarihler([])
-    api.firsatDetay(firsat.id).then(setDetay).finally(() => setYukleniyor(false))
+    setDetay(null); setYukleniyor(true); setItUretiliyor(false)
+    setFoto(null); setGaleri([]); setBenzer([]); setAltTarihler([]); setKanalVideo(null)
+    api.firsatDetay(firsat.id).then(d => {
+      setDetay(d)
+      // Itinerary yoksa otomatik üret
+      if (!d?.paket) {
+        setItUretiliyor(true)
+        api.itineraryOlustur(firsat.id).then(sonuc => {
+          if (sonuc?.paket) {
+            setDetay(prev => ({ ...prev, paket: sonuc.paket }))
+          }
+        }).catch(() => {}).finally(() => setItUretiliyor(false))
+      }
+    }).finally(() => setYukleniyor(false))
     api.foto(firsat.varis).then(f => { if (f?.length) setFoto(f[0]) }).catch(() => {})
     api.galeri(firsat.varis, 4).then(setGaleri).catch(() => setGaleri([]))
     api.aktiviteler(firsat.varis).then(setAktiviteler).catch(() => setAktiviteler([]))
     api.harita(firsat.varis).then(setHarita).catch(() => setHarita(null))
-    api.videolar(firsat.varis).then(setVideolar).catch(() => setVideolar([]))
+    api.kanalVideo(firsat.varis).then(v => { if (v) setKanalVideo(v) }).catch(() => {})
     api.benzerFirsatlar(firsat.id).then(setBenzer).catch(() => setBenzer([]))
     api.alternatifTarihler(firsat.id).then(setAltTarihler).catch(() => setAltTarihler([]))
   }, [firsat])
@@ -56,13 +70,12 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
   const donusTarih = firsat?.donus_tarihi || ''
   const tarihBilgi = `${tarihFormat(gidisTarih)} - ${tarihFormat(donusTarih)}`
   const fiyatGosterim = firsat?.fiyat?.toLocaleString('tr-TR')
-  const jetradarBase = `https://search.jetradar.com/flights/${o}-${d}/?depart_date=${gidisTarih}&return_date=${donusTarih}&marker=${mk}`
-  const aviasalesLink = jetradarBase
+  const links = generateAllLinks(o, d, gidisTarih, donusTarih)
   const hotellookLink = `https://search.hotellook.com/?destination=${sehir}&marker=${mk}`
   const platformlar = [
-    { isim: 'Aviasales', aciklama: 'En dusuk fiyat garantisi', emoji: '🔥', renk: '#FF6B35', puan: 5.0, yildiz: '★★★★★', link: jetradarBase },
-    { isim: 'Skyscanner', aciklama: 'Genis karsilastirma', emoji: '🔍', renk: '#00B2E2', puan: 4.5, yildiz: '★★★★½', link: jetradarBase },
-    { isim: 'Kiwi.com', aciklama: 'Esnek arama & bagaj dahil', emoji: '🌍', renk: '#00A991', puan: 4.0, yildiz: '★★★★', link: `${jetradarBase}&with_request=true` },
+    { isim: 'Aviasales', fiyatYazi: `${fiyatGosterim} ₺'den başlayan fiyatlar`, buton: 'Sitede güncel fiyatı gör', emoji: '🔥', renk: '#FF6B35', link: links.aviasales },
+    { isim: 'Skyscanner', fiyatYazi: 'Fiyatları karşılaştır →', buton: 'Sitede güncel fiyatı gör', emoji: '🔍', renk: '#00B2E2', link: links.skyscanner },
+    { isim: 'Kiwi.com', fiyatYazi: 'Esnek arama yap →', buton: 'Sitede güncel fiyatı gör', emoji: '🌍', renk: '#00A991', link: links.kiwi },
   ]
 
   const GunKart = ({ gun }) => {
@@ -82,12 +95,20 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
           <div key={zaman} style={{ marginBottom: 14, paddingLeft: 14, borderLeft: '2px solid var(--accent)' }}>
             <div style={{ fontSize: 11, color: 'var(--accent2)', marginBottom: 6, fontWeight: 500 }}>{ic?.emoji || '🕐'} {zaman}</div>
             {typeof ic === 'object' ? (<>
-              <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)', marginBottom: 2 }}>{ic.aktivite}</div>
+              <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 2 }}>
+                {ic.google_maps_link
+                  ? <a href={ic.google_maps_link} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ color: '#2EC4B6', textDecoration: 'underline', textUnderlineOffset: 2 }}>{ic.aktivite}</a>
+                  : <span style={{ color: 'var(--text)' }}>{ic.aktivite}</span>}
+              </div>
               {ic.detay && <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5, marginBottom: 6, fontStyle: 'italic' }}>{ic.detay}</div>}
-              {ic.restoran && <div style={{ fontSize: 12, color: 'var(--success)', marginBottom: 4 }}>🍽️ {ic.restoran}</div>}
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              {ic.restoran && <div style={{ fontSize: 12, marginBottom: 4 }}>🍽️ {ic.restoran_maps_link
+                ? <a href={ic.restoran_maps_link} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ color: '#2EC4B6', textDecoration: 'underline', textUnderlineOffset: 2 }}>{ic.restoran}</a>
+                : <span style={{ color: 'var(--success)' }}>{ic.restoran}</span>}
+              </div>}
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
                 {ic.ulasim && <span style={{ fontSize: 11, color: 'var(--text3)' }}>🚌 {ic.ulasim}</span>}
                 {ic.harcama_eur != null && <span style={{ fontSize: 11, color: 'var(--accent)' }}>💰 €{ic.harcama_eur}</span>}
+                {ic.aktivite && <a href={`https://www.getyourguide.com/s/?q=${encodeURIComponent(ic.aktivite + ' ' + sehir)}&partner_id=KACAMAK&utm_medium=online_publisher`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>🎟️ Bilet al →</a>}
               </div>
             </>) : <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>{ic?.aktivite || ic}</div>}
           </div>
@@ -179,44 +200,62 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
             {it?.en_iyi_zaman && <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text3)' }}>📅 {it.en_iyi_zaman}</div>}
           </div>
 
-          {/* Fiyat Karsilastir */}
+          {/* Bilet Satın Al */}
           <div style={{ marginBottom: 16 }}>
-            <div style={{ ...lbl, marginBottom: 10 }}>✈️ Fiyat Karsilastir</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+            <div style={{ ...lbl, marginBottom: 10 }}>✈️ Bilet Satın Al</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {platformlar.map((p, i) => (
-                <div key={i} onClick={() => window.open(p.link, '_blank')} style={{ ...cs, padding: '14px 10px', cursor: 'pointer', textAlign: 'center', borderTop: `3px solid ${p.renk}`, transition: 'transform 0.15s' }}>
-                  <div style={{ fontSize: 24, marginBottom: 6 }}>{p.emoji}</div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>{p.isim}</div>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: p.renk, marginBottom: 4 }}>{fiyatGosterim} ₺</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 6 }}>{tarihBilgi}</div>
-                  <div style={{ fontSize: 12, color: 'var(--accent2)', marginBottom: 2 }}>{p.yildiz}</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>({p.puan})</div>
-                  <div style={{ fontSize: 10, color: 'var(--text2)', marginTop: 6, lineHeight: 1.3 }}>{p.aciklama}</div>
+                <div key={i} onClick={() => window.open(p.link, '_blank')} style={{ ...cs, padding: '16px 18px', cursor: 'pointer', borderLeft: `4px solid ${p.renk}`, display: 'flex', alignItems: 'center', gap: 14, transition: 'border-color 0.15s' }}>
+                  <div style={{ fontSize: 28, flexShrink: 0 }}>{p.emoji}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>{p.isim}</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: p.renk }}>{p.fiyatYazi}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>{tarihBilgi}</div>
+                  </div>
+                  <div style={{ background: `${p.renk}20`, border: `1px solid ${p.renk}40`, borderRadius: 10, padding: '8px 12px', flexShrink: 0 }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: p.renk, whiteSpace: 'nowrap' }}>{p.buton} ↗</div>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Itinerary */}
-          {yukleniyor && <div style={{ textAlign: 'center', padding: 40, color: 'var(--text2)' }}>✈️ Program hazirlaniyor...</div>}
-          {it?.gunler?.map(gun => <GunKart key={gun.gun} gun={gun} />)}
+          {yukleniyor && <div style={{ textAlign: 'center', padding: 40, color: 'var(--text2)' }}>✈️ Program hazırlanıyor...</div>}
+          {itUretiliyor && (
+            <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text2)' }}>
+              <div style={{ fontSize: 40, marginBottom: 16, animation: 'fadeIn 1s ease infinite alternate' }}>✨</div>
+              <div style={{ fontSize: 16, fontWeight: 500, color: 'var(--accent2)', marginBottom: 8 }}>AI seyahat programınız hazırlanıyor...</div>
+              <div style={{ fontSize: 13, color: 'var(--text3)', lineHeight: 1.6 }}>Claude, {sehir} için kişiselleştirilmiş gün gün program oluşturuyor. Bu işlem 10-20 saniye sürebilir.</div>
+            </div>
+          )}
+          {!itUretiliyor && it?.gunler?.map(gun => <GunKart key={gun.gun} gun={gun} />)}
 
           {/* Alternatif Tarihler */}
           {altTarihler.length > 0 && (
             <div style={{ ...cs, padding: 20, marginBottom: 16 }}>
               <div style={{ ...lbl, marginBottom: 14 }}>📅 Alternatif Tarihler</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {altTarihler.map(a => {
+                {altTarihler.map((a, i) => {
                   const gece = geceSay(a.ucus_tarihi, a.donus_tarihi)
+                  const altLinks = generateAllLinks(o, d, a.ucus_tarihi, a.donus_tarihi)
+                  const handleClick = () => {
+                    if (a.id) {
+                      onFirsat?.({ ...firsat, id: a.id, ucus_tarihi: a.ucus_tarihi, donus_tarihi: a.donus_tarihi, fiyat: a.fiyat, indirim_orani: a.indirim_orani })
+                    } else {
+                      window.open(altLinks.aviasales, '_blank')
+                    }
+                  }
                   return (
-                    <div key={a.id} onClick={() => onFirsat?.({ ...firsat, id: a.id, ucus_tarihi: a.ucus_tarihi, donus_tarihi: a.donus_tarihi, fiyat: a.fiyat, indirim_orani: a.indirim_orani })} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 14px', background: 'var(--bg)', borderRadius: 10, border: '1px solid var(--border)', cursor: 'pointer', transition: 'border-color 0.15s' }}>
+                    <div key={a.id || `alt-${i}`} onClick={handleClick} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 14px', background: 'var(--bg)', borderRadius: 10, border: '1px solid var(--border)', cursor: 'pointer', transition: 'border-color 0.15s' }}>
                       <div>
                         <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)' }}>{tarihFormat(a.ucus_tarihi)} → {tarihFormat(a.donus_tarihi)}</div>
-                        {gece && <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>{gece} gece</div>}
+                        {gece > 0 && <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>{gece} gece</div>}
                       </div>
                       <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--accent)' }}>{a.fiyat?.toLocaleString('tr-TR')} ₺</div>
-                        {a.indirim_orani > 0 && <div style={{ fontSize: 11, color: 'var(--accent2)' }}>%{a.indirim_orani} ucuz</div>}
+                        <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--accent)' }}>{a.fiyat?.toLocaleString('tr-TR')} ₺</div>
+                        {!a.id && <div style={{ fontSize: 10, color: 'var(--success)', marginTop: 2 }}>Bilet ara ↗</div>}
+                        {a.id && a.indirim_orani > 0 && <div style={{ fontSize: 11, color: 'var(--accent2)' }}>%{a.indirim_orani} ucuz</div>}
                       </div>
                     </div>
                   )
@@ -240,9 +279,10 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
                     {a.puan > 0 && <div style={{ fontSize: 11, color: 'var(--accent2)', marginTop: 2 }}>⭐ {a.puan}</div>}
                   </div>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  {a.sure && <span style={{ fontSize: 11, color: 'var(--text3)' }}>⏱️ {a.sure}</span>}
-                  <button onClick={(e) => { e.stopPropagation(); window.open(a.link, '_blank') }} style={{ background: 'rgba(46,196,182,0.15)', border: '1px solid rgba(46,196,182,0.3)', borderRadius: 8, padding: '6px 14px', color: 'var(--success)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Rezervasyon yap ↗</button>
+                {a.sure && <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>⏱️ {a.sure}</div>}
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button onClick={(e) => { e.stopPropagation(); window.open(`https://www.getyourguide.com/s/?q=${encodeURIComponent(a.baslik + ' ' + sehir)}&partner_id=KACAMAK&utm_medium=online_publisher`, '_blank') }} style={{ flex: 1, background: 'rgba(255,107,53,0.15)', border: '1px solid rgba(255,107,53,0.3)', borderRadius: 8, padding: '7px 10px', color: 'var(--accent)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>GetYourGuide ↗</button>
+                  <button onClick={(e) => { e.stopPropagation(); window.open(`https://www.viator.com/searchResults/all?text=${encodeURIComponent(a.baslik + ' ' + sehir)}&pid=P00166886`, '_blank') }} style={{ flex: 1, background: 'rgba(46,196,182,0.15)', border: '1px solid rgba(46,196,182,0.3)', borderRadius: 8, padding: '7px 10px', color: 'var(--success)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Viator ↗</button>
                 </div>
               </div>
             ))}
@@ -252,45 +292,88 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
 
         {/* === SAG KOLON === */}
         <div className="detay-col-sag">
-          {/* Videolar */}
-          {videolar.length > 0 && (
-            <div style={{ marginBottom: 20 }}>
-              <div style={lbl}>🎬 Gezi Videolari</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {videolar.slice(0, 3).map((v, i) => (
-                  <div key={i} onClick={() => window.open(`https://www.youtube.com/watch?v=${v.id}`, '_blank')} style={{ ...cs, overflow: 'hidden', borderRadius: 12, cursor: 'pointer' }}>
-                    <div style={{ position: 'relative' }}>
-                      <img src={`https://img.youtube.com/vi/${v.id}/mqdefault.jpg`} alt={v.baslik} style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block' }} />
-                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.3)' }}>
-                        <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(255,0,0,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <div style={{ width: 0, height: 0, borderTop: '10px solid transparent', borderBottom: '10px solid transparent', borderLeft: '16px solid #fff', marginLeft: 3 }} />
-                        </div>
-                      </div>
+          {/* YouTube Gezi Videoları */}
+          <div style={{ marginBottom: 20 }}>
+            <div style={lbl}>🎬 Gezi Videoları</div>
+
+            {kanalVideo ? (<>
+              {/* Ucuza Gezen Doktor videosu */}
+              <div
+                onClick={() => window.open(`https://www.youtube.com/watch?v=${kanalVideo.id}`, '_blank')}
+                style={{ ...cs, overflow: 'hidden', borderRadius: 12, cursor: 'pointer', marginBottom: 10 }}
+              >
+                <div style={{ position: 'relative' }}>
+                  <img src={`https://img.youtube.com/vi/${kanalVideo.id}/mqdefault.jpg`} alt={kanalVideo.baslik} style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block' }} />
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.25)' }}>
+                    <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(204,0,0,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ width: 0, height: 0, borderTop: '11px solid transparent', borderBottom: '11px solid transparent', borderLeft: '18px solid #fff', marginLeft: 3 }} />
                     </div>
-                    <div style={{ padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: 13, color: 'var(--text2)', fontWeight: 500 }}>{v.baslik}</span>
-                      <span style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600 }}>YouTube'da izle ↗</span>
-                    </div>
+                  </div>
+                  {/* Kanal badge */}
+                  <div style={{ position: 'absolute', top: 8, left: 8, background: 'rgba(204,0,0,0.9)', borderRadius: 6, padding: '3px 8px', fontSize: 10, fontWeight: 600, color: '#fff', letterSpacing: '0.02em' }}>Ucuza Gezen Doktor</div>
+                </div>
+                <div style={{ padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{kanalVideo.baslik}</span>
+                  <span style={{ fontSize: 11, color: '#CC0000', fontWeight: 600, flexShrink: 0, marginLeft: 8 }}>İzle ↗</span>
+                </div>
+              </div>
+              {/* Genel arama linki */}
+              <div
+                onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(sehir + ' gezi videoları')}`, '_blank')}
+                style={{ ...cs, padding: '12px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, borderLeft: '3px solid #CC0000' }}
+              >
+                <span style={{ fontSize: 18 }}>🎬</span>
+                <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: 'var(--text2)' }}>{sehir} gezi videoları</span>
+                <span style={{ fontSize: 11, color: '#CC0000', fontWeight: 600, flexShrink: 0 }}>YouTube'da ara ↗</span>
+              </div>
+            </>) : (<>
+              {/* Kanal videosu yok — arama kartları */}
+              <div
+                onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(sehir + ' gezi rehberi vlog')}`, '_blank')}
+                style={{ ...cs, overflow: 'hidden', borderRadius: 12, cursor: 'pointer', marginBottom: 10 }}
+              >
+                <div style={{ padding: '28px 20px', background: 'linear-gradient(135deg, #1B1F3B 0%, #3b1520 40%, #CC0000 100%)', textAlign: 'center' }}>
+                  <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                    <div style={{ width: 0, height: 0, borderTop: '11px solid transparent', borderBottom: '11px solid transparent', borderLeft: '18px solid #fff', marginLeft: 3 }} />
+                  </div>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 4 }}>{sehir} Gezi Videoları</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>YouTube'da ara ↗</div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {[
+                  { etiket: `${sehir} gezilecek yerler`, emoji: '📍' },
+                  { etiket: `${sehir} yeme içme`, emoji: '🍽️' },
+                  { etiket: `${sehir} pratik bilgiler`, emoji: '💡' },
+                ].map((item, i) => (
+                  <div
+                    key={i}
+                    onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(item.etiket)}`, '_blank')}
+                    style={{ ...cs, padding: '12px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, borderLeft: '3px solid #CC0000' }}
+                  >
+                    <span style={{ fontSize: 18 }}>{item.emoji}</span>
+                    <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: 'var(--text2)' }}>{item.etiket}</span>
+                    <span style={{ fontSize: 11, color: '#CC0000', fontWeight: 600, flexShrink: 0 }}>Ara ↗</span>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            </>)}
+          </div>
 
-          {/* Benzer firsatlar */}
+          {/* Benzer fırsatlar */}
           {benzer.length > 0 && (
             <div>
-              <div style={lbl}>🔥 Benzer Firsatlar</div>
+              <div style={lbl}>🔥 Benzer Fiyatlı {['AYT','DLM','ADB','ESB','TZX','GZT','ADA','BJV','NAV','VAN','ERZ','SZF','DIY','IST','SAW','IZM','ANK','COV','GZP','TRS'].includes(d) ? 'Yurtiçi' : 'Yurtdışı'} Fırsatlar</div>
               {benzer.map(b => (
-                <div key={b.id} onClick={() => onFirsat?.(b)} style={{ ...cs, padding: 16, marginBottom: 10, cursor: 'pointer' }}>
+                <div key={b.id} onClick={() => onFirsat?.(b)} style={{ ...cs, padding: 14, marginBottom: 10, cursor: 'pointer', borderLeft: '3px solid var(--accent)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div>
-                      <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text)', marginBottom: 4 }}>{b.varis_sehir || b.varis}</div>
-                      <div style={{ fontSize: 12, color: 'var(--text2)' }}>{b.cikis} → {b.varis} · {b.ucus_tarihi}</div>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text)', marginBottom: 2 }}>{b.varis_sehir || b.varis} <span style={{ fontSize: 11, color: 'var(--text3)', fontWeight: 400 }}>({b.varis})</span></div>
+                      <div style={{ fontSize: 12, color: 'var(--text3)' }}>{tarihFormat(b.ucus_tarihi)}{b.donus_tarihi ? ` → ${tarihFormat(b.donus_tarihi)}` : ''}{geceSay(b.ucus_tarihi, b.donus_tarihi) ? ` · ${geceSay(b.ucus_tarihi, b.donus_tarihi)} gece` : ''}</div>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--accent)' }}>{b.fiyat?.toLocaleString('tr-TR')} ₺</div>
-                      <div style={{ fontSize: 11, color: 'var(--accent2)' }}>%{b.indirim_orani} ucuz</div>
+                    <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: 10 }}>
+                      <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--accent)' }}>{b.fiyat?.toLocaleString('tr-TR')} ₺</div>
+                      <div style={{ fontSize: 11, color: 'var(--accent2)', fontWeight: 600 }}>%{b.indirim_orani} ucuz</div>
                     </div>
                   </div>
                 </div>
@@ -303,7 +386,7 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
       {/* Sticky bar — tam genislik, kolonlarin disinda */}
       <div className="detay-sticky-bar">
         <div className="detay-sticky-inner">
-          <button style={{ flex: 1, padding: 14, background: 'var(--accent)', border: 'none', borderRadius: 'var(--radius)', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 20px rgba(255,107,53,0.4)' }} onClick={() => window.open(aviasalesLink, '_blank')}>✈️ Bilet ara</button>
+          <button style={{ flex: 1, padding: 14, background: 'var(--accent)', border: 'none', borderRadius: 'var(--radius)', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 20px rgba(255,107,53,0.4)' }} onClick={() => window.open(links.aviasales, '_blank')}>✈️ Bilet ara</button>
           <button style={{ flex: 1, padding: 14, background: 'var(--success)', border: 'none', borderRadius: 'var(--radius)', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 20px rgba(46,196,182,0.4)' }} onClick={() => window.open(hotellookLink, '_blank')}>🏨 Otel bul</button>
         </div>
       </div>

@@ -1,68 +1,90 @@
+from datetime import datetime
 from services.claude_service import claude_sor
+from services.bolge import bolge_bul, maks_gece, varsayilan_gece
+from services.koordinat import sehir_adi_getir
 
-def itinerary_olustur(firsat: dict, tercihler: dict = {}, gece: int = 3) -> dict:
+
+def gece_hesapla(firsat: dict) -> int:
+    """Uçuş tarihlerinden veya destinasyon bölgesine göre gece sayısı hesaplar."""
+    varis = firsat.get('varis', '')
+    ucus = firsat.get('ucus_tarihi', '')
+    donus = firsat.get('donus_tarihi', '')
+
+    if ucus and donus:
+        try:
+            g = datetime.strptime(ucus, "%Y-%m-%d")
+            d = datetime.strptime(donus, "%Y-%m-%d")
+            gece = (d - g).days
+            if gece >= 1:
+                return min(gece, maks_gece(varis))
+        except ValueError:
+            pass
+
+    return varsayilan_gece(varis)
+
+
+def _varis_sehir_bul(firsat: dict) -> str:
+    """Fırsattan varış şehir adını çözer. DB'deki varis_sehir > IATA mapping > ham kod."""
+    if firsat.get('varis_sehir'):
+        return firsat['varis_sehir']
+    return sehir_adi_getir(firsat.get('varis', ''))
+
+
+def itinerary_olustur(firsat: dict, tercihler: dict = {}, gece: int = None) -> dict:
     tipler = tercihler.get("tercih_tipleri", [])
     cocuklu = tercihler.get("cocuk_var", False)
     yetiskin = tercihler.get("yetiskin_sayisi", 1)
 
-    prompt = f"""Sen deneyimli bir seyahat planlayicisisin. Turkce, gun bazli cok detayli seyahat programi hazirla.
+    varis_sehir = _varis_sehir_bul(firsat)
+    cikis_sehir = sehir_adi_getir(firsat.get('cikis', ''))
 
-Destinasyon: {firsat.get('varis_sehir', firsat['varis'])}
-Sure: {gece} gece / {gece+1} gun
-Kisi: {yetiskin} yetiskin{'+ cocuk' if cocuklu else ''}
+    if gece is None:
+        gece = gece_hesapla(firsat)
+
+    gece = min(gece, maks_gece(firsat.get('varis', '')))
+    gun = gece + 1
+
+    prompt = f"""Turkce, {varis_sehir} sehri icin tam {gun} gunluk ({gece} gece) seyahat programi hazirla.
+
+ONEMLI: Varis sehri {varis_sehir}. Tum program {varis_sehir} icin olmali. Cikis sehri {cikis_sehir} hakkinda bilgi verme, sadece {varis_sehir} sehrindeki gezilecek yerler, restoranlar ve aktiviteleri yaz.
+
+Kisi: {yetiskin} yetiskin{' + cocuk' if cocuklu else ''}
 Tercih: {', '.join(tipler) if tipler else 'genel'}
-Cocuklu: {'Evet - aile dostu oneriler yap' if cocuklu else 'Hayir'}
 
-Her gun icin 3 zaman dilimi (sabah/ogle/aksam), her zaman diliminde:
-- Emoji ile baslayan aktivite adi
-- Gezilecek yer veya restoran onerisi (gercek isim ver)
-- Ulasim bilgisi (nasil gidilir)
-- Tahmini harcama (EUR)
+Kurallar:
+- Sadece {varis_sehir} sehrindeki gercek mekan/restoran isimleri kullan
+- Her zaman diliminde emoji, aktivite, detay, ulasim, harcama_eur ver
+- Oglen ve aksamda {varis_sehir} sehrinde restoran oner
+- Her aktivite ve restoran icin google_maps_link alani ekle. Format: https://www.google.com/maps/search/?api=1&query=URL_ENCODED_MEKAN_ADI+{varis_sehir}
+- Sehir rehberi (pratik bolumu) {varis_sehir} icin olmali
+- Kompakt JSON dondur, aciklama yazma
 
-ONEMLI: Gercek mekan isimleri kullan. Yerel, turistik olmayan restoran ve kafeler de oner.
+JSON formati:
+{{"gunler":[{{"gun":1,"tema":"...","emoji":"...","sabah":{{"emoji":"...","aktivite":"...","detay":"...","google_maps_link":"https://www.google.com/maps/search/?api=1&query=Mekan+Adi+{varis_sehir}","ulasim":"...","harcama_eur":5}},"ogle":{{"emoji":"...","aktivite":"...","detay":"...","restoran":"Restoran Adi","restoran_maps_link":"https://www.google.com/maps/search/?api=1&query=Restoran+Adi+{varis_sehir}","google_maps_link":"https://www.google.com/maps/search/?api=1&query=Mekan+Adi+{varis_sehir}","ulasim":"...","harcama_eur":15}},"aksam":{{"emoji":"...","aktivite":"...","detay":"...","restoran":"Restoran Adi","restoran_maps_link":"https://www.google.com/maps/search/?api=1&query=Restoran+Adi+{varis_sehir}","google_maps_link":"https://www.google.com/maps/search/?api=1&query=Mekan+Adi+{varis_sehir}","ulasim":"...","harcama_eur":25}},"gun_toplam_eur":45,"ipucu":"..."}}],"pratik":{{"ulasim":"...","para":"...","dil":"...","guvenlik":"...","ipuclari":["..."]}},"toplam_aktivite_eur":150,"en_iyi_zaman":"..."}}"""
 
-Sadece JSON dondur, baska hicbir sey yazma:
-{{
-  "gunler": [
-    {{
-      "gun": 1,
-      "tema": "Varis ve ilk kesif",
-      "emoji": "✈️",
-      "sabah": {{
-        "emoji": "🛬",
-        "aktivite": "Havalimanindan sehir merkezine transfer",
-        "detay": "...",
-        "ulasim": "Metro/otobus ile nasil gidilir",
-        "harcama_eur": 5
-      }},
-      "ogle": {{
-        "emoji": "🍽️",
-        "aktivite": "...",
-        "detay": "...",
-        "restoran": "Restoran Adi - kisa aciklama",
-        "ulasim": "...",
-        "harcama_eur": 15
-      }},
-      "aksam": {{
-        "emoji": "🌆",
-        "aktivite": "...",
-        "detay": "...",
-        "restoran": "Restoran Adi - kisa aciklama",
-        "ulasim": "...",
-        "harcama_eur": 25
-      }},
-      "gun_toplam_eur": 45,
-      "ipucu": "Bugun icin ozel bir ipucu"
-    }}
-  ],
-  "pratik": {{
-    "ulasim": "Havalimanindan sehir merkezine ulasim detayi",
-    "para": "Yerel para birimi, kartla odeme durumu",
-    "dil": "Temel yerel ifadeler (3-4 tane)",
-    "guvenlik": "Dikkat edilecek hususlar",
-    "ipuclari": ["Ipucu 1", "Ipucu 2", "Ipucu 3"]
-  }},
-  "toplam_aktivite_eur": 150,
-  "en_iyi_zaman": "Bu destinasyon icin en iyi ziyaret zamani"
-}}"""
-    return claude_sor(prompt, json_mod=True)
+    sonuc = claude_sor(prompt, json_mod=True, max_tokens=8192)
+
+    # Post-processing: eksik Google Maps linklerini ekle
+    if sonuc and sonuc.get('gunler'):
+        _maps_linkleri_ekle(sonuc, varis_sehir)
+
+    return sonuc
+
+
+def _maps_linkleri_ekle(itinerary: dict, sehir: str):
+    """Claude'un üretmediği Google Maps linklerini post-processing ile ekler."""
+    from urllib.parse import quote
+    for gun in itinerary.get('gunler', []):
+        for zaman in ('sabah', 'ogle', 'aksam'):
+            bolum = gun.get(zaman)
+            if not isinstance(bolum, dict):
+                continue
+            # Aktivite linki
+            if bolum.get('aktivite') and not bolum.get('google_maps_link'):
+                q = quote(f"{bolum['aktivite']} {sehir}")
+                bolum['google_maps_link'] = f"https://www.google.com/maps/search/?api=1&query={q}"
+            # Restoran linki
+            if bolum.get('restoran') and not bolum.get('restoran_maps_link'):
+                restoran_adi = bolum['restoran'].split(' - ')[0].strip()
+                q = quote(f"{restoran_adi} {sehir}")
+                bolum['restoran_maps_link'] = f"https://www.google.com/maps/search/?api=1&query={q}"

@@ -66,10 +66,49 @@ SEHIR_VIDEOLARI = {
     "Antalya": [
         {"id": "dFpEy_CTQBA", "baslik": "Antalya Gezi Rehberi"},
     ],
+    "Tbilisi": [
+        {"id": "L3T3pOBnLzI", "baslik": "Tiflis Gezi Rehberi"},
+        {"id": "cVE4sPfqz8c", "baslik": "Tiflis'te 3 Gun"},
+    ],
+    "Baku": [
+        {"id": "L3K4eTYJbl0", "baslik": "Baku Gezi Rehberi"},
+    ],
+    "Moscow": [
+        {"id": "6TlZ-L_KYk0", "baslik": "Moskova Gezi Rehberi"},
+    ],
+    "Sharm el Sheikh": [
+        {"id": "hGXlNx2-U9s", "baslik": "Sarm El Seyh Gezi Rehberi"},
+    ],
+    "Cairo": [
+        {"id": "HSxzMfIcZVY", "baslik": "Kahire Gezi Rehberi"},
+    ],
+    "Bangkok": [
+        {"id": "bKoMugi2N3s", "baslik": "Bangkok Gezi Rehberi"},
+    ],
 }
+
+# Türkçe isimlerle de erişilebilsin
+_TR_ALIAS = {
+    "Roma": "Rome", "Londra": "London", "Atina": "Athens",
+    "Barselona": "Barcelona", "Budapeşte": "Budapest", "Viyana": "Vienna",
+    "Lizbon": "Lisbon", "Prag": "Prague", "Münih": "Munich",
+    "Milano": "Milan", "Moskova": "Moscow", "Tiflis": "Tbilisi",
+    "Bakü": "Baku", "Kahire": "Cairo", "Şarm El Şeyh": "Sharm el Sheikh",
+    "İstanbul": "Istanbul",
+}
+for tr, en in _TR_ALIAS.items():
+    if en in SEHIR_VIDEOLARI and tr not in SEHIR_VIDEOLARI:
+        SEHIR_VIDEOLARI[tr] = SEHIR_VIDEOLARI[en]
 
 
 def videolar_getir(destinasyon: str) -> list:
-    from services.unsplash import SEHIR_ISIMLERI
-    sehir = SEHIR_ISIMLERI.get(destinasyon.upper(), destinasyon)
-    return SEHIR_VIDEOLARI.get(sehir, [])
+    from services.koordinat import sehir_adi_getir, SEHIR_KOORDINATLARI
+    kod = destinasyon.upper()
+    # Önce Türkçe isimle dene, sonra koordinat.py'deki İngilizce isimle
+    tr_isim = sehir_adi_getir(kod)
+    if tr_isim in SEHIR_VIDEOLARI:
+        return SEHIR_VIDEOLARI[tr_isim]
+    koord = SEHIR_KOORDINATLARI.get(kod)
+    if koord and koord["isim"] in SEHIR_VIDEOLARI:
+        return SEHIR_VIDEOLARI[koord["isim"]]
+    return []

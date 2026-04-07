@@ -3,6 +3,7 @@ from services.unsplash import foto_getir, galeri_getir
 from services.aktivite import aktiviteler_getir
 from services.koordinat import koordinat_getir, harita_embed_url
 from services.youtube_data import videolar_getir
+from services.youtube_kanal import kanal_videosu_getir
 
 bp = Blueprint("medya", __name__)
 
@@ -43,3 +44,11 @@ def destinasyon_harita(destinasyon):
 @bp.route("/api/videolar/<destinasyon>", methods=["GET"])
 def destinasyon_videolar(destinasyon):
     return jsonify(videolar_getir(destinasyon.upper()))
+
+
+@bp.route("/api/kanal-video/<destinasyon>", methods=["GET"])
+def destinasyon_kanal_video(destinasyon):
+    video = kanal_videosu_getir(destinasyon.upper())
+    if video:
+        return jsonify(video)
+    return jsonify(None)
