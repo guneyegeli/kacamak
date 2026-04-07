@@ -116,3 +116,10 @@ html, body {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 6px rgba(255,107,53,0.4); }
+  50% { box-shadow: 0 0 16px rgba(255,107,53,0.8); }
+}
+.yeni-badge {
+  animation: pulse-glow 2s ease-in-out infinite;
+}

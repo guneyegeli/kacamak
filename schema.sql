@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS firsatlar (
     ucus_no TEXT,
     affiliate_link TEXT,
     gecerlilik TIMESTAMP,
+    aktif INTEGER DEFAULT 1,
     olusturulma TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

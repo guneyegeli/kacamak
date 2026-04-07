@@ -10,9 +10,14 @@ def firsatlar_listele():
     conn = sqlite3.connect(DB)
     conn.row_factory = sqlite3.Row
     rows = conn.execute("""
-        SELECT * FROM firsatlar
-        WHERE gecerlilik > datetime('now') OR gecerlilik IS NULL
-        ORDER BY indirim_orani DESC
+        SELECT *,
+            CASE WHEN olusturulma > datetime('now', '-24 hours') THEN 1 ELSE 0 END AS yeni
+        FROM firsatlar
+        WHERE (aktif = 1 OR aktif IS NULL)
+        AND (gecerlilik > datetime('now') OR gecerlilik IS NULL)
+        ORDER BY
+            CASE WHEN olusturulma > datetime('now', '-24 hours') THEN 0 ELSE 1 END,
+            indirim_orani DESC
         LIMIT 50
     """).fetchall()
     conn.close()
@@ -60,6 +65,7 @@ def alternatif_tarihler(firsat_id):
         WHERE cikis = ? AND varis = ?
         AND ucus_tarihi >= date('now')
         AND ucus_tarihi != ?
+        AND (aktif = 1 OR aktif IS NULL)
         AND (gecerlilik > datetime('now') OR gecerlilik IS NULL)
         GROUP BY ucus_tarihi
         ORDER BY fiyat ASC
@@ -131,6 +137,7 @@ def benzer_firsatlar(firsat_id):
         SELECT * FROM firsatlar
         WHERE id != ?
         AND fiyat BETWEEN ? AND ?
+        AND (aktif = 1 OR aktif IS NULL)
         AND (gecerlilik > datetime('now') OR gecerlilik IS NULL)
         ORDER BY indirim_orani DESC
         LIMIT 50

@@ -126,7 +126,7 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
         <div style={{ position: 'absolute', inset: 0, background: foto ? 'linear-gradient(transparent 30%, rgba(27,31,59,0.95))' : 'radial-gradient(circle at 70% 30%, rgba(247,201,72,0.2) 0%, transparent 60%)' }} />
         <button onClick={onGeri} style={{ position: 'absolute', top: 52, left: 24, background: 'rgba(27,31,59,0.6)', backdropFilter: 'blur(8px)', border: 'none', borderRadius: 20, padding: '6px 14px', color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 500, zIndex: 2 }}>← Geri</button>
         <div style={{ position: 'absolute', bottom: 28, left: 28, right: 28 }}>
-          <div style={{ fontSize: 13, color: 'var(--text2)', fontWeight: 500, marginBottom: 6 }}>{o} → {d} · {tarihFormat(firsat?.ucus_tarihi)}{firsat?.donus_tarihi ? ` → ${tarihFormat(firsat.donus_tarihi)}` : ''}{geceSay(firsat?.ucus_tarihi, firsat?.donus_tarihi) ? ` (${geceSay(firsat.ucus_tarihi, firsat.donus_tarihi)} gece)` : ''}</div>
+          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', fontWeight: 500, marginBottom: 6 }}>{o} → {d} · {tarihFormat(firsat?.ucus_tarihi)}{firsat?.donus_tarihi ? ` → ${tarihFormat(firsat.donus_tarihi)}` : ''}{geceSay(firsat?.ucus_tarihi, firsat?.donus_tarihi) ? ` (${geceSay(firsat.ucus_tarihi, firsat.donus_tarihi)} gece)` : ''}</div>
           <div style={{ fontSize: 36, fontWeight: 500, color: '#fff' }}>{sehir}</div>
         </div>
         {foto?.fotograf && <div style={{ position: 'absolute', bottom: 8, right: 28, fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>📷 {foto.fotograf}</div>}
@@ -388,6 +388,9 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
         <div className="detay-sticky-inner">
           <button style={{ flex: 1, padding: 14, background: 'var(--accent)', border: 'none', borderRadius: 'var(--radius)', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 20px rgba(255,107,53,0.4)' }} onClick={() => window.open(links.aviasales, '_blank')}>✈️ Bilet ara</button>
           <button style={{ flex: 1, padding: 14, background: 'var(--success)', border: 'none', borderRadius: 'var(--radius)', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 20px rgba(46,196,182,0.4)' }} onClick={() => window.open(hotellookLink, '_blank')}>🏨 Otel bul</button>
+        </div>
+        <div style={{ padding: '4px 16px 8px', textAlign: 'center' }}>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontStyle: 'italic', lineHeight: 1.4 }}>Gösterilen fiyatlar hizmet sağlayıcıların sunduğu rakamlardır. Bağlantı kurduğunuzda hizmet sağlayıcı site fiyatlarda değişiklik yapmış olabilir. Kaçamak aracı platformdur, bilet satışı yapmaz.</p>
         </div>
       </div>
 

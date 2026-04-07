@@ -73,6 +73,7 @@ IATA_ARAMA_TERIMLERI = {
     "CMN": "Hassan II Mosque Casablanca",
     "TUN": "Tunis Medina",
     "SSH": "Sharm el Sheikh Red Sea coral",
+    "AER": "Sochi beach Black Sea",
 }
 
 # Sabit fotoğraflar — API'ye bağımlı olmadan her zaman doğru sonuç

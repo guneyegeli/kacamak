@@ -80,24 +80,30 @@ function FirsatKart({ f, fotolar, altTarihler, onFirsat }) {
   const gece = geceSay(f.ucus_tarihi, f.donus_tarihi)
   const sehir = sehirAdi(f)
   const cikis = cikisSehirAdi(f.cikis)
+  const yeni = f.yeni === 1 || (f.olusturulma && (Date.now() - new Date(f.olusturulma).getTime()) < 86400000)
 
   return (
     <div onClick={() => onFirsat(f)} style={{borderRadius:'var(--radius)',border:'1px solid var(--border)',borderLeft:`3px solid ${renk}`,marginBottom:14,cursor:'pointer',overflow:'hidden',background:'var(--bg2)',backdropFilter:'blur(12px)'}}>
       <div style={{position:'relative',height:140,overflow:'hidden',background:foto?undefined:kartGradient(f.varis)}}>
         {foto && <img src={foto.url_kucuk} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}} />}
-        <div style={{position:'absolute',inset:0,background:foto?'linear-gradient(transparent 40%, rgba(27,31,59,0.9))':'linear-gradient(transparent 20%, rgba(27,31,59,0.85))'}} />
+        <div style={{position:'absolute',inset:0,background:foto?'linear-gradient(transparent 20%, rgba(27,31,59,0.95))':'linear-gradient(transparent 10%, rgba(27,31,59,0.9))'}} />
         <div style={{position:'absolute',bottom:10,left:14,right:14}}>
           <div style={{display:'flex',alignItems:'baseline',gap:6}}>
             <span style={{fontSize:22,fontWeight:500,color:'#fff',textShadow:'0 1px 4px rgba(0,0,0,0.5)'}}>{sehir}</span>
-            <span style={{fontSize:12,color:'rgba(255,255,255,0.5)',fontWeight:400}}>({f.varis})</span>
+            <span style={{fontSize:12,color:'rgba(255,255,255,0.7)',fontWeight:500}}>({f.varis})</span>
           </div>
-          <div style={{fontSize:11,color:'rgba(255,255,255,0.6)',marginTop:2,fontWeight:500}}>
+          <div style={{fontSize:13,color:'rgba(255,255,255,0.85)',marginTop:2,fontWeight:500}}>
             {cikis} ({f.cikis}) → {sehir} ({f.varis})
             {f.ucus_tarihi ? ` · ${tarihFormat(f.ucus_tarihi)}` : ''}
             {f.donus_tarihi ? ` → ${tarihFormat(f.donus_tarihi)}` : ''}
             {gece ? ` (${gece} gece)` : ''}
           </div>
         </div>
+        {yeni && (
+          <div className="yeni-badge" style={{position:'absolute',top:10,left:10,background:'#FF6B35',borderRadius:6,padding:'3px 8px',fontSize:10,fontWeight:700,color:'#fff',letterSpacing:'0.05em',boxShadow:'0 0 12px rgba(255,107,53,0.6)'}}>
+            YEN&#304;
+          </div>
+        )}
         <div style={{position:'absolute',top:10,right:10,background:'rgba(247,201,72,0.9)',borderRadius:8,padding:'6px 10px',textAlign:'center'}}>
           <div style={{fontSize:16,fontWeight:700,color:'#1B1F3B'}}>%{f.indirim_orani}</div>
         </div>
@@ -132,8 +138,8 @@ export default function AnaSayfa({ onFirsat, onTercih }) {
 
   useEffect(() => {
     api.firsatlar().then(data => {
-      // İndirim oranına göre sırala (en yüksek üstte)
-      const sirali = [...data].sort((a, b) => (b.indirim_orani || 0) - (a.indirim_orani || 0))
+      // Backend zaten sıralıyor: önce yeni (24 saat), sonra eski — indirim oranına göre
+      const sirali = data
       setFirsatlar(sirali)
       sirali.forEach(f => {
         const kod = f.varis
