@@ -1,4 +1,4 @@
-const MARKER = import.meta.env.VITE_TRAVELPAYOUTS_MARKER || '716307'
+const MARKER = import.meta.env.VITE_TRAVELPAYOUTS_MARKER || '516181'
 
 // Kiwi.com uses English city-country slugs
 const KIWI_SLUGS = {
