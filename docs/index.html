@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kacamak — Ucuz Ucus Firsatlarini AI ile Yakala</title>
+    <meta name="description" content="Turkiye cikisli en ucuz ucuslari otomatik bulan, gun bazli seyahat programi olusturan akilli seyahat asistani. Yakinda App Store ve Google Play'de.">
+    <meta property="og:title" content="Kacamak — Ucuz Ucus Firsatlarini AI ile Yakala">
+    <meta property="og:description" content="Turkiye cikisli en ucuz ucuslari otomatik bulan, gun bazli seyahat programi olusturan akilli seyahat asistani.">
+    <meta property="og:image" content="https://kacamak.app/og-image.png">
+    <meta property="og:url" content="https://kacamak.app">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: #E8E8E8;
+            background: #1B1F3B;
+            overflow-x: hidden;
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem 1.5rem;
+            background: linear-gradient(135deg, #1B1F3B 0%, #2A1F4E 40%, #FF6B35 100%);
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 70% 30%, rgba(247,201,72,0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 30% 70%, rgba(46,196,182,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 700px;
+        }
+
+        .logo {
+            font-size: 4.5rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #FFFFFF 0%, #F7C948 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .logo-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .slogan {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #FFFFFF;
+            margin-bottom: 0.75rem;
+        }
+
+        .sub-slogan {
+            font-size: 1.05rem;
+            color: rgba(255,255,255,0.75);
+            line-height: 1.6;
+            max-width: 550px;
+            margin: 0 auto 2.5rem;
+        }
+
+        .badges {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: transform 0.2s;
+        }
+
+        .badge:hover {
+            transform: translateY(-2px);
+        }
+
+        .badge svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            color: rgba(255,255,255,0.5);
+            font-size: 1.5rem;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        /* Section common */
+        section {
+            padding: 5rem 1.5rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #FFFFFF;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.55);
+            font-size: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Features */
+        .features {
+            background: #161933;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255,107,53,0.4);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #F7C948;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.6);
+            line-height: 1.5;
+        }
+
+        /* Screenshots */
+        .screenshots {
+            background: #1B1F3B;
+        }
+
+        .screenshots-row {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .phone-frame {
+            width: 230px;
+            height: 460px;
+            border-radius: 28px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: #111328;
+            overflow: hidden;
+            position: relative;
+            flex-shrink: 0;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            transition: transform 0.3s;
+        }
+        .phone-frame:hover {
+            transform: translateY(-6px);
+        }
+        .phone-notch {
+            width: 80px;
+            height: 6px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 3px;
+            margin: 8px auto 0;
+        }
+        .phone-screen {
+            padding: 6px 10px;
+            height: calc(100% - 20px);
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        .mock-header {
+            font-size: 7px;
+            color: rgba(255,255,255,0.4);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        .mock-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .mock-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+        .mock-card-img {
+            height: 52px;
+            position: relative;
+        }
+        .mock-card-img .mock-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(transparent 20%, rgba(17,19,40,0.9));
+        }
+        .mock-card-body {
+            padding: 5px 8px 6px;
+        }
+        .mock-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(247,201,72,0.9);
+            border-radius: 4px;
+            padding: 1px 5px;
+            font-size: 7px;
+            font-weight: 700;
+            color: #1B1F3B;
+        }
+        .mock-city {
+            position: absolute;
+            bottom: 4px;
+            left: 6px;
+            font-size: 11px;
+            font-weight: 500;
+            color: #fff;
+        }
+        .mock-route {
+            font-size: 6.5px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 3px;
+        }
+        .mock-price {
+            font-size: 12px;
+            font-weight: 700;
+            color: #FF6B35;
+        }
+        .mock-old-price {
+            font-size: 7px;
+            color: rgba(255,255,255,0.35);
+            text-decoration: line-through;
+            margin-left: 4px;
+        }
+        .mock-section-label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+        .mock-section-label .bar {
+            width: 3px;
+            height: 10px;
+            border-radius: 1px;
+        }
+        .mock-section-label span {
+            font-size: 7px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .mock-hero {
+            height: 110px;
+            border-radius: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .mock-hero .mock-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(transparent 30%, rgba(17,19,40,0.95));
+        }
+        .mock-hero-info {
+            position: absolute;
+            bottom: 8px;
+            left: 10px;
+        }
+        .mock-hero-route {
+            font-size: 7px;
+            color: rgba(255,255,255,0.75);
+            font-weight: 500;
+        }
+        .mock-hero-city {
+            font-size: 20px;
+            font-weight: 500;
+            color: #fff;
+        }
+        .mock-price-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .mock-btn {
+            display: flex;
+            gap: 4px;
+            padding: 0 10px 6px;
+        }
+        .mock-btn div {
+            flex: 1;
+            text-align: center;
+            padding: 5px;
+            border-radius: 6px;
+            font-size: 7px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .mock-day {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px;
+            padding: 6px 8px;
+            margin-bottom: 5px;
+        }
+        .mock-day-title {
+            font-size: 8px;
+            font-weight: 600;
+            color: #F7C948;
+            margin-bottom: 4px;
+        }
+        .mock-activity {
+            display: flex;
+            align-items: flex-start;
+            gap: 4px;
+            margin-bottom: 3px;
+        }
+        .mock-activity-icon {
+            font-size: 8px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        .mock-activity-text {
+            font-size: 6.5px;
+            color: rgba(255,255,255,0.7);
+            line-height: 1.4;
+        }
+        .mock-activity-name {
+            font-size: 7px;
+            color: rgba(255,255,255,0.9);
+            font-weight: 500;
+        }
+
+        /* How it works */
+        .how-it-works {
+            background: #161933;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            position: relative;
+        }
+
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 3rem;
+            left: calc(16.66% + 1rem);
+            right: calc(16.66% + 1rem);
+            height: 2px;
+            background: linear-gradient(90deg, #FF6B35, #F7C948, #2EC4B6);
+            opacity: 0.3;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step:nth-child(1) .step-number {
+            background: linear-gradient(135deg, #FF6B35, #FF8F5E);
+            color: #fff;
+        }
+
+        .step:nth-child(2) .step-number {
+            background: linear-gradient(135deg, #F7C948, #FFE066);
+            color: #1B1F3B;
+        }
+
+        .step:nth-child(3) .step-number {
+            background: linear-gradient(135deg, #2EC4B6, #5EDDD0);
+            color: #1B1F3B;
+        }
+
+        .step h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #FFFFFF;
+            margin-bottom: 0.5rem;
+        }
+
+        .step p {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.55);
+            line-height: 1.5;
+        }
+
+        /* Stats */
+        .stats {
+            background: linear-gradient(135deg, #FF6B35 0%, #F7C948 100%);
+            padding: 4rem 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1B1F3B;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(27,31,59,0.7);
+            font-weight: 500;
+            margin-top: 0.25rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #12142B;
+            padding: 3rem 1.5rem 2rem;
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFFFFF, #F7C948);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: #F7C948;
+        }
+
+        .footer-contact {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-contact a {
+            color: #2EC4B6;
+            text-decoration: none;
+        }
+
+        .footer-badges {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(255,255,255,0.06);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .footer-bottom {
+            color: rgba(255,255,255,0.25);
+            font-size: 0.75rem;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding-top: 1.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .logo {
+                font-size: 3rem;
+            }
+            .slogan {
+                font-size: 1.2rem;
+            }
+            .sub-slogan {
+                font-size: 0.95rem;
+            }
+            .section-title {
+                font-size: 1.6rem;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .steps {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+            .steps::before {
+                display: none;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+            .stat-value {
+                font-size: 2rem;
+            }
+            .screenshot-placeholder {
+                width: 180px;
+                height: 360px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="logo-icon">✈️</div>
+            <h1 class="logo">Kacamak</h1>
+            <p class="slogan">Ucuz ucus firsatlarini AI ile yakala</p>
+            <p class="sub-slogan">Turkiye cikisli en ucuz ucuslari otomatik bulan, gun bazli seyahat programi olusturan akilli seyahat asistani</p>
+            <div class="badges">
+                <div class="badge">
+                    <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                    Yakinda App Store'da
+                </div>
+                <div class="badge">
+                    <svg viewBox="0 0 24 24"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-1.063l2.387 1.385a1 1 0 010 1.742l-2.387 1.385-2.467-2.467 2.467-2.045zM5.864 3.458L16.8 9.791l-2.302 2.302-8.634-8.635z"/></svg>
+                    Yakinda Google Play'de
+                </div>
+            </div>
+        </div>
+        <div class="scroll-hint">&#8595;</div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Ozellikler</h2>
+            <p class="section-subtitle">Seyahat planlamak hic bu kadar kolay olmamisti</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Firsat Avcisi</h3>
+                    <p>7/24 ucuz ucus taramasi. Fiyat dusunce aninda bildirim alirsin.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Seyahat Programi</h3>
+                    <p>Gun bazli itinerary, restoran ve aktivite onerileri. Yapay zeka ile ozel program.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📦</div>
+                    <h3>Komple Paket</h3>
+                    <p>Ucus + otel + aktivite tek ekranda. Her sey bir arada, tek tikla.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Ucretsiz</h3>
+                    <p>Tamamen ucretsiz, reklamsiz. Sadece firsat yakala, keyfine bak.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots -->
+    <section class="screenshots">
+        <div class="container">
+            <h2 class="section-title">Uygulama</h2>
+            <p class="section-subtitle">Basit, hizli, kullanici dostu arayuz</p>
+            <div class="screenshots-row">
+                <!-- Mockup 1: Ana Sayfa -->
+                <div class="phone-frame">
+                    <div class="phone-notch"></div>
+                    <div class="phone-screen">
+                        <div class="mock-header">Bugunun firsatlari</div>
+                        <div class="mock-title">Kacamak</div>
+
+                        <div class="mock-section-label">
+                            <div class="bar" style="background:#FF6B35"></div>
+                            <span style="color:#FF6B35">Yurtici Firsatlar</span>
+                        </div>
+
+                        <div class="mock-card">
+                            <div class="mock-card-img" style="background:linear-gradient(135deg,#1B1F3B,#2a4a3a,#2EC4B6)">
+                                <div class="mock-overlay"></div>
+                                <div class="mock-badge">%42</div>
+                                <div class="mock-city">Antalya</div>
+                            </div>
+                            <div class="mock-card-body">
+                                <div class="mock-route">Istanbul (IST) → Antalya (AYT) · 16 Nis → 23 Nis (7 gece)</div>
+                                <div><span class="mock-price">1.245 &#8378;</span><span class="mock-old-price">2.148 &#8378;</span></div>
+                            </div>
+                        </div>
+
+                        <div class="mock-card">
+                            <div class="mock-card-img" style="background:linear-gradient(135deg,#1B1F3B,#3b1f4a,#F7C948)">
+                                <div class="mock-overlay"></div>
+                                <div class="mock-badge">%38</div>
+                                <div class="mock-city">Bodrum</div>
+                            </div>
+                            <div class="mock-card-body">
+                                <div class="mock-route">Ankara (ESB) → Bodrum (BJV) · 20 Nis → 25 Nis (5 gece)</div>
+                                <div><span class="mock-price">987 &#8378;</span><span class="mock-old-price">1.592 &#8378;</span></div>
+                            </div>
+                        </div>
+
+                        <div class="mock-section-label" style="margin-top:8px">
+                            <div class="bar" style="background:#2EC4B6"></div>
+                            <span style="color:#2EC4B6">Yurtdisi Firsatlar</span>
+                        </div>
+
+                        <div class="mock-card">
+                            <div class="mock-card-img" style="background:linear-gradient(135deg,#1B1F3B,#2a2f5a,#FF6B35)">
+                                <div class="mock-overlay"></div>
+                                <div class="mock-badge">%47</div>
+                                <div class="mock-city">Paris</div>
+                            </div>
+                            <div class="mock-card-body">
+                                <div class="mock-route">Istanbul (IST) → Paris (PAR) · 1 May → 6 May (5 gece)</div>
+                                <div><span class="mock-price">3.890 &#8378;</span><span class="mock-old-price">7.340 &#8378;</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mockup 2: Firsat Detay -->
+                <div class="phone-frame">
+                    <div class="phone-notch"></div>
+                    <div class="phone-screen" style="padding:0">
+                        <div class="mock-hero" style="background:linear-gradient(135deg,#1B1F3B,#1e3a5f,#2EC4B6)">
+                            <div class="mock-overlay"></div>
+                            <div style="position:absolute;top:10px;left:10px;font-size:8px;color:rgba(255,255,255,0.7);background:rgba(27,31,59,0.6);border-radius:8px;padding:2px 8px">← Geri</div>
+                            <div class="mock-hero-info">
+                                <div class="mock-hero-route">Istanbul → Antalya · 16 Nis → 23 Nis (7 gece)</div>
+                                <div class="mock-hero-city">Antalya</div>
+                            </div>
+                        </div>
+                        <div class="mock-price-row">
+                            <span style="font-size:16px;font-weight:700;color:#FF6B35">1.245 &#8378;</span>
+                            <span style="font-size:8px;color:#FF6B35;font-weight:500">gidis-donus</span>
+                            <span style="font-size:8px;color:rgba(255,255,255,0.35);text-decoration:line-through">2.148 &#8378;</span>
+                            <span style="font-size:8px;background:rgba(247,201,72,0.9);color:#1B1F3B;border-radius:4px;padding:1px 4px;font-weight:700;margin-left:auto">%42</span>
+                        </div>
+                        <div class="mock-btn">
+                            <div style="background:#FF6B35">✈️ Bilet ara</div>
+                            <div style="background:#2EC4B6">🏨 Otel bul</div>
+                        </div>
+                        <div style="padding:0 10px">
+                            <div style="font-size:8px;color:#F7C948;font-weight:600;margin-bottom:5px">📋 Gun Programi</div>
+                            <div class="mock-day">
+                                <div class="mock-day-title">🌅 Gun 1 — Varis & Kesfet</div>
+                                <div class="mock-activity"><span class="mock-activity-icon">✈️</span><span class="mock-activity-name">Havalimanina varis, transfer</span></div>
+                                <div class="mock-activity"><span class="mock-activity-icon">🏨</span><span class="mock-activity-name">Otele yerlesme</span></div>
+                                <div class="mock-activity"><span class="mock-activity-icon">🚶</span><span class="mock-activity-name">Kaleici turu</span></div>
+                            </div>
+                            <div class="mock-day">
+                                <div class="mock-day-title">🏖️ Gun 2 — Plaj & Doga</div>
+                                <div class="mock-activity"><span class="mock-activity-icon">🏖️</span><span class="mock-activity-name">Konyaalti Plaji</span></div>
+                                <div class="mock-activity"><span class="mock-activity-icon">🚤</span><span class="mock-activity-name">Tekne turu</span></div>
+                            </div>
+                            <div class="mock-day">
+                                <div class="mock-day-title">🏛️ Gun 3 — Kultur & Tarih</div>
+                                <div class="mock-activity"><span class="mock-activity-icon">🏛️</span><span class="mock-activity-name">Antalya Muzesi</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mockup 3: Seyahat Programi -->
+                <div class="phone-frame">
+                    <div class="phone-notch"></div>
+                    <div class="phone-screen" style="padding:6px 10px">
+                        <div style="font-size:9px;color:#F7C948;font-weight:600;margin-bottom:6px">📋 7 Gunluk Seyahat Programi — Antalya</div>
+
+                        <div class="mock-day">
+                            <div class="mock-day-title">🌅 Gun 1 — Varis & Kesfet</div>
+                            <div class="mock-activity"><span class="mock-activity-icon">✈️</span><div><div class="mock-activity-name">Havalimanina varis</div><div class="mock-activity-text">09:30 · Transfer + otele yerlesme</div></div></div>
+                            <div class="mock-activity"><span class="mock-activity-icon">🚶</span><div><div class="mock-activity-name">Kaleici yuruyusu</div><div class="mock-activity-text">14:00 · Tarihi sokaklar, Hadrian Kapisi</div></div></div>
+                            <div class="mock-activity"><span class="mock-activity-icon">🍽️</span><div><div class="mock-activity-name">Aksam yemegi</div><div class="mock-activity-text">19:30 · Deniz manzarali restoran · ~250 &#8378;</div></div></div>
+                        </div>
+
+                        <div class="mock-day">
+                            <div class="mock-day-title">🏖️ Gun 2 — Plaj & Tekne</div>
+                            <div class="mock-activity"><span class="mock-activity-icon">🏖️</span><div><div class="mock-activity-name">Konyaalti Plaji</div><div class="mock-activity-text">10:00 · Sezlong + semsiye · ~150 &#8378;</div></div></div>
+                            <div class="mock-activity"><span class="mock-activity-icon">🚤</span><div><div class="mock-activity-name">Korfez tekne turu</div><div class="mock-activity-text">14:00 · 3 saat · ~400 &#8378;/kisi</div></div></div>
+                            <div class="mock-activity"><span class="mock-activity-icon">🍕</span><div><div class="mock-activity-name">Marina'da aksam</div><div class="mock-activity-text">19:00 · Pizza & kokteyl · ~300 &#8378;</div></div></div>
+                        </div>
+
+                        <div class="mock-day">
+                            <div class="mock-day-title">🏛️ Gun 3 — Kultur Turu</div>
+                            <div class="mock-activity"><span class="mock-activity-icon">🏛️</span><div><div class="mock-activity-name">Antalya Muzesi</div><div class="mock-activity-text">10:00 · Giris 100 &#8378; · 2 saat</div></div></div>
+                            <div class="mock-activity"><span class="mock-activity-icon">🌊</span><div><div class="mock-activity-name">Duden Selalesi</div><div class="mock-activity-text">14:00 · Ucretsiz · Foto duragi</div></div></div>
+                        </div>
+
+                        <div class="mock-day">
+                            <div class="mock-day-title">🌄 Gun 4 — Doga & Macera</div>
+                            <div class="mock-activity"><span class="mock-activity-icon">🥾</span><div><div class="mock-activity-name">Olimpos & Yanartag</div><div class="mock-activity-text">Tam gun tur · ~600 &#8378;/kisi</div></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">Nasil Calisir?</h2>
+            <p class="section-subtitle">3 adimda firsatlari yakala</p>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Tercihlerini Belirle</h3>
+                    <p>Butce, tarih araligin ve ilgi alanlarini sec. Kisi sayisi, otel yildizi, seyahat tarzini ayarla.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Firsatlari Al</h3>
+                    <p>Push bildirim ile aninda haberdar ol. Ucus fiyatlari dustugunde sana ozel firsat gelsin.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Rezervasyon Yap</h3>
+                    <p>Tek tikla bilet, otel ve aktivite rezervasyonu. Her sey bir arada, zaman kaybetme.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat">
+                <div class="stat-value">50+</div>
+                <div class="stat-label">Destinasyon</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">5</div>
+                <div class="stat-label">Turk Havalimani</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">7/24</div>
+                <div class="stat-label">Fiyat Takibi</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">%100</div>
+                <div class="stat-label">Ucretsiz</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Disclaimer -->
+    <section style="padding: 0 1.5rem 0;">
+        <div class="container">
+            <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; max-width: 800px; margin: 0 auto;">
+                <h3 style="color: #F7C948; font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem;">Onemli Bilgilendirme</h3>
+                <p style="font-size: 0.82rem; color: rgba(255,255,255,0.5); line-height: 1.7;">Kacamak, ucus ve otel firsatlarini karsilastirmali olarak sunan bir araci platformdur. Bilet satisi, otel rezervasyonu veya tur organizasyonu yapmamaktadir. Tum rezervasyonlar, ilgili hizmet saglayici firmalarin (havayollari, oteller, tur operatorleri) web siteleri uzerinden gerceklestirilir. Rezervasyon, iptal, iade ve hizmet kalitesine iliskin tum sorumluluk ilgili hizmet saglayici firmaya aittir. Kacamak, gosterilen fiyatlarin guncelligini garanti etmez; fiyatlar hizmet saglayicinin sitesinde farklilik gosterebilir.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-logo">Kacamak</div>
+            <div class="footer-links">
+                <a href="gizlilik.html">Gizlilik Politikasi</a>
+                <a href="kullanim-sartlari.html">Kullanim Sartlari</a>
+            </div>
+            <div class="footer-contact">
+                Iletisim: <a href="mailto:info@kacamak.app">info@kacamak.app</a>
+            </div>
+            <div class="footer-badges">
+                <div class="footer-badge">⚡ Powered by AI</div>
+                <div class="footer-badge">✈️ Travelpayouts Partner</div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2025 Kacamak. Tum haklar saklidir.
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
