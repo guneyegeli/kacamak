@@ -89,31 +89,31 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
             <div style={{ fontSize: 11, color: 'var(--accent2)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 500 }}>{gun.emoji || '📍'} Gun {gun.gun}</div>
             <div style={{ fontSize: 17, fontWeight: 500, color: 'var(--text)', marginTop: 4 }}>{gun.tema}</div>
           </div>
-          {gun.gun_toplam_eur && <div style={{ background: 'rgba(255,107,53,0.12)', borderRadius: 8, padding: '6px 10px' }}><div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>~€{gun.gun_toplam_eur}</div></div>}
+          {gun.gun_toplam_eur && <div style={{ background: 'rgba(255,107,53,0.12)', borderRadius: 8, padding: '6px 10px' }}><div style={{ fontSize: 15, fontWeight: 600, color: 'var(--accent)' }}>~€{gun.gun_toplam_eur}</div></div>}
         </div>
         {zz.map(([zaman, ic]) => (
           <div key={zaman} style={{ marginBottom: 14, paddingLeft: 14, borderLeft: '2px solid var(--accent)' }}>
-            <div style={{ fontSize: 11, color: 'var(--accent2)', marginBottom: 6, fontWeight: 500 }}>{ic?.emoji || '🕐'} {zaman}</div>
+            <div style={{ fontSize: 14, color: 'var(--accent2)', marginBottom: 6, fontWeight: 500 }}>{ic?.emoji || '🕐'} {zaman}</div>
             {typeof ic === 'object' ? (<>
-              <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 2 }}>
+              <div style={{ fontSize: 18, fontWeight: 500, marginBottom: 2 }}>
                 {ic.google_maps_link
                   ? <a href={ic.google_maps_link} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ color: '#2EC4B6', textDecoration: 'underline', textUnderlineOffset: 2 }}>{ic.aktivite}</a>
                   : <span style={{ color: 'var(--text)' }}>{ic.aktivite}</span>}
               </div>
-              {ic.detay && <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5, marginBottom: 6, fontStyle: 'italic' }}>{ic.detay}</div>}
-              {ic.restoran && <div style={{ fontSize: 12, marginBottom: 4 }}>🍽️ {ic.restoran_maps_link
+              {ic.detay && <div style={{ fontSize: 15, color: 'var(--text3)', lineHeight: 1.5, marginBottom: 6, fontStyle: 'italic' }}>{ic.detay}</div>}
+              {ic.restoran && <div style={{ fontSize: 15, marginBottom: 4 }}>🍽️ {ic.restoran_maps_link
                 ? <a href={ic.restoran_maps_link} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ color: '#2EC4B6', textDecoration: 'underline', textUnderlineOffset: 2 }}>{ic.restoran}</a>
                 : <span style={{ color: 'var(--success)' }}>{ic.restoran}</span>}
               </div>}
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-                {ic.ulasim && <span style={{ fontSize: 11, color: 'var(--text3)' }}>🚌 {ic.ulasim}</span>}
-                {ic.harcama_eur != null && <span style={{ fontSize: 11, color: 'var(--accent)' }}>💰 €{ic.harcama_eur}</span>}
-                {ic.aktivite && <a href={`https://www.getyourguide.com/s/?q=${encodeURIComponent(ic.aktivite + ' ' + sehir)}&partner_id=KACAMAK&utm_medium=online_publisher`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>🎟️ Bilet al →</a>}
+                {ic.ulasim && <span style={{ fontSize: 14, color: 'var(--text3)' }}>🚌 {ic.ulasim}</span>}
+                {ic.harcama_eur != null && <span style={{ fontSize: 14, color: 'var(--accent)' }}>💰 €{ic.harcama_eur}</span>}
+                {ic.aktivite && <a href={`https://www.getyourguide.com/s/?q=${encodeURIComponent(ic.aktivite + ' ' + sehir)}&partner_id=KACAMAK&utm_medium=online_publisher`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>🎟️ Bilet al →</a>}
               </div>
-            </>) : <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>{ic?.aktivite || ic}</div>}
+            </>) : <div style={{ fontSize: 15, color: 'var(--text2)', lineHeight: 1.6 }}>{ic?.aktivite || ic}</div>}
           </div>
         ))}
-        {gun.ipucu && <div style={{ background: 'rgba(247,201,72,0.08)', borderRadius: 10, padding: '10px 12px', marginTop: 4 }}><div style={{ fontSize: 12, color: 'var(--accent2)', lineHeight: 1.5 }}>💡 {gun.ipucu}</div></div>}
+        {gun.ipucu && <div style={{ background: 'rgba(247,201,72,0.08)', borderRadius: 10, padding: '10px 12px', marginTop: 4 }}><div style={{ fontSize: 14, color: 'var(--accent2)', lineHeight: 1.5 }}>💡 {gun.ipucu}</div></div>}
       </div>
     )
   }
@@ -151,11 +151,11 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
           {it?.pratik && (
             <div style={{ background: 'rgba(46,196,182,0.08)', borderRadius: 'var(--radius)', border: '1px solid rgba(46,196,182,0.2)', padding: 20, marginBottom: 20 }}>
               <div style={{ fontSize: 11, color: 'var(--success)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 14, fontWeight: 500 }}>📋 Sehir Rehberi</div>
-              {it.pratik.ulasim && <div style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.6 }}>🚌 <strong style={{ color: 'var(--text)' }}>Ulasim:</strong> {it.pratik.ulasim}</div>}
-              {it.pratik.para && <div style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.6 }}>💰 <strong style={{ color: 'var(--text)' }}>Para:</strong> {it.pratik.para}</div>}
-              {it.pratik.dil && <div style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.6 }}>🗣️ <strong style={{ color: 'var(--text)' }}>Dil:</strong> {it.pratik.dil}</div>}
-              {it.pratik.guvenlik && <div style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.6 }}>🛡️ <strong style={{ color: 'var(--text)' }}>Guvenlik:</strong> {it.pratik.guvenlik}</div>}
-              {it.pratik.ipuclari?.map((ip, i) => <div key={i} style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 4, lineHeight: 1.6 }}>💡 {ip}</div>)}
+              {it.pratik.ulasim && <div style={{ fontSize: 15, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.6 }}>🚌 <strong style={{ color: 'var(--text)' }}>Ulasim:</strong> {it.pratik.ulasim}</div>}
+              {it.pratik.para && <div style={{ fontSize: 15, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.6 }}>💰 <strong style={{ color: 'var(--text)' }}>Para:</strong> {it.pratik.para}</div>}
+              {it.pratik.dil && <div style={{ fontSize: 15, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.6 }}>🗣️ <strong style={{ color: 'var(--text)' }}>Dil:</strong> {it.pratik.dil}</div>}
+              {it.pratik.guvenlik && <div style={{ fontSize: 15, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.6 }}>🛡️ <strong style={{ color: 'var(--text)' }}>Guvenlik:</strong> {it.pratik.guvenlik}</div>}
+              {it.pratik.ipuclari?.map((ip, i) => <div key={i} style={{ fontSize: 15, color: 'var(--text2)', marginBottom: 4, lineHeight: 1.6 }}>💡 {ip}</div>)}
             </div>
           )}
 
@@ -208,9 +208,9 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
                 <div key={i} onClick={() => window.open(p.link, '_blank')} style={{ ...cs, padding: '16px 18px', cursor: 'pointer', borderLeft: `4px solid ${p.renk}`, display: 'flex', alignItems: 'center', gap: 14, transition: 'border-color 0.15s' }}>
                   <div style={{ fontSize: 28, flexShrink: 0 }}>{p.emoji}</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>{p.isim}</div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: p.renk }}>{p.fiyatYazi}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>{tarihBilgi}</div>
+                    <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>{p.isim}</div>
+                    <div style={{ fontSize: 16, fontWeight: 600, color: p.renk }}>{p.fiyatYazi}</div>
+                    <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 2 }}>{tarihBilgi}</div>
                   </div>
                   <div style={{ background: `${p.renk}20`, border: `1px solid ${p.renk}40`, borderRadius: 10, padding: '8px 12px', flexShrink: 0 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, color: p.renk, whiteSpace: 'nowrap' }}>{p.buton} ↗</div>
