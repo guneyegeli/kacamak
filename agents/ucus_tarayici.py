@@ -161,13 +161,15 @@ _son_ortalama_kaynak = ""
 
 def tarihsel_ortalama(origin, varis):
     global _son_ortalama_kaynak
-    conn = sqlite3.connect(DB)
-    r = conn.execute("""
-        SELECT AVG(fiyat) FROM firsatlar
-        WHERE cikis=? AND varis=?
-        AND olusturulma >= datetime('now','-90 days')
-    """, (origin, varis)).fetchone()
-    conn.close()
+    try:
+        conn = sqlite3.connect(DB)
+        r = conn.execute("""
+            SELECT AVG(fiyat) FROM firsatlar
+            WHERE cikis=? AND varis=?
+            AND olusturulma >= datetime('now','-90 days')
+        """, (origin, varis)).fetchone()
+    finally:
+        conn.close()
     if r and r[0]:
         _son_ortalama_kaynak = "db"
         return int(r[0])
@@ -278,43 +280,36 @@ def _firsat_olustur_ve_kaydet(origin, varis, veri, fiyat, normal, indirim):
 def firsat_kaydet(f: dict) -> dict | None:
     conn = sqlite3.connect(DB)
     try:
-        # Aynı rota+tarih varsa fiyatı güncelle (UPSERT)
-        mevcut = conn.execute("""
-            SELECT id, fiyat FROM firsatlar
+        # Atomik UPSERT: INSERT OR IGNORE + UPDATE
+        conn.execute("""
+            INSERT OR IGNORE INTO firsatlar
+            (cikis,varis,varis_sehir,fiyat,normal_fiyat,indirim_orani,
+             ucus_tarihi,donus_tarihi,havayolu,gecerlilik,aktarma,sure_dk)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+        """, (f["cikis"], f["varis"], f.get("varis_sehir"), f["fiyat"],
+              f["normal_fiyat"], f["indirim_orani"], f["ucus_tarihi"],
+              f["donus_tarihi"], f["havayolu"], f["gecerlilik"],
+              f.get("aktarma", 0), f.get("sure_dk", 0)))
+        # Mevcut kayıt varsa güncelle
+        conn.execute("""
+            UPDATE firsatlar
+            SET fiyat=?, normal_fiyat=?, indirim_orani=?, havayolu=?,
+                gecerlilik=?, aktarma=?, sure_dk=?, aktif=1
             WHERE cikis=? AND varis=? AND ucus_tarihi=? AND donus_tarihi=?
-            LIMIT 1
+        """, (f["fiyat"], f["normal_fiyat"], f["indirim_orani"],
+              f["havayolu"], f["gecerlilik"],
+              f.get("aktarma", 0), f.get("sure_dk", 0),
+              f["cikis"], f["varis"], f["ucus_tarihi"], f["donus_tarihi"]))
+        conn.commit()
+        # ID'yi al
+        row = conn.execute("""
+            SELECT id FROM firsatlar
+            WHERE cikis=? AND varis=? AND ucus_tarihi=? AND donus_tarihi=?
         """, (f["cikis"], f["varis"], f["ucus_tarihi"], f["donus_tarihi"])).fetchone()
-
-        if mevcut:
-            eski_fiyat = mevcut[0] if len(mevcut) > 1 else 0
-            f["id"] = mevcut[0]
-            conn.execute("""
-                UPDATE firsatlar
-                SET fiyat=?, normal_fiyat=?, indirim_orani=?, havayolu=?,
-                    gecerlilik=?, aktarma=?, sure_dk=?, aktif=1
-                WHERE id=?
-            """, (f["fiyat"], f["normal_fiyat"], f["indirim_orani"],
-                  f["havayolu"], f["gecerlilik"],
-                  f.get("aktarma", 0), f.get("sure_dk", 0), f["id"]))
-            conn.commit()
-            istatistik["fiyat_kaydedilen"] += 1
-            log.debug("    DB: Fırsat #%d güncellendi (%s→%s, %d₺)", f["id"], f["cikis"], f["varis"], f["fiyat"])
-            return f
-        else:
-            cur = conn.execute("""
-                INSERT INTO firsatlar
-                (cikis,varis,varis_sehir,fiyat,normal_fiyat,indirim_orani,
-                 ucus_tarihi,donus_tarihi,havayolu,gecerlilik,aktarma,sure_dk)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
-            """, (f["cikis"], f["varis"], f.get("varis_sehir"), f["fiyat"],
-                  f["normal_fiyat"], f["indirim_orani"], f["ucus_tarihi"],
-                  f["donus_tarihi"], f["havayolu"], f["gecerlilik"],
-                  f.get("aktarma", 0), f.get("sure_dk", 0)))
-            f["id"] = cur.lastrowid
-            conn.commit()
-            istatistik["fiyat_kaydedilen"] += 1
-            log.debug("    DB: Fırsat #%d kaydedildi (%s→%s, %d₺)", f["id"], f["cikis"], f["varis"], f["fiyat"])
-            return f if f["id"] else None
+        f["id"] = row[0] if row else None
+        istatistik["fiyat_kaydedilen"] += 1
+        log.debug("    DB: Fırsat #%s kaydedildi/güncellendi (%s→%s, %d₺)", f.get("id"), f["cikis"], f["varis"], f["fiyat"])
+        return f if f.get("id") else None
     except Exception as e:
         log.error("    DB HATA: %s", e)
         return None
@@ -325,27 +320,31 @@ def firsat_kaydet(f: dict) -> dict | None:
 def firsat_itinerary_kaydet(firsat_id, itinerary):
     import json
     conn = sqlite3.connect(DB)
-    mevcut = conn.execute(
-        "SELECT id FROM paketler WHERE firsat_id=? AND kullanici_id IS NULL",
-        (firsat_id,)
-    ).fetchone()
-    icerik = json.dumps(itinerary, ensure_ascii=False)
-    if mevcut:
-        conn.execute("UPDATE paketler SET icerik=? WHERE id=?", (icerik, mevcut[0]))
-    else:
-        conn.execute(
-            "INSERT INTO paketler (firsat_id, icerik) VALUES (?,?)",
-            (firsat_id, icerik)
-        )
-    conn.commit()
-    conn.close()
+    try:
+        mevcut = conn.execute(
+            "SELECT id FROM paketler WHERE firsat_id=? AND kullanici_id IS NULL",
+            (firsat_id,)
+        ).fetchone()
+        icerik = json.dumps(itinerary, ensure_ascii=False)
+        if mevcut:
+            conn.execute("UPDATE paketler SET icerik=? WHERE id=?", (icerik, mevcut[0]))
+        else:
+            conn.execute(
+                "INSERT INTO paketler (firsat_id, icerik) VALUES (?,?)",
+                (firsat_id, icerik)
+            )
+        conn.commit()
+    finally:
+        conn.close()
 
 
 def bildirim_kaydet(kullanici_id, firsat_id):
     conn = sqlite3.connect(DB)
-    conn.execute("""
-        INSERT OR IGNORE INTO bildirimler (kullanici_id, firsat_id)
-        VALUES (?,?)
-    """, (kullanici_id, firsat_id))
-    conn.commit()
-    conn.close()
+    try:
+        conn.execute("""
+            INSERT OR IGNORE INTO bildirimler (kullanici_id, firsat_id)
+            VALUES (?,?)
+        """, (kullanici_id, firsat_id))
+        conn.commit()
+    finally:
+        conn.close()

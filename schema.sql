@@ -89,5 +89,9 @@ CREATE TABLE IF NOT EXISTS yenileme_kuyrugu (
 CREATE INDEX IF NOT EXISTS idx_tercihler_kullanici ON tercihler(kullanici_id);
 CREATE INDEX IF NOT EXISTS idx_tercihler_havaalani ON tercihler(cikis_havaalani);
 CREATE INDEX IF NOT EXISTS idx_firsatlar_cikis ON firsatlar(cikis);
+CREATE INDEX IF NOT EXISTS idx_firsatlar_varis ON firsatlar(varis);
+CREATE INDEX IF NOT EXISTS idx_firsatlar_cikis_varis ON firsatlar(cikis, varis);
 CREATE INDEX IF NOT EXISTS idx_firsatlar_tarih ON firsatlar(olusturulma);
+CREATE INDEX IF NOT EXISTS idx_firsatlar_ucus_tarihi ON firsatlar(ucus_tarihi);
+CREATE INDEX IF NOT EXISTS idx_paketler_kullanici ON paketler(kullanici_id);
 CREATE INDEX IF NOT EXISTS idx_bildirimler_kullanici ON bildirimler(kullanici_id);

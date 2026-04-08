@@ -1,9 +1,11 @@
 import firebase_admin
 from firebase_admin import credentials, messaging
 import os
+import logging
 from dotenv import load_dotenv
 
 load_dotenv()
+log = logging.getLogger("firebase_service")
 
 _app = None
 
@@ -16,15 +18,15 @@ def _firebase_init():
     if os.path.exists(cred_path):
         cred = credentials.Certificate(cred_path)
         _app = firebase_admin.initialize_app(cred)
-        print("[Firebase] Basariyla baslatildi")
+        log.info("Başarıyla başlatıldı")
     else:
-        print(f"[Firebase] Credentials dosyasi bulunamadi: {cred_path}")
+        log.warning("Credentials dosyası bulunamadı: %s", cred_path)
 
 
 def bildirim_gonder(fcm_token: str, baslik: str, mesaj: str, data: dict = {}) -> bool:
     _firebase_init()
     if not _app:
-        print("[Firebase] Uygulama baslatilamadi, bildirim gonderilemedi")
+        log.warning("Uygulama başlatılamadı, bildirim gönderilemedi")
         return False
     try:
         message = messaging.Message(
@@ -39,13 +41,13 @@ def bildirim_gonder(fcm_token: str, baslik: str, mesaj: str, data: dict = {}) ->
             ),
         )
         response = messaging.send(message)
-        print(f"[Firebase] Bildirim gonderildi: {response}")
+        log.info("Bildirim gönderildi: %s", response)
         return True
     except messaging.UnregisteredError:
-        print(f"[Firebase] Token gecersiz, cihaz kayit disi: {fcm_token[:20]}...")
+        log.warning("Token geçersiz, cihaz kayıt dışı: %s...", fcm_token[:20])
         return False
     except Exception as e:
-        print(f"[Firebase] Bildirim hatasi: {e}")
+        log.error("Bildirim hatası: %s", e)
         return False
 
 

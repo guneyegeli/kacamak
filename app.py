@@ -6,7 +6,9 @@ import os
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret")
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
+if not app.secret_key:
+    raise ValueError("FLASK_SECRET_KEY .env dosyasında tanımlı değil")
 CORS(app)
 
 from api.kullanici import bp as kullanici_bp
@@ -29,4 +31,4 @@ def index():
 
 if __name__ == "__main__":
     port = int(os.getenv("FLASK_PORT", 5001))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host="0.0.0.0", port=port, debug=os.getenv("FLASK_DEBUG", "false").lower() == "true")

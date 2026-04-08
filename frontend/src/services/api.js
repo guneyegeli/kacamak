@@ -1,5 +1,21 @@
 const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001'
-const KULLANICI_ID = 1
+
+function getKullaniciId() {
+  let id = localStorage.getItem('kacamak_kullanici_id')
+  if (!id) {
+    id = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`
+    localStorage.setItem('kacamak_kullanici_id', id)
+  }
+  return id
+}
+
+const kullaniciId = getKullaniciId()
+
+const handleResponse = async (r) => {
+  const data = await r.json()
+  if (!r.ok) throw new Error(data?.hata || 'Sunucu hatası')
+  return data
+}
 
 export const api = {
   firsatlar: (cikis, direkt) => {
@@ -10,21 +26,21 @@ export const api = {
     return fetch(`${BASE}/api/firsatlar${qs ? `?${qs}` : ''}`).then(r => r.json())
   },
   firsatDetay: (id) => fetch(`${BASE}/api/firsatlar/${id}`).then(r => r.json()),
-  tercihGetir: () => fetch(`${BASE}/api/tercihler/${KULLANICI_ID}`).then(r => r.json()),
-  tercihGuncelle: (data) => fetch(`${BASE}/api/tercihler/${KULLANICI_ID}`, {
+  tercihGetir: () => fetch(`${BASE}/api/tercihler/${kullaniciId}`).then(r => r.json()),
+  tercihGuncelle: (data) => fetch(`${BASE}/api/tercihler/${kullaniciId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
-  }).then(r => { if (!r.ok) return r.json().then(d => { throw new Error(d.hata || 'Sunucu hatasi') }); return r.json() }),
+  }).then(handleResponse),
   fcmTokenGuncelle: (fcmToken) => fetch(`${BASE}/api/fcm-token`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ kullanici_id: KULLANICI_ID, fcm_token: fcmToken })
+    body: JSON.stringify({ kullanici_id: kullaniciId, fcm_token: fcmToken })
   }).then(r => r.json()),
   testBildirim: () => fetch(`${BASE}/api/bildirim/test`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ kullanici_id: KULLANICI_ID })
+    body: JSON.stringify({ kullanici_id: kullaniciId })
   }).then(r => r.json()),
   foto: (dest) => fetch(`${BASE}/api/foto/${dest}`).then(r => r.json()),
   galeri: (dest, count = 6) => fetch(`${BASE}/api/foto/galeri/${dest}?count=${count}`).then(r => r.json()),

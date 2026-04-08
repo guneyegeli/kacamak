@@ -86,13 +86,13 @@ async function webBildirimIzniIste() {
 
 function webBildirimDinle(callback) {
   if (!window.__fcmMessaging) return () => {}
+  let unsubscribe = null
   import('firebase/messaging').then(({ onMessage }) => {
-    onMessage(window.__fcmMessaging, (payload) => {
-      console.log('[Firebase] Foreground bildirim:', payload)
+    unsubscribe = onMessage(window.__fcmMessaging, (payload) => {
       callback(payload)
     })
   })
-  return () => {}
+  return () => { if (unsubscribe) unsubscribe() }
 }
 
 // --- Public API ---

@@ -46,23 +46,27 @@ def tercih_getir(kullanici_id):
 @bp.route("/api/tercihler/<int:kullanici_id>", methods=["PUT"])
 def tercih_guncelle(kullanici_id):
     data = request.json
+    if not data or not data.get("cikis_havalimanlari"):
+        return jsonify({"hata": "Geçersiz tercih verisi"}), 400
     try:
         tercih_profili_olustur(kullanici_id, data)
         p = data.get("paket", {})
         conn = sqlite3.connect(DB)
-        conn.execute("""
-            INSERT OR REPLACE INTO paket_tercihleri
-            (kullanici_id,ucus,otel,etkinlik,restoran,tur,arac_kiralama,sigorta)
-            VALUES (?,?,?,?,?,?,?,?)
-        """, (
-            kullanici_id,
-            int(p.get("ucus", True)), int(p.get("otel", True)),
-            int(p.get("etkinlik", True)), int(p.get("restoran", True)),
-            int(p.get("tur", True)), int(p.get("arac_kiralama", False)),
-            int(p.get("sigorta", False))
-        ))
-        conn.commit()
-        conn.close()
+        try:
+            conn.execute("""
+                INSERT OR REPLACE INTO paket_tercihleri
+                (kullanici_id,ucus,otel,etkinlik,restoran,tur,arac_kiralama,sigorta)
+                VALUES (?,?,?,?,?,?,?,?)
+            """, (
+                kullanici_id,
+                int(p.get("ucus", True)), int(p.get("otel", True)),
+                int(p.get("etkinlik", True)), int(p.get("restoran", True)),
+                int(p.get("tur", True)), int(p.get("arac_kiralama", False)),
+                int(p.get("sigorta", False))
+            ))
+            conn.commit()
+        finally:
+            conn.close()
         return jsonify({"basarili": True})
     except Exception as e:
         return jsonify({"hata": str(e)}), 500

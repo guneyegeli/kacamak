@@ -7,6 +7,8 @@ DB = os.getenv("DATABASE_PATH", "data/kacamak.db")
 @bp.route("/api/kayit", methods=["POST"])
 def kayit():
     d = request.json
+    if not d or not d.get("email"):
+        return jsonify({"hata": "Email gerekli"}), 400
     conn = sqlite3.connect(DB)
     try:
         cur = conn.execute(
@@ -23,11 +25,15 @@ def kayit():
 @bp.route("/api/fcm-token", methods=["PUT"])
 def fcm_guncelle():
     d = request.json
+    if not d or not d.get("fcm_token") or not d.get("kullanici_id"):
+        return jsonify({"hata": "Geçersiz istek"}), 400
     conn = sqlite3.connect(DB)
-    conn.execute(
-        "UPDATE kullanicilar SET fcm_token=? WHERE id=?",
-        (d["fcm_token"], d["kullanici_id"])
-    )
-    conn.commit()
-    conn.close()
-    return jsonify({"basarili": True})
+    try:
+        conn.execute(
+            "UPDATE kullanicilar SET fcm_token=? WHERE id=?",
+            (d["fcm_token"], d["kullanici_id"])
+        )
+        conn.commit()
+        return jsonify({"basarili": True})
+    finally:
+        conn.close()

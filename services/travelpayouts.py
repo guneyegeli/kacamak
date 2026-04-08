@@ -42,7 +42,7 @@ def aylik_matris_getir(origin: str, varis: str) -> list:
     r = requests.get(f"{BASE}/v2/prices/month-matrix", params={
         "origin": origin, "destination": varis,
         "currency": "try", "token": TOKEN
-    })
+    }, timeout=10)
     if r.ok:
         return r.json().get("data", [])
     return []
@@ -50,7 +50,7 @@ def aylik_matris_getir(origin: str, varis: str) -> list:
 def ozel_firsatlar_getir(origin: str) -> list:
     r = requests.get(f"{BASE}/aviasales/v3/get_special_offers", params={
         "origin": origin, "locale": "tr", "token": TOKEN
-    })
+    }, timeout=10)
     if r.ok:
         return r.json().get("data", [])
     return []
@@ -61,7 +61,7 @@ def alternatif_tarihler_getir(origin: str, destination: str) -> list:
         "origin": origin, "destination": destination,
         "currency": "try", "token": TOKEN,
         "show_to_affiliates": "true"
-    })
+    }, timeout=10)
     if r.ok:
         data = r.json().get("data", [])
         sonuclar = []
@@ -85,7 +85,7 @@ def otel_bul(sehir: str, checkin: str, gece: int,
         "duration": gece, "stars": yildiz,
         "currency": "try", "token": TOKEN,
         "limit": 5
-    })
+    }, timeout=10)
     if r.ok:
         return r.json() if isinstance(r.json(), list) else []
     return []
