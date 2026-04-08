@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from services.firebase_service import bildirim_gonder
+from api.kullanici_helper import device_id_coz
 import sqlite3
 import os
 
@@ -16,12 +17,13 @@ def test_bildirim():
     fcm_token = d.get("fcm_token")
 
     if not fcm_token and d.get("kullanici_id"):
+        kullanici_id = device_id_coz(d["kullanici_id"])
         conn = sqlite3.connect(DB)
         try:
             conn.row_factory = sqlite3.Row
             row = conn.execute(
                 "SELECT fcm_token FROM kullanicilar WHERE id=?",
-                (d["kullanici_id"],)
+                (kullanici_id,)
             ).fetchone()
             if row:
                 fcm_token = row["fcm_token"]

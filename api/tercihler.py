@@ -1,12 +1,14 @@
 from flask import Blueprint, request, jsonify
 import sqlite3, json, os
 from services.eslestirici import tercih_profili_olustur
+from api.kullanici_helper import device_id_coz
 
 bp = Blueprint("tercihler", __name__)
 DB = os.getenv("DATABASE_PATH", "data/kacamak.db")
 
-@bp.route("/api/tercihler/<int:kullanici_id>", methods=["GET"])
+@bp.route("/api/tercihler/<kullanici_id>", methods=["GET"])
 def tercih_getir(kullanici_id):
+    kullanici_id = device_id_coz(kullanici_id)
     conn = sqlite3.connect(DB)
     try:
         conn.row_factory = sqlite3.Row
@@ -45,8 +47,9 @@ def tercih_getir(kullanici_id):
         }
     })
 
-@bp.route("/api/tercihler/<int:kullanici_id>", methods=["PUT"])
+@bp.route("/api/tercihler/<kullanici_id>", methods=["PUT"])
 def tercih_guncelle(kullanici_id):
+    kullanici_id = device_id_coz(kullanici_id)
     data = request.json
     if not data or not data.get("cikis_havalimanlari"):
         return jsonify({"hata": "Geçersiz tercih verisi"}), 400

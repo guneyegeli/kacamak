@@ -1,11 +1,13 @@
 from flask import Blueprint, jsonify
 import sqlite3, json, os
+from api.kullanici_helper import device_id_coz
 
 bp = Blueprint("paketler", __name__)
 DB = os.getenv("DATABASE_PATH", "data/kacamak.db")
 
-@bp.route("/api/paketler/<int:kullanici_id>", methods=["GET"])
+@bp.route("/api/paketler/<kullanici_id>", methods=["GET"])
 def kullanici_paketleri(kullanici_id):
+    kullanici_id = device_id_coz(kullanici_id)
     conn = sqlite3.connect(DB)
     try:
         conn.row_factory = sqlite3.Row

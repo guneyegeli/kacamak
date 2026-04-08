@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 import sqlite3, os
+from api.kullanici_helper import device_id_coz
 
 bp = Blueprint("kullanici", __name__)
 DB = os.getenv("DATABASE_PATH", "data/kacamak.db")
@@ -30,11 +31,12 @@ def fcm_guncelle():
     d = request.json
     if not d or not d.get("fcm_token") or not d.get("kullanici_id"):
         return jsonify({"hata": "Geçersiz istek"}), 400
+    kullanici_id = device_id_coz(d["kullanici_id"])
     conn = sqlite3.connect(DB)
     try:
         conn.execute(
             "UPDATE kullanicilar SET fcm_token=? WHERE id=?",
-            (d["fcm_token"], d["kullanici_id"])
+            (d["fcm_token"], kullanici_id)
         )
         conn.commit()
         return jsonify({"basarili": True})
