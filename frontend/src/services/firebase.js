@@ -8,17 +8,17 @@ const isNative = Capacitor.isNativePlatform()
 async function nativeBildirimIzniIste() {
   const izin = await PushNotifications.requestPermissions()
   if (izin.receive !== 'granted') {
-    console.warn('[Push] Bildirim izni reddedildi')
+    // Bildirim izni reddedildi
     return null
   }
 
   return new Promise((resolve) => {
     PushNotifications.addListener('registration', (token) => {
-      console.log('[Push] FCM Token alindi (native)')
+      // FCM Token alındı
       resolve(token.value)
     })
     PushNotifications.addListener('registrationError', (err) => {
-      console.error('[Push] Kayit hatasi:', err)
+      // Kayıt hatası
       resolve(null)
     })
     PushNotifications.register()
@@ -27,7 +27,7 @@ async function nativeBildirimIzniIste() {
 
 function nativeBildirimDinle(callback) {
   PushNotifications.addListener('pushNotificationReceived', (notification) => {
-    console.log('[Push] Foreground bildirim:', notification)
+    // Foreground bildirim alındı
     callback({
       notification: {
         title: notification.title,
@@ -38,7 +38,7 @@ function nativeBildirimDinle(callback) {
   })
 
   PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
-    console.log('[Push] Bildirime tiklandi:', action)
+    // Bildirime tıklandı
   })
 
   return () => PushNotifications.removeAllListeners()
@@ -48,13 +48,13 @@ function nativeBildirimDinle(callback) {
 
 async function webBildirimIzniIste() {
   if (!('Notification' in window)) {
-    console.warn('[Firebase] Bu tarayici bildirimleri desteklemiyor')
+    // Bu tarayıcı bildirimleri desteklemiyor
     return null
   }
 
   const izin = await Notification.requestPermission()
   if (izin !== 'granted') {
-    console.warn('[Firebase] Bildirim izni reddedildi')
+    // Bildirim izni reddedildi
     return null
   }
 
@@ -73,13 +73,13 @@ async function webBildirimIzniIste() {
     const messaging = getMessaging(app)
     const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY
     const token = await getToken(messaging, { vapidKey })
-    console.log('[Firebase] FCM Token alindi (web)')
+    // FCM Token alındı (web)
 
     // Store messaging instance for listener
     window.__fcmMessaging = messaging
     return token
   } catch (err) {
-    console.error('[Firebase] Token alinamadi:', err)
+    // Token alınamadı
     return null
   }
 }

@@ -147,6 +147,7 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
   const [kanalVideo, setKanalVideo] = useState(null)
 
   const [itUretiliyor, setItUretiliyor] = useState(false)
+  const [detayHata, setDetayHata] = useState(null)
   const [otelTercih, setOtelTercih] = useState(null)
 
   useEffect(() => {
@@ -155,7 +156,7 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
 
   useEffect(() => {
     if (!firsat?.id) return
-    setDetay(null); setYukleniyor(true); setItUretiliyor(false)
+    setDetay(null); setYukleniyor(true); setItUretiliyor(false); setDetayHata(null)
     setFoto(null); setGaleri([]); setBenzer([]); setAltTarihler([]); setKanalVideo(null)
     api.firsatDetay(firsat.id).then(d => {
       setDetay(d)
@@ -168,7 +169,7 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
           }
         }).catch(() => {}).finally(() => setItUretiliyor(false))
       }
-    }).finally(() => setYukleniyor(false))
+    }).catch(() => setDetayHata('Fırsat detayı yüklenemedi.')).finally(() => setYukleniyor(false))
     api.foto(firsat.varis).then(f => { if (f?.length) setFoto(f[0]) }).catch(() => {})
     api.galeri(firsat.varis, 4).then(setGaleri).catch(() => setGaleri([]))
     api.aktiviteler(firsat.varis).then(setAktiviteler).catch(() => setAktiviteler([]))
@@ -411,6 +412,14 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
 
           {/* Itinerary */}
           {yukleniyor && <div style={{ textAlign: 'center', padding: 40, color: 'var(--text2)' }}>✈️ Program hazırlanıyor...</div>}
+          {detayHata && (
+            <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>⚠️</div>
+              <div style={{ fontSize: 15, color: 'var(--accent)', fontWeight: 500, marginBottom: 8 }}>{detayHata}</div>
+              <div style={{ fontSize: 13, color: 'var(--text3)', marginBottom: 16 }}>Lütfen tekrar deneyin.</div>
+              <button onClick={onGeri} style={{ background: 'var(--accent)', border: 'none', borderRadius: 10, padding: '10px 24px', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Geri Dön</button>
+            </div>
+          )}
           {itUretiliyor && (
             <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text2)' }}>
               <div style={{ fontSize: 40, marginBottom: 16, animation: 'fadeIn 1s ease infinite alternate' }}>✨</div>

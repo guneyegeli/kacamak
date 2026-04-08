@@ -1,5 +1,8 @@
 import requests
 import os
+import logging
+
+log = logging.getLogger("aktivite")
 from functools import lru_cache
 from dotenv import load_dotenv
 
@@ -149,7 +152,7 @@ def aktiviteler_getir(destinasyon: str) -> list:
                     for t in data[:5]
                 ]
         except Exception as e:
-            print(f"[GetYourGuide] API hata: {e}")
+            log.warning("API hata: %s", e)
 
     # Fallback: statik populer aktiviteler
     aktiviteler = POPULER_AKTIVITELER.get(sehir, [])

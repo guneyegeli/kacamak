@@ -52,7 +52,7 @@ export default function Tercihler({ onGeri }) {
       setMesaj('Kaydedildi!')
       setTimeout(() => { setMesaj(''); onGeri() }, 1000)
     } catch (err) {
-      console.error('Tercih kaydetme hatasi:', err)
+      // Tercih kaydetme hatası
       setMesaj('Baglanti hatasi!')
       setTimeout(() => setMesaj(''), 3000)
     } finally {

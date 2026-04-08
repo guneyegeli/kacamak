@@ -9,6 +9,9 @@ def kayit():
     d = request.json
     if not d or not d.get("email"):
         return jsonify({"hata": "Email gerekli"}), 400
+    email = d["email"].strip()
+    if "@" not in email or "." not in email.split("@")[-1]:
+        return jsonify({"hata": "Geçersiz email formatı"}), 400
     conn = sqlite3.connect(DB)
     try:
         cur = conn.execute(

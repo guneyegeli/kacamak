@@ -1,7 +1,10 @@
 import requests
 import os
+import logging
 from functools import lru_cache
 from dotenv import load_dotenv
+
+log = logging.getLogger("unsplash")
 
 load_dotenv()
 
@@ -217,7 +220,7 @@ def _unsplash_ara(query: str, adet: int) -> list:
             for p in data
         ]
     except Exception as e:
-        print(f"[Unsplash] Hata: {e}")
+        log.warning("Arama hatası: %s", e)
         return []
 
 

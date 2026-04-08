@@ -8,16 +8,18 @@ DB = os.getenv("DATABASE_PATH", "data/kacamak.db")
 @bp.route("/api/tercihler/<int:kullanici_id>", methods=["GET"])
 def tercih_getir(kullanici_id):
     conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
-    rows = conn.execute(
-        "SELECT * FROM tercihler WHERE kullanici_id=? AND aktif=1",
-        (kullanici_id,)
-    ).fetchall()
-    paket = conn.execute(
-        "SELECT * FROM paket_tercihleri WHERE kullanici_id=?",
-        (kullanici_id,)
-    ).fetchone()
-    conn.close()
+    try:
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(
+            "SELECT * FROM tercihler WHERE kullanici_id=? AND aktif=1",
+            (kullanici_id,)
+        ).fetchall()
+        paket = conn.execute(
+            "SELECT * FROM paket_tercihleri WHERE kullanici_id=?",
+            (kullanici_id,)
+        ).fetchone()
+    finally:
+        conn.close()
     if not rows:
         return jsonify({"ilk_giris": True})
     r = rows[0]
@@ -48,6 +50,9 @@ def tercih_guncelle(kullanici_id):
     data = request.json
     if not data or not data.get("cikis_havalimanlari"):
         return jsonify({"hata": "Geçersiz tercih verisi"}), 400
+    butce = data.get("maks_butce", 10000)
+    if not isinstance(butce, (int, float)) or butce < 0 or butce > 500000:
+        return jsonify({"hata": "Bütçe 0-500.000 arasında olmalı"}), 400
     try:
         tercih_profili_olustur(kullanici_id, data)
         p = data.get("paket", {})

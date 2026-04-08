@@ -1,40 +1,49 @@
-import os, sys, logging
+import os, sys, logging, fcntl
 sys.path.insert(0, os.path.dirname(__file__))
 os.chdir(os.path.dirname(__file__))
 
 from dotenv import load_dotenv
 load_dotenv()
 
-# Loglama ayarı — her adımı terminale yaz
+# Çakışma koruması — aynı anda sadece bir cron çalışsın
+lock_file = open('/tmp/kacamak_cron.lock', 'w')
+try:
+    fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+except IOError:
+    logging.warning("Cron zaten çalışıyor, atlanıyor")
+    sys.exit(0)
+
+# Loglama ayarı
 logging.basicConfig(
     level=logging.DEBUG if os.getenv("DEBUG") else logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     datefmt="%H:%M:%S"
 )
+log = logging.getLogger("cron")
 
 from agents.ucus_tarayici import cron_tarama
 import sqlite3
 
 # 7 günden eski fırsatları pasife çek
 DB = os.getenv("DATABASE_PATH", "data/kacamak.db")
+conn = sqlite3.connect(DB)
 try:
-    conn = sqlite3.connect(DB)
     pasif = conn.execute("""
         UPDATE firsatlar SET aktif = 0
         WHERE aktif = 1 AND olusturulma < datetime('now', '-7 days')
     """)
     pasif_sayi = pasif.rowcount
     conn.commit()
-    conn.close()
     if pasif_sayi > 0:
-        logging.info("%d eski fırsat pasife alındı (7 gün+)", pasif_sayi)
+        log.info("%d eski fırsat pasife alındı (7 gün+)", pasif_sayi)
 except Exception as e:
-    logging.warning("Eski fırsat pasife alma hatası: %s", e)
+    log.warning("Eski fırsat pasife alma hatası: %s", e)
+finally:
+    conn.close()
 
 sonuc = cron_tarama()
 
-print("\n" + "=" * 50)
-print(f"  SONUÇ: {sonuc['rota']} rota tarandi, "
-      f"{sonuc['fiyat_kaydedilen']} fiyat kaydedildi, "
-      f"{sonuc['firsat']} firsat bulundu")
-print("=" * 50)
+log.info("=" * 50)
+log.info("SONUÇ: %d rota tarandi, %d fiyat kaydedildi, %d firsat bulundu",
+         sonuc['rota'], sonuc['fiyat_kaydedilen'], sonuc['firsat'])
+log.info("=" * 50)

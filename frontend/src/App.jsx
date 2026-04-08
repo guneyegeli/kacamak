@@ -14,7 +14,7 @@ export default function App() {
   useEffect(() => {
     bildirimIzniIste().then((token) => {
       if (token) {
-        api.fcmTokenGuncelle(token).catch(console.error)
+        api.fcmTokenGuncelle(token).catch(() => {})
       }
     })
 

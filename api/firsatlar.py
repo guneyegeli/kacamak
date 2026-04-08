@@ -31,44 +31,41 @@ def firsatlar_listele():
     MIN_YURTDISI = 20
 
     conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
-    # Her varış noktası için en ucuz fırsatları çek (rota çeşitliliği için)
-    rows = conn.execute("""
-        SELECT f.*,
-            CASE WHEN f.olusturulma > datetime('now', '-24 hours') THEN 1 ELSE 0 END AS yeni
-        FROM firsatlar f
-        INNER JOIN (
-            SELECT varis, cikis, MIN(fiyat) as min_fiyat
-            FROM firsatlar
-            WHERE (aktif = 1 OR aktif IS NULL)
-            AND (ucus_tarihi >= date('now') OR ucus_tarihi IS NULL)
-            GROUP BY varis, cikis
-        ) g ON f.varis = g.varis AND f.cikis = g.cikis AND f.fiyat = g.min_fiyat
-        WHERE (f.aktif = 1 OR f.aktif IS NULL)
-        AND (f.ucus_tarihi >= date('now') OR f.ucus_tarihi IS NULL)
-        GROUP BY f.varis, f.cikis
-        ORDER BY f.fiyat ASC
-    """).fetchall()
-
-    tumu = [dict(r) for r in rows]
-
-    # Yeterli fırsat yoksa pasif olanları da dahil et
-    if len(tumu) < MIN_TOPLAM * 3:
-        pasif_rows = conn.execute("""
-            SELECT *,
-                0 AS yeni
-            FROM firsatlar
-            WHERE aktif = 0
-            AND (ucus_tarihi >= date('now') OR ucus_tarihi IS NULL)
-            ORDER BY olusturulma DESC, fiyat ASC
-            LIMIT 500
+    try:
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute("""
+            SELECT f.*,
+                CASE WHEN f.olusturulma > datetime('now', '-24 hours') THEN 1 ELSE 0 END AS yeni
+            FROM firsatlar f
+            INNER JOIN (
+                SELECT varis, cikis, MIN(fiyat) as min_fiyat
+                FROM firsatlar
+                WHERE (aktif = 1 OR aktif IS NULL)
+                AND (ucus_tarihi >= date('now') OR ucus_tarihi IS NULL)
+                GROUP BY varis, cikis
+            ) g ON f.varis = g.varis AND f.cikis = g.cikis AND f.fiyat = g.min_fiyat
+            WHERE (f.aktif = 1 OR f.aktif IS NULL)
+            AND (f.ucus_tarihi >= date('now') OR f.ucus_tarihi IS NULL)
+            GROUP BY f.varis, f.cikis
+            ORDER BY f.fiyat ASC
         """).fetchall()
-        gorulmus = {(d["varis"], d["cikis"]) for d in tumu}
-        for r in pasif_rows:
-            d = dict(r)
-            if (d["varis"], d["cikis"]) not in gorulmus:
-                tumu.append(d)
-    conn.close()
+
+        tumu = [dict(r) for r in rows]
+
+        if len(tumu) < MIN_TOPLAM * 3:
+            pasif_rows = conn.execute("""
+                SELECT *, 0 AS yeni FROM firsatlar
+                WHERE aktif = 0
+                AND (ucus_tarihi >= date('now') OR ucus_tarihi IS NULL)
+                ORDER BY olusturulma DESC, fiyat ASC LIMIT 500
+            """).fetchall()
+            gorulmus = {(d["varis"], d["cikis"]) for d in tumu}
+            for r in pasif_rows:
+                d = dict(r)
+                if (d["varis"], d["cikis"]) not in gorulmus:
+                    tumu.append(d)
+    finally:
+        conn.close()
 
     # Minimum indirim filtresi
     tumu = [d for d in tumu if (d.get("indirim_orani") or 0) >= MIN_INDIRIM]
@@ -158,52 +155,54 @@ def firsatlar_listele():
 @bp.route("/api/firsatlar/<int:firsat_id>", methods=["GET"])
 def firsat_detay(firsat_id):
     conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
-    firsat = conn.execute(
-        "SELECT * FROM firsatlar WHERE id=?", (firsat_id,)
-    ).fetchone()
-    paket = conn.execute(
-        "SELECT * FROM paketler WHERE firsat_id=?", (firsat_id,)
-    ).fetchone()
-    conn.close()
+    try:
+        conn.row_factory = sqlite3.Row
+        firsat = conn.execute(
+            "SELECT * FROM firsatlar WHERE id=?", (firsat_id,)
+        ).fetchone()
+        paket = conn.execute(
+            "SELECT * FROM paketler WHERE firsat_id=?", (firsat_id,)
+        ).fetchone()
+    finally:
+        conn.close()
     if not firsat:
         return jsonify({"hata": "Bulunamadı"}), 404
     return jsonify({
         "firsat": dict(firsat),
-        "paket": json.loads(paket["icerik"]) if paket else None
+        "paket": json.loads(paket["icerik"]) if paket and paket["icerik"] else None
     })
 
 
 @bp.route("/api/firsatlar/<int:firsat_id>/alternatifler", methods=["GET"])
 def alternatif_tarihler(firsat_id):
     conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
-    firsat = conn.execute(
-        "SELECT cikis, varis, ucus_tarihi, donus_tarihi, fiyat FROM firsatlar WHERE id=?",
-        (firsat_id,)
-    ).fetchone()
-    if not firsat:
+    try:
+        conn.row_factory = sqlite3.Row
+        firsat = conn.execute(
+            "SELECT cikis, varis, ucus_tarihi, donus_tarihi, fiyat FROM firsatlar WHERE id=?",
+            (firsat_id,)
+        ).fetchone()
+        if not firsat:
+            return jsonify([])
+
+        origin = firsat["cikis"]
+        dest = firsat["varis"]
+        mevcut_tarih = firsat["ucus_tarihi"] or ""
+
+        rows = conn.execute("""
+            SELECT MIN(id) as id, ucus_tarihi, donus_tarihi, MIN(fiyat) as fiyat, MAX(indirim_orani) as indirim_orani
+            FROM firsatlar
+            WHERE cikis = ? AND varis = ?
+            AND ucus_tarihi >= date('now')
+            AND ucus_tarihi != ?
+            AND (aktif = 1 OR aktif IS NULL)
+            AND (gecerlilik > datetime('now') OR gecerlilik IS NULL)
+            GROUP BY ucus_tarihi
+            ORDER BY fiyat ASC
+            LIMIT 10
+        """, (origin, dest, mevcut_tarih)).fetchall()
+    finally:
         conn.close()
-        return jsonify([])
-
-    origin = firsat["cikis"]
-    dest = firsat["varis"]
-    mevcut_tarih = firsat["ucus_tarihi"] or ""
-
-    # DB'den farklı tarihlerdeki fırsatları çek (aynı tarih grubundan en ucuzu)
-    rows = conn.execute("""
-        SELECT MIN(id) as id, ucus_tarihi, donus_tarihi, MIN(fiyat) as fiyat, MAX(indirim_orani) as indirim_orani
-        FROM firsatlar
-        WHERE cikis = ? AND varis = ?
-        AND ucus_tarihi >= date('now')
-        AND ucus_tarihi != ?
-        AND (aktif = 1 OR aktif IS NULL)
-        AND (gecerlilik > datetime('now') OR gecerlilik IS NULL)
-        GROUP BY ucus_tarihi
-        ORDER BY fiyat ASC
-        LIMIT 10
-    """, (origin, dest, mevcut_tarih)).fetchall()
-    conn.close()
 
     sonuc = [dict(r) for r in rows]
 
@@ -251,30 +250,30 @@ def alternatif_tarihler(firsat_id):
 def benzer_firsatlar(firsat_id):
     from services.bolge import YURTICI
     conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
-    firsat = conn.execute(
-        "SELECT id, cikis, varis, fiyat FROM firsatlar WHERE id=?", (firsat_id,)
-    ).fetchone()
-    if not firsat:
+    try:
+        conn.row_factory = sqlite3.Row
+        firsat = conn.execute(
+            "SELECT id, cikis, varis, fiyat FROM firsatlar WHERE id=?", (firsat_id,)
+        ).fetchone()
+        if not firsat:
+            return jsonify([])
+
+        fiyat = firsat["fiyat"] or 0
+        fiyat_min = max(fiyat - 1500, 0)
+        fiyat_max = fiyat + 1500
+        yurtici = firsat["varis"] in YURTICI
+
+        rows = conn.execute("""
+            SELECT * FROM firsatlar
+            WHERE id != ?
+            AND fiyat BETWEEN ? AND ?
+            AND (aktif = 1 OR aktif IS NULL)
+            AND (gecerlilik > datetime('now') OR gecerlilik IS NULL)
+            ORDER BY indirim_orani DESC
+            LIMIT 50
+        """, (firsat_id, fiyat_min, fiyat_max)).fetchall()
+    finally:
         conn.close()
-        return jsonify([])
-
-    fiyat = firsat["fiyat"] or 0
-    fiyat_min = max(fiyat - 1500, 0)
-    fiyat_max = fiyat + 1500
-    yurtici = firsat["varis"] in YURTICI
-
-    # Aynı bölgedeki (yurtiçi/yurtdışı) ve benzer fiyat aralığındaki fırsatlar
-    rows = conn.execute("""
-        SELECT * FROM firsatlar
-        WHERE id != ?
-        AND fiyat BETWEEN ? AND ?
-        AND (aktif = 1 OR aktif IS NULL)
-        AND (gecerlilik > datetime('now') OR gecerlilik IS NULL)
-        ORDER BY indirim_orani DESC
-        LIMIT 50
-    """, (firsat_id, fiyat_min, fiyat_max)).fetchall()
-    conn.close()
 
     # Bölge filtresi: Python tarafında uygula (SQLite'da set membership zor)
     sonuc = []
@@ -291,23 +290,20 @@ def benzer_firsatlar(firsat_id):
 @bp.route("/api/firsat/<int:firsat_id>/itinerary-olustur", methods=["POST"])
 def itinerary_olustur_endpoint(firsat_id):
     conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
+    try:
+        conn.row_factory = sqlite3.Row
+        firsat = conn.execute("SELECT * FROM firsatlar WHERE id=?", (firsat_id,)).fetchone()
+        if not firsat:
+            return jsonify({"hata": "Fırsat bulunamadı"}), 404
 
-    firsat = conn.execute("SELECT * FROM firsatlar WHERE id=?", (firsat_id,)).fetchone()
-    if not firsat:
+        paket = conn.execute(
+            "SELECT * FROM paketler WHERE firsat_id=?", (firsat_id,)
+        ).fetchone()
+        if paket and paket["icerik"]:
+            icerik = json.loads(paket["icerik"])
+            return jsonify({"paket": icerik, "kaynak": "cache"})
+    finally:
         conn.close()
-        return jsonify({"hata": "Fırsat bulunamadı"}), 404
-
-    # Zaten itinerary varsa tekrar üretme
-    paket = conn.execute(
-        "SELECT * FROM paketler WHERE firsat_id=?", (firsat_id,)
-    ).fetchone()
-    if paket and paket["icerik"]:
-        conn.close()
-        icerik = json.loads(paket["icerik"])
-        return jsonify({"paket": icerik, "kaynak": "cache"})
-
-    conn.close()
 
     firsat_dict = dict(firsat)
 

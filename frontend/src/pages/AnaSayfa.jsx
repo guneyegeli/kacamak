@@ -331,6 +331,7 @@ function FirsatKart({ f, fotolar, altTarihler, onFirsat }) {
 export default function AnaSayfa({ onFirsat, onTercih }) {
   const [firsatlar, setFirsatlar] = useState([])
   const [yukleniyor, setYukleniyor] = useState(true)
+  const [hata, setHata] = useState(null)
   const [fotolar, setFotolar] = useState({})
   const [altTarihler, setAltTarihler] = useState({})
 
@@ -355,7 +356,7 @@ export default function AnaSayfa({ onFirsat, onTercih }) {
           if (alt?.length) setAltTarihler(prev => ({...prev, [f.id]: alt.slice(0, 3)}))
         }).catch(() => {})
       })
-    }).catch(() => setFirsatlar([])).finally(() => setYukleniyor(false))
+    }).catch(() => { setFirsatlar([]); setHata('Fırsatlar yüklenirken bir sorun oluştu.') }).finally(() => setYukleniyor(false))
   }, [])
 
   const yurtici = firsatlar.filter(f => YURTICI_KODLARI.has(f.varis))
@@ -382,7 +383,15 @@ export default function AnaSayfa({ onFirsat, onTercih }) {
             <p>Fırsatlar aranıyor...</p>
           </div>
         )}
-        {!yukleniyor && firsatlar.length === 0 && (
+        {!yukleniyor && hata && (
+          <div style={{textAlign:'center',padding:'60px 20px'}}>
+            <div style={{fontSize:48,marginBottom:16}}>⚠️</div>
+            <h3 style={{marginBottom:8,fontWeight:500,color:'var(--accent)'}}>{hata}</h3>
+            <p style={{color:'var(--text2)',fontSize:14,lineHeight:1.6,marginBottom:16}}>Lütfen internet bağlantınızı kontrol edip tekrar deneyin.</p>
+            <button onClick={() => { setHata(null); setYukleniyor(true); window.location.reload() }} style={{background:'var(--accent)',border:'none',borderRadius:10,padding:'10px 24px',color:'#fff',fontSize:14,fontWeight:600,cursor:'pointer'}}>Yenile</button>
+          </div>
+        )}
+        {!yukleniyor && !hata && firsatlar.length === 0 && (
           <div style={{textAlign:'center',padding:'60px 20px'}}>
             <div style={{fontSize:48,marginBottom:16}}>🔍</div>
             <h3 style={{marginBottom:8,fontWeight:500}}>Henüz fırsat yok</h3>
@@ -390,7 +399,7 @@ export default function AnaSayfa({ onFirsat, onTercih }) {
           </div>
         )}
 
-        {!yukleniyor && firsatlar.length > 0 && (
+        {!yukleniyor && !hata && firsatlar.length > 0 && (
           <div className="firsatlar-grid">
             {/* Yurtiçi Kolon */}
             <div className="firsatlar-kolon">
