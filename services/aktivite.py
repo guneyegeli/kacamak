@@ -17,7 +17,40 @@ SEHIR_ISIMLERI = {
     "MXP": "Milan", "MUC": "Munich", "DUB": "Dublin",
     "CPH": "Copenhagen", "IST": "Istanbul", "SAW": "Istanbul",
     "ADB": "Izmir", "AYT": "Antalya", "DXB": "Dubai",
-    "BKK": "Bangkok", "HND": "Tokyo", "TBS": "Tbilisi",
+    "BKK": "Bangkok", "HND": "Tokyo", "NRT": "Tokyo", "TBS": "Tbilisi",
+    # Yeni çıkış havalimanları
+    "TZX": "Trabzon", "GZT": "Gaziantep", "BJV": "Bodrum",
+    "DIY": "Diyarbakir", "VAN": "Van", "ERZ": "Erzurum", "SZF": "Samsun",
+    # Balkanlar
+    "OTP": "Bucharest", "SOF": "Sofia", "BEG": "Belgrade",
+    "SKP": "Skopje", "TIA": "Tirana", "ZAG": "Zagreb", "SJJ": "Sarajevo",
+    # Almanya
+    "FRA": "Frankfurt", "DTM": "Dortmund", "DUS": "Dusseldorf",
+    "HAM": "Hamburg", "STR": "Stuttgart", "CGN": "Cologne",
+    "NUE": "Nuremberg", "HAJ": "Hannover", "BRE": "Bremen", "LEJ": "Leipzig",
+    "TXL": "Berlin",
+    # Ek havalimanları (aynı şehir)
+    "ORY": "Paris", "LGW": "London", "STN": "London", "LTN": "London",
+    "CIA": "Rome", "BGY": "Milan", "TCI": "Tenerife",
+    "SVO": "Moscow", "VKO": "Moscow", "DME": "Moscow",
+    "ROV": "Rostov", "VOZ": "Voronezh", "YEI": "Bursa",
+    # Kafkasya / Orta Doğu
+    "EVN": "Yerevan", "RUH": "Riyadh", "MCT": "Muscat",
+    "BAH": "Bahrain", "KWI": "Kuwait", "AMM": "Amman",
+    "GYD": "Baku", "CAI": "Cairo", "CMN": "Casablanca",
+    "ECN": "Nicosia", "LCA": "Larnaca", "PFO": "Paphos",
+    "RAK": "Marrakech", "DOH": "Doha",
+    # Uzak
+    "KUL": "Kuala Lumpur", "SIN": "Singapore", "MLE": "Maldives",
+    "HRG": "Hurghada", "SSH": "Sharm el Sheikh",
+    "JFK": "New York", "LAX": "Los Angeles", "MIA": "Miami",
+    "ARN": "Stockholm", "OSL": "Oslo", "HEL": "Helsinki", "WAW": "Warsaw",
+    "HKT": "Phuket", "MNL": "Manila", "DPS": "Bali",
+    "PEK": "Beijing", "PVG": "Shanghai", "HKG": "Hong Kong",
+    "DEL": "Delhi", "BOM": "Mumbai", "CMB": "Colombo", "ICN": "Seoul",
+    "SFO": "San Francisco", "CUN": "Cancun", "GRU": "Sao Paulo",
+    "GIG": "Rio de Janeiro", "EZE": "Buenos Aires",
+    "SYD": "Sydney", "MEL": "Melbourne", "AKL": "Auckland",
 }
 
 # GetYourGuide API mevcut degilse, populer aktiviteleri statik olarak sun
@@ -81,9 +114,8 @@ POPULER_AKTIVITELER = {
 
 
 def _gyg_affiliate_link(sehir: str) -> str:
-    partner = GYG_PARTNER_ID or "kacamak"
     slug = sehir.lower().replace(" ", "-")
-    return f"https://www.getyourguide.com/s/?q={slug}&partner_id={partner}&cmp=kacamak"
+    return f"https://www.getyourguide.com/s/?q={slug}"
 
 
 @lru_cache(maxsize=100)
@@ -111,7 +143,7 @@ def aktiviteler_getir(destinasyon: str) -> list:
                         "sure": t.get("duration_text", ""),
                         "puan": t.get("overall_rating", 0),
                         "emoji": "🎯",
-                        "link": f"{t.get('url', '')}?partner_id={GYG_PARTNER_ID}",
+                        "link": t.get('url', ''),
                         "resim": t.get("pictures", [{}])[0].get("url", ""),
                     }
                     for t in data[:5]

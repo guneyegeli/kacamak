@@ -2,6 +2,53 @@ import { useState, useEffect } from 'react'
 import { api } from '../services/api'
 import { generateAllLinks } from '../utils/affiliateLinks'
 
+const CIKIS_SEHIRLERI = {
+  IST:'İstanbul',SAW:'İstanbul',ADB:'İzmir',AYT:'Antalya',ESB:'Ankara',
+  ADA:'Adana',TZX:'Trabzon',GZT:'Gaziantep',BJV:'Bodrum',DLM:'Dalaman',
+  SZF:'Samsun',ERZ:'Erzurum',VAN:'Van',DIY:'Diyarbakır',KYA:'Konya',
+  MLX:'Malatya',EZS:'Elazığ',ASR:'Kayseri',HTY:'Hatay',GNY:'Şanlıurfa',
+  MQM:'Mardin',IGD:'Iğdır',MSR:'Muş',KSY:'Kars',EDO:'Balıkesir',
+  DNZ:'Denizli',ISE:'Isparta',NOP:'Sinop',ONQ:'Zonguldak',
+  CKZ:'Çanakkale',TEQ:'Tekirdağ',USQ:'Uşak',AFY:'Afyon',BZI:'Balıkesir',YEI:'Bursa',
+}
+
+const HAVAYOLU_ADLARI = {
+  TK: 'Türk Hava Yolları', PC: 'Pegasus', XQ: 'SunExpress',
+  W6: 'Wizz Air', FR: 'Ryanair', A3: 'Aegean', DP: 'Pobeda',
+  A4: 'Azimuth', '5F': 'FlyOne', VF: 'Flynas', TO: 'Transavia',
+  GQ: 'Sky Express', U2: 'easyJet', LH: 'Lufthansa', BA: 'British Airways',
+  AF: 'Air France', KL: 'KLM', OS: 'Austrian', LX: 'Swiss',
+  AZ: 'ITA Airways', QR: 'Qatar Airways', EK: 'Emirates', EY: 'Etihad',
+  TG: 'Thai Airways', SQ: 'Singapore Airlines',
+}
+const BAGAJ_23KG = new Set(['TK', 'LH', 'BA', 'AF', 'KL', 'OS', 'LX', 'AZ', 'QR', 'EK', 'EY', 'TG', 'SQ', 'A3'])
+const BAGAJ_KABIN = new Set(['PC', 'W6', 'FR', 'U2', 'DP', 'GQ', '5F'])
+
+const aktarmaBilgi = (f) => {
+  if (!f) return { ikon: '✈️', yazi: null, renk: 'var(--text3)' }
+  if (f.aktarma > 0) return { ikon: '🔄', yazi: f.aktarma === 1 ? '1 aktarma' : `${f.aktarma} aktarma`, renk: '#F7C948' }
+  if (f.aktarma === 0 && f.sure_dk > 0) return { ikon: '✈️', yazi: 'Direkt uçuş', renk: 'var(--success)' }
+  return { ikon: '✈️', yazi: 'Sitede kontrol edin', renk: 'var(--text3)' }
+}
+
+const sureBilgisi = (dk) => {
+  if (!dk || dk <= 0) return null
+  const tekYon = Math.round(dk / 2)
+  const s = Math.floor(tekYon / 60)
+  const m = tekYon % 60
+  return `${s}s${m > 0 ? ` ${m}dk` : ''}`
+}
+
+const bagajDetay = (havayolu) => {
+  if (havayolu === 'TK') return 'Genellikle 1 adet 23kg bagaj dahil'
+  if (havayolu === 'PC') return 'Genellikle el bagajı dahil, hold bagajı ekstra'
+  if (havayolu === 'XQ') return 'Genellikle el bagajı dahil, hold bagajı ekstra'
+  if (!havayolu) return 'Bagaj bilgisi için bilet sitesini kontrol edin'
+  if (BAGAJ_23KG.has(havayolu)) return 'Genellikle 23kg bagaj dahil'
+  if (BAGAJ_KABIN.has(havayolu)) return 'Genellikle el bagajı dahil, hold bagajı ekstra'
+  return 'Bagaj bilgisi için bilet sitesini kontrol edin'
+}
+
 const tarihFormat = (tarih) => {
   if (!tarih) return ''
   try {
@@ -20,6 +67,73 @@ const geceSay = (gidis, donus) => {
   } catch { return null }
 }
 
+const YURTICI_KODLARI = new Set([
+  'AYT', 'DLM', 'ADB', 'ESB', 'TZX', 'GZT', 'ADA', 'BJV', 'NAV', 'VAN',
+  'ERZ', 'TRS', 'SZF', 'DIY', 'IST', 'SAW', 'IZM', 'ANK', 'COV', 'GZP',
+  'KYA', 'MLX', 'EZS', 'ASR', 'NOP', 'ONQ', 'HTY', 'GNY', 'MQM', 'IGD',
+  'MSR', 'KSY', 'EDO', 'CKZ', 'TEQ', 'USQ', 'DNZ', 'ISE', 'AFY', 'BZI',
+  'YEI', 'RZV', 'VAS',
+])
+
+const ULKE_ADLARI = {
+  BCN: 'İspanya', MAD: 'İspanya', TCI: 'İspanya',
+  PAR: 'Fransa', CDG: 'Fransa', ORY: 'Fransa',
+  LHR: 'İngiltere', LON: 'İngiltere', LGW: 'İngiltere', STN: 'İngiltere', LTN: 'İngiltere',
+  BER: 'Almanya', TXL: 'Almanya', MUC: 'Almanya', FRA: 'Almanya',
+  DUS: 'Almanya', HAM: 'Almanya', STR: 'Almanya', CGN: 'Almanya',
+  NUE: 'Almanya', HAJ: 'Almanya', BRE: 'Almanya', LEJ: 'Almanya', DTM: 'Almanya',
+  ROM: 'İtalya', FCO: 'İtalya', CIA: 'İtalya', MXP: 'İtalya', BGY: 'İtalya',
+  AMS: 'Hollanda', PRG: 'Çekya', BUD: 'Macaristan', VIE: 'Avusturya',
+  ATH: 'Yunanistan', LIS: 'Portekiz', WAW: 'Polonya', ZAG: 'Hırvatistan',
+  BEG: 'Sırbistan', SOF: 'Bulgaristan', OTP: 'Romanya', SKP: 'Kuzey Makedonya',
+  TIA: 'Arnavutluk', SJJ: 'Bosna Hersek', DUB: 'İrlanda', CPH: 'Danimarka',
+  OSL: 'Norveç', ARN: 'İsveç', HEL: 'Finlandiya', ZRH: 'İsviçre', BRU: 'Belçika',
+  TGD: 'Karadağ', TIV: 'Karadağ',
+  TBS: 'Gürcistan', GYD: 'Azerbaycan', BAK: 'Azerbaycan', GNJ: 'Azerbaycan',
+  EVN: 'Ermenistan', TLV: 'İsrail', AMM: 'Ürdün', BEY: 'Lübnan',
+  DXB: 'BAE', DOH: 'Katar',
+  JED: 'Suudi Arabistan', MED: 'Suudi Arabistan', RUH: 'Suudi Arabistan',
+  MCT: 'Umman', BAH: 'Bahreyn', KWI: 'Kuveyt',
+  CAI: 'Mısır', SSH: 'Mısır', HRG: 'Mısır', CMN: 'Fas', RAK: 'Fas', TUN: 'Tunus',
+  ECN: 'KKTC', LCA: 'Kıbrıs', PFO: 'Kıbrıs',
+  MOW: 'Rusya', SVO: 'Rusya', VKO: 'Rusya', DME: 'Rusya',
+  LED: 'Rusya', AER: 'Rusya', KRR: 'Rusya', RMO: 'Rusya', ROV: 'Rusya', VOZ: 'Rusya',
+  KZN: 'Rusya', SVX: 'Rusya', MRV: 'Rusya', MCX: 'Rusya', GRV: 'Rusya',
+  OGZ: 'Rusya', CEK: 'Rusya', UFA: 'Rusya', PEE: 'Rusya', GOJ: 'Rusya',
+  OMS: 'Rusya', KJA: 'Rusya', TJM: 'Rusya', KGD: 'Rusya', RTW: 'Rusya',
+  OVB: 'Rusya', KUF: 'Rusya',
+  TAS: 'Özbekistan', SKD: 'Özbekistan', BSZ: 'Kırgızistan', OSS: 'Kırgızistan',
+  NQZ: 'Kazakistan', ALA: 'Kazakistan', CIT: 'Kazakistan', MSQ: 'Belarus',
+  BKK: 'Tayland', HKT: 'Tayland', SIN: 'Singapur', KUL: 'Malezya',
+  MNL: 'Filipinler', DPS: 'Endonezya',
+  HND: 'Japonya', NRT: 'Japonya', ICN: 'Güney Kore',
+  PEK: 'Çin', PVG: 'Çin', HKG: 'Hong Kong',
+  DEL: 'Hindistan', BOM: 'Hindistan', CMB: 'Sri Lanka',
+  JFK: 'ABD', MIA: 'ABD', LAX: 'ABD', SFO: 'ABD', ORD: 'ABD', ATL: 'ABD',
+  YYZ: 'Kanada', MEX: 'Meksika', CUN: 'Meksika',
+  GRU: 'Brezilya', GIG: 'Brezilya', EZE: 'Arjantin',
+  SYD: 'Avustralya', MEL: 'Avustralya', AKL: 'Yeni Zelanda',
+  CPT: 'Güney Afrika', NBO: 'Kenya', MRU: 'Mauritius', SEZ: 'Seyşeller',
+  MLE: 'Maldivler',
+  BTS: 'Slovakya', PRN: 'Kosova', NAP: 'İtalya', MRS: 'Fransa',
+  RTM: 'Hollanda', POZ: 'Polonya', ABZ: 'İngiltere', BUH: 'Romanya',
+  TYO: 'Japonya', CJU: 'Güney Kore', IKT: 'Rusya', FEG: 'Özbekistan',
+  SHJ: 'BAE',
+}
+
+const ulkeEkle = (sehirAd, varisKod) => {
+  if (YURTICI_KODLARI.has(varisKod)) return sehirAd
+  const ulke = ULKE_ADLARI[varisKod]
+  return ulke ? `${sehirAd}, ${ulke}` : sehirAd
+}
+
+const trToAscii = (s) => s
+  .replace(/ö/g,'o').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ç/g,'c')
+  .replace(/ğ/g,'g').replace(/ı/g,'i').replace(/Ö/g,'O').replace(/Ü/g,'U')
+  .replace(/Ş/g,'S').replace(/Ç/g,'C').replace(/Ğ/g,'G').replace(/İ/g,'I')
+
+const encodeQuery = (text) => encodeURIComponent(trToAscii(text))
+
 export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
   const [detay, setDetay] = useState(null)
   const [yukleniyor, setYukleniyor] = useState(true)
@@ -33,6 +147,11 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
   const [kanalVideo, setKanalVideo] = useState(null)
 
   const [itUretiliyor, setItUretiliyor] = useState(false)
+  const [otelTercih, setOtelTercih] = useState(null)
+
+  useEffect(() => {
+    api.tercihGetir().then(d => { if (d?.tercihler) setOtelTercih(d.tercihler) }).catch(() => {})
+  }, [])
 
   useEffect(() => {
     if (!firsat?.id) return
@@ -62,7 +181,9 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
   const it = detay?.paket
   const mk = import.meta.env.VITE_TRAVELPAYOUTS_MARKER
   const o = firsat?.cikis || '', d = firsat?.varis || ''
-  const sehir = firsat?.varis_sehir || firsat?.varis
+  const cikisSehir = CIKIS_SEHIRLERI[o] || o
+  const sehirAd = firsat?.varis_sehir || firsat?.varis
+  const sehir = ulkeEkle(sehirAd, firsat?.varis)
   const cs = { background: 'var(--bg2)', backdropFilter: 'blur(12px)', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }
   const lbl = { fontSize: 11, color: 'var(--accent2)', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 500, marginBottom: 12 }
 
@@ -71,7 +192,9 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
   const tarihBilgi = `${tarihFormat(gidisTarih)} - ${tarihFormat(donusTarih)}`
   const fiyatGosterim = firsat?.fiyat?.toLocaleString('tr-TR')
   const links = generateAllLinks(o, d, gidisTarih, donusTarih)
-  const hotellookLink = `https://search.hotellook.com/?destination=${sehir}&marker=${mk}`
+  const otelYildiz = otelTercih?.otel_yildizlar?.filter(y => typeof y === 'number')
+  const hotellookStars = otelYildiz?.length ? `&stars=${otelYildiz.join(',')}` : ''
+  const hotellookLink = `https://search.hotellook.com/?destination=${sehirAd}&marker=${mk}&locale=tr&currency=try${hotellookStars}`
   const platformlar = [
     { isim: 'Aviasales', fiyatYazi: `${fiyatGosterim} ₺'den başlayan fiyatlar`, buton: 'Sitede güncel fiyatı gör', emoji: '🔥', renk: '#FF6B35', link: links.aviasales },
     { isim: 'Skyscanner', fiyatYazi: 'Fiyatları karşılaştır →', buton: 'Sitede güncel fiyatı gör', emoji: '🔍', renk: '#00B2E2', link: links.skyscanner },
@@ -108,7 +231,9 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
                 {ic.ulasim && <span style={{ fontSize: 14, color: 'var(--text3)' }}>🚌 {ic.ulasim}</span>}
                 {ic.harcama_eur != null && <span style={{ fontSize: 14, color: 'var(--accent)' }}>💰 €{ic.harcama_eur}</span>}
-                {ic.aktivite && <a href={`https://www.getyourguide.com/s/?q=${encodeURIComponent(ic.aktivite + ' ' + sehir)}&partner_id=KACAMAK&utm_medium=online_publisher`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>🎟️ Bilet al →</a>}
+                {ic.aktivite && !YURTICI_KODLARI.has(firsat?.varis) && (
+                  <a href={`https://www.getyourguide.com/s/?q=${encodeQuery(ic.aktivite + ' ' + sehirAd)}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>🎟️ GetYourGuide'da ara →</a>
+                )}
               </div>
             </>) : <div style={{ fontSize: 15, color: 'var(--text2)', lineHeight: 1.6 }}>{ic?.aktivite || ic}</div>}
           </div>
@@ -124,9 +249,9 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
       <div style={{ position: 'relative', width: '100vw', marginLeft: 'calc(-50vw + 50%)', height: 320, overflow: 'hidden', background: foto ? undefined : 'linear-gradient(135deg, #1B1F3B 0%, #2a2f5a 40%, #FF6B35 100%)' }}>
         {foto && <img src={foto.url_orta} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
         <div style={{ position: 'absolute', inset: 0, background: foto ? 'linear-gradient(transparent 30%, rgba(27,31,59,0.95))' : 'radial-gradient(circle at 70% 30%, rgba(247,201,72,0.2) 0%, transparent 60%)' }} />
-        <button onClick={onGeri} style={{ position: 'absolute', top: 52, left: 24, background: 'rgba(27,31,59,0.6)', backdropFilter: 'blur(8px)', border: 'none', borderRadius: 20, padding: '6px 14px', color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 500, zIndex: 2 }}>← Geri</button>
+        <button onClick={onGeri} onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.25)'} onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.15)'} style={{ position: 'absolute', top: 52, left: 24, background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 8, padding: '10px 20px', color: '#fff', cursor: 'pointer', fontSize: 15, fontWeight: 600, zIndex: 2, transition: 'background 0.2s' }}><span style={{ fontSize: 18, marginRight: 6 }}>‹</span>Geri</button>
         <div style={{ position: 'absolute', bottom: 28, left: 28, right: 28 }}>
-          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', fontWeight: 500, marginBottom: 6 }}>{o} → {d} · {tarihFormat(firsat?.ucus_tarihi)}{firsat?.donus_tarihi ? ` → ${tarihFormat(firsat.donus_tarihi)}` : ''}{geceSay(firsat?.ucus_tarihi, firsat?.donus_tarihi) ? ` (${geceSay(firsat.ucus_tarihi, firsat.donus_tarihi)} gece)` : ''}</div>
+          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', fontWeight: 500, marginBottom: 6 }}>{cikisSehir} ({o}) → {sehir} ({d}) · {tarihFormat(firsat?.ucus_tarihi)}{firsat?.donus_tarihi ? ` → ${tarihFormat(firsat.donus_tarihi)}` : ''}{geceSay(firsat?.ucus_tarihi, firsat?.donus_tarihi) ? ` (${geceSay(firsat.ucus_tarihi, firsat.donus_tarihi)} gece)` : ''}</div>
           <div style={{ fontSize: 36, fontWeight: 500, color: '#fff' }}>{sehir}</div>
         </div>
         {foto?.fotograf && <div style={{ position: 'absolute', bottom: 8, right: 28, fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>📷 {foto.fotograf}</div>}
@@ -151,10 +276,11 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
           {it?.pratik && (
             <div style={{ background: 'rgba(46,196,182,0.08)', borderRadius: 'var(--radius)', border: '1px solid rgba(46,196,182,0.2)', padding: 20, marginBottom: 20 }}>
               <div style={{ fontSize: 11, color: 'var(--success)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 14, fontWeight: 500 }}>📋 Sehir Rehberi</div>
-              {it.pratik.ulasim && <div style={{ fontSize: 15, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.6 }}>🚌 <strong style={{ color: 'var(--text)' }}>Ulasim:</strong> {it.pratik.ulasim}</div>}
-              {it.pratik.para && <div style={{ fontSize: 15, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.6 }}>💰 <strong style={{ color: 'var(--text)' }}>Para:</strong> {it.pratik.para}</div>}
-              {it.pratik.dil && <div style={{ fontSize: 15, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.6 }}>🗣️ <strong style={{ color: 'var(--text)' }}>Dil:</strong> {it.pratik.dil}</div>}
-              {it.pratik.guvenlik && <div style={{ fontSize: 15, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.6 }}>🛡️ <strong style={{ color: 'var(--text)' }}>Guvenlik:</strong> {it.pratik.guvenlik}</div>}
+              {it.pratik.ulasim && <div style={{ fontSize: 15, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.6 }}>🚌 <strong style={{ color: 'var(--text)' }}>Ulaşım:</strong> {it.pratik.ulasim}</div>}
+              {it.pratik.konaklama_bolgeleri && <div style={{ fontSize: 15, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.6 }}>🏨 <strong style={{ color: 'var(--text)' }}>Konaklama:</strong> {it.pratik.konaklama_bolgeleri}</div>}
+              {!YURTICI_KODLARI.has(firsat?.varis) && it.pratik.para && <div style={{ fontSize: 15, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.6 }}>💰 <strong style={{ color: 'var(--text)' }}>Para:</strong> {it.pratik.para}</div>}
+              {!YURTICI_KODLARI.has(firsat?.varis) && it.pratik.dil && <div style={{ fontSize: 15, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.6 }}>🗣️ <strong style={{ color: 'var(--text)' }}>Dil:</strong> {it.pratik.dil}</div>}
+              {!YURTICI_KODLARI.has(firsat?.varis) && it.pratik.guvenlik && <div style={{ fontSize: 15, color: 'var(--text2)', marginBottom: 10, lineHeight: 1.6 }}>🛡️ <strong style={{ color: 'var(--text)' }}>Güvenlik:</strong> {it.pratik.guvenlik}</div>}
               {it.pratik.ipuclari?.map((ip, i) => <div key={i} style={{ fontSize: 15, color: 'var(--text2)', marginBottom: 4, lineHeight: 1.6 }}>💡 {ip}</div>)}
             </div>
           )}
@@ -200,6 +326,69 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
             {it?.en_iyi_zaman && <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text3)' }}>📅 {it.en_iyi_zaman}</div>}
           </div>
 
+          {/* Uçuş Detayları */}
+          {(() => {
+            const akt = aktarmaBilgi(firsat)
+            const sure = sureBilgisi(firsat?.sure_dk)
+            const bgj = bagajDetay(firsat?.havayolu)
+            const havayoluAd = firsat?.havayolu ? (HAVAYOLU_ADLARI[firsat.havayolu] || firsat.havayolu) : null
+            return (
+              <div style={{ ...cs, padding: 20, marginBottom: 16 }}>
+                <div style={{ ...lbl, marginBottom: 14 }}>✈️ Uçuş Detayları</div>
+
+                {/* Gidiş Uçuşu */}
+                <div style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 12, color: 'var(--accent2)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Gidiş Uçuşu</div>
+                  <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>
+                    {cikisSehir} ({o}) → {sehirAd} ({d})
+                  </div>
+                  {firsat?.ucus_tarihi && <div style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 8 }}>Tarih: {tarihFormat(firsat.ucus_tarihi)}</div>}
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, marginBottom: 4 }}>
+                    <span style={{ fontSize: 14, color: akt.renk, fontWeight: 500 }}>{akt.ikon} {akt.yazi}</span>
+                    {sure && <span style={{ fontSize: 14, color: 'var(--text2)' }}>⏱️ {sure}</span>}
+                    {havayoluAd && <span style={{ fontSize: 14, color: 'var(--text2)' }}>🛫 {havayoluAd}</span>}
+                  </div>
+                </div>
+
+                {/* Dönüş Uçuşu */}
+                {firsat?.donus_tarihi && (
+                  <div style={{ marginBottom: 14, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
+                    <div style={{ fontSize: 12, color: 'var(--accent2)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Dönüş Uçuşu</div>
+                    <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text)', marginBottom: 6 }}>
+                      {sehirAd} ({d}) → {cikisSehir} ({o})
+                    </div>
+                    <div style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 8 }}>Tarih: {tarihFormat(firsat.donus_tarihi)}</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
+                      <span style={{ fontSize: 14, color: akt.renk, fontWeight: 500 }}>{akt.ikon} {akt.yazi}</span>
+                      {sure && <span style={{ fontSize: 14, color: 'var(--text2)' }}>⏱️ {sure}</span>}
+                    </div>
+                  </div>
+                )}
+
+                {/* Bagaj & Fiyat Kapsamı */}
+                <div style={{ paddingTop: 14, borderTop: '1px solid var(--border)', marginBottom: 10 }}>
+                  <div style={{ fontSize: 14, color: 'var(--text2)', marginBottom: 6 }}>🧳 {bgj}</div>
+                  <div style={{ fontSize: 13, color: 'var(--text3)', lineHeight: 1.6 }}>
+                    Bu fiyat 1 yetişkin, gidiş-dönüş bilet içindir.
+                    Koltuk seçimi ve yemek ekstra ücretli olabilir.
+                  </div>
+                </div>
+
+                {/* Uyarı kutusu */}
+                <div style={{ background: 'rgba(247,201,72,0.08)', border: '1px solid rgba(247,201,72,0.2)', borderRadius: 10, padding: '10px 14px' }}>
+                  <div style={{ fontSize: 12, color: '#F7C948', lineHeight: 1.6 }}>
+                    Uçuş saatleri ve bagaj bilgileri bilet satın alma sırasında değişebilir. Kesin bilgi için Aviasales'te rezervasyon sırasında kontrol edin.
+                  </div>
+                </div>
+
+                {/* Deep link */}
+                <div style={{ marginTop: 10, textAlign: 'center' }}>
+                  <span onClick={(e) => { e.stopPropagation(); window.open(links.aviasales, '_blank') }} style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 600, cursor: 'pointer' }}>Detaylı uçuş bilgisi → Aviasales</span>
+                </div>
+              </div>
+            )
+          })()}
+
           {/* Bilet Satın Al */}
           <div style={{ marginBottom: 16 }}>
             <div style={{ ...lbl, marginBottom: 10 }}>✈️ Bilet Satın Al</div>
@@ -226,7 +415,7 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
             <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text2)' }}>
               <div style={{ fontSize: 40, marginBottom: 16, animation: 'fadeIn 1s ease infinite alternate' }}>✨</div>
               <div style={{ fontSize: 16, fontWeight: 500, color: 'var(--accent2)', marginBottom: 8 }}>AI seyahat programınız hazırlanıyor...</div>
-              <div style={{ fontSize: 13, color: 'var(--text3)', lineHeight: 1.6 }}>Claude, {sehir} için kişiselleştirilmiş gün gün program oluşturuyor. Bu işlem 10-20 saniye sürebilir.</div>
+              <div style={{ fontSize: 13, color: 'var(--text3)', lineHeight: 1.6 }}>Claude, {sehirAd} için kişiselleştirilmiş gün gün program oluşturuyor. Bu işlem 10-20 saniye sürebilir.</div>
             </div>
           )}
           {!itUretiliyor && it?.gunler?.map(gun => <GunKart key={gun.gun} gun={gun} />)}
@@ -280,10 +469,12 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
                   </div>
                 </div>
                 {a.sure && <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>⏱️ {a.sure}</div>}
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button onClick={(e) => { e.stopPropagation(); window.open(`https://www.getyourguide.com/s/?q=${encodeURIComponent(a.baslik + ' ' + sehir)}&partner_id=KACAMAK&utm_medium=online_publisher`, '_blank') }} style={{ flex: 1, background: 'rgba(255,107,53,0.15)', border: '1px solid rgba(255,107,53,0.3)', borderRadius: 8, padding: '7px 10px', color: 'var(--accent)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>GetYourGuide ↗</button>
-                  <button onClick={(e) => { e.stopPropagation(); window.open(`https://www.viator.com/searchResults/all?text=${encodeURIComponent(a.baslik + ' ' + sehir)}&pid=P00166886`, '_blank') }} style={{ flex: 1, background: 'rgba(46,196,182,0.15)', border: '1px solid rgba(46,196,182,0.3)', borderRadius: 8, padding: '7px 10px', color: 'var(--success)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Viator ↗</button>
-                </div>
+                {!YURTICI_KODLARI.has(firsat?.varis) && (
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button onClick={(e) => { e.stopPropagation(); window.open(`https://www.getyourguide.com/s/?q=${encodeQuery(a.baslik + ' ' + sehirAd)}`, '_blank') }} style={{ flex: 1, background: 'rgba(255,107,53,0.15)', border: '1px solid rgba(255,107,53,0.3)', borderRadius: 8, padding: '7px 10px', color: 'var(--accent)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>GetYourGuide'da ara ↗</button>
+                    <button onClick={(e) => { e.stopPropagation(); window.open(`https://www.viator.com/searchResults/all?text=${encodeQuery(a.baslik + ' ' + sehirAd)}`, '_blank') }} style={{ flex: 1, background: 'rgba(46,196,182,0.15)', border: '1px solid rgba(46,196,182,0.3)', borderRadius: 8, padding: '7px 10px', color: 'var(--success)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Viator'da ara ↗</button>
+                  </div>
+                )}
               </div>
             ))}
           </>)}
@@ -319,32 +510,32 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
               </div>
               {/* Genel arama linki */}
               <div
-                onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(sehir + ' gezi videoları')}`, '_blank')}
+                onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(sehirAd + ' gezi videoları')}`, '_blank')}
                 style={{ ...cs, padding: '12px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, borderLeft: '3px solid #CC0000' }}
               >
                 <span style={{ fontSize: 18 }}>🎬</span>
-                <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: 'var(--text2)' }}>{sehir} gezi videoları</span>
+                <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: 'var(--text2)' }}>{sehirAd} gezi videoları</span>
                 <span style={{ fontSize: 11, color: '#CC0000', fontWeight: 600, flexShrink: 0 }}>YouTube'da ara ↗</span>
               </div>
             </>) : (<>
               {/* Kanal videosu yok — arama kartları */}
               <div
-                onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(sehir + ' gezi rehberi vlog')}`, '_blank')}
+                onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(sehirAd + ' gezi rehberi vlog')}`, '_blank')}
                 style={{ ...cs, overflow: 'hidden', borderRadius: 12, cursor: 'pointer', marginBottom: 10 }}
               >
                 <div style={{ padding: '28px 20px', background: 'linear-gradient(135deg, #1B1F3B 0%, #3b1520 40%, #CC0000 100%)', textAlign: 'center' }}>
                   <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                     <div style={{ width: 0, height: 0, borderTop: '11px solid transparent', borderBottom: '11px solid transparent', borderLeft: '18px solid #fff', marginLeft: 3 }} />
                   </div>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 4 }}>{sehir} Gezi Videoları</div>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 4 }}>{sehirAd} Gezi Videoları</div>
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)' }}>YouTube'da ara ↗</div>
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {[
-                  { etiket: `${sehir} gezilecek yerler`, emoji: '📍' },
-                  { etiket: `${sehir} yeme içme`, emoji: '🍽️' },
-                  { etiket: `${sehir} pratik bilgiler`, emoji: '💡' },
+                  { etiket: `${sehirAd} gezilecek yerler`, emoji: '📍' },
+                  { etiket: `${sehirAd} yeme içme`, emoji: '🍽️' },
+                  { etiket: `${sehirAd} pratik bilgiler`, emoji: '💡' },
                 ].map((item, i) => (
                   <div
                     key={i}
@@ -368,7 +559,7 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
                 <div key={b.id} onClick={() => onFirsat?.(b)} style={{ ...cs, padding: 14, marginBottom: 10, cursor: 'pointer', borderLeft: '3px solid var(--accent)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text)', marginBottom: 2 }}>{b.varis_sehir || b.varis} <span style={{ fontSize: 11, color: 'var(--text3)', fontWeight: 400 }}>({b.varis})</span></div>
+                      <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text)', marginBottom: 2 }}>{ulkeEkle(b.varis_sehir || b.varis, b.varis)} <span style={{ fontSize: 11, color: 'var(--text3)', fontWeight: 400 }}>({b.varis})</span></div>
                       <div style={{ fontSize: 12, color: 'var(--text3)' }}>{tarihFormat(b.ucus_tarihi)}{b.donus_tarihi ? ` → ${tarihFormat(b.donus_tarihi)}` : ''}{geceSay(b.ucus_tarihi, b.donus_tarihi) ? ` · ${geceSay(b.ucus_tarihi, b.donus_tarihi)} gece` : ''}</div>
                     </div>
                     <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: 10 }}>

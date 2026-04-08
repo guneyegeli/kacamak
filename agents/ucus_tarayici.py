@@ -1,6 +1,7 @@
 import sqlite3
 import os
 import logging
+import time
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from services.travelpayouts import ucuz_ucuslar_getir, aylik_matris_getir, alternatif_tarihler_getir
@@ -14,7 +15,26 @@ load_dotenv()
 DB = os.getenv("DATABASE_PATH", "data/kacamak.db")
 INDIRIM_ESIGI = 0.80  # %20 indirim eşiği (fiyat < normal * 0.80)
 ILK_TARAMA_EN_UCUZ = 10  # Geçmiş veri yoksa en ucuz N uçuşu kaydet
-HAVAALANLARI = ["IST", "SAW", "ADB", "AYT", "ESB"]
+API_BEKLEME = 2  # Havalimanları arası bekleme süresi (saniye) — rate limit koruması
+
+# Türkiye'nin uluslararası uçuş yapan tüm havalimanları
+HAVAALANLARI = [
+    # Büyük hub'lar
+    "IST", "SAW", "ADB", "AYT", "ESB",
+    # Karadeniz
+    "TZX", "SZF",
+    # Güneydoğu / Doğu
+    "GZT", "ADA", "DIY", "VAN", "ERZ", "MLX", "EZS", "HTY", "GNY", "MQM",
+    "IGD", "MSR", "KSY",
+    # Ege / Akdeniz
+    "BJV", "DLM", "DNZ",
+    # İç Anadolu
+    "KYA", "ASR",
+    # Marmara / Batı
+    "EDO", "CKZ", "TEQ", "BZI",
+    # Diğer
+    "USQ", "ISE", "AFY", "NOP", "ONQ",
+]
 
 log = logging.getLogger("ucus_tarayici")
 
@@ -32,7 +52,9 @@ def cron_tarama():
     log.info("Havaalanları: %s | İndirim eşiği: %%%d", ", ".join(HAVAALANLARI), int((1 - INDIRIM_ESIGI) * 100))
     log.info("=" * 60)
 
-    for origin in HAVAALANLARI:
+    for idx, origin in enumerate(HAVAALANLARI):
+        if idx > 0:
+            time.sleep(API_BEKLEME)
         firsatlar = havaalani_tara(origin)
         for firsat in firsatlar:
             kullanicilar = firsat_icin_kullanicilar_bul(firsat)
@@ -181,6 +203,16 @@ def _firsat_olustur_ve_kaydet(origin, varis, veri, fiyat, normal, indirim):
     """Fırsat verisi oluşturup kaydeder, alternatif tarihleri de ekler."""
     ucus_tarihi = veri.get("departure_at", "")[:10]
     donus_tarihi = veri.get("return_at", "")[:10]
+
+    # Geçmiş tarihli uçuşları kaydetme
+    if ucus_tarihi:
+        try:
+            if datetime.strptime(ucus_tarihi, "%Y-%m-%d").date() < datetime.now().date():
+                log.debug("    ✗ [%s→%s] Geçmiş tarih (%s), atlanıyor", origin, varis, ucus_tarihi)
+                return None
+        except ValueError:
+            pass
+
     if not donus_tarihi and ucus_tarihi:
         try:
             gidis = datetime.strptime(ucus_tarihi, "%Y-%m-%d")
@@ -206,7 +238,9 @@ def _firsat_olustur_ve_kaydet(origin, varis, veri, fiyat, normal, indirim):
         "ucus_tarihi": ucus_tarihi,
         "donus_tarihi": donus_tarihi,
         "havayolu": veri.get("airline", ""),
-        "gecerlilik": veri.get("expires_at", "")
+        "gecerlilik": veri.get("expires_at", ""),
+        "aktarma": veri.get("aktarma", 0),
+        "sure_dk": veri.get("sure_dk", 0),
     })
 
     if f:
@@ -244,19 +278,43 @@ def _firsat_olustur_ve_kaydet(origin, varis, veri, fiyat, normal, indirim):
 def firsat_kaydet(f: dict) -> dict | None:
     conn = sqlite3.connect(DB)
     try:
-        cur = conn.execute("""
-            INSERT INTO firsatlar
-            (cikis,varis,varis_sehir,fiyat,normal_fiyat,indirim_orani,
-             ucus_tarihi,donus_tarihi,havayolu,gecerlilik)
-            VALUES (?,?,?,?,?,?,?,?,?,?)
-        """, (f["cikis"], f["varis"], f.get("varis_sehir"), f["fiyat"],
-              f["normal_fiyat"], f["indirim_orani"], f["ucus_tarihi"],
-              f["donus_tarihi"], f["havayolu"], f["gecerlilik"]))
-        f["id"] = cur.lastrowid
-        conn.commit()
-        istatistik["fiyat_kaydedilen"] += 1
-        log.debug("    DB: Fırsat #%d kaydedildi (%s→%s, %d₺)", f["id"], f["cikis"], f["varis"], f["fiyat"])
-        return f if f["id"] else None
+        # Aynı rota+tarih varsa fiyatı güncelle (UPSERT)
+        mevcut = conn.execute("""
+            SELECT id, fiyat FROM firsatlar
+            WHERE cikis=? AND varis=? AND ucus_tarihi=? AND donus_tarihi=?
+            LIMIT 1
+        """, (f["cikis"], f["varis"], f["ucus_tarihi"], f["donus_tarihi"])).fetchone()
+
+        if mevcut:
+            eski_fiyat = mevcut[0] if len(mevcut) > 1 else 0
+            f["id"] = mevcut[0]
+            conn.execute("""
+                UPDATE firsatlar
+                SET fiyat=?, normal_fiyat=?, indirim_orani=?, havayolu=?,
+                    gecerlilik=?, aktarma=?, sure_dk=?, aktif=1
+                WHERE id=?
+            """, (f["fiyat"], f["normal_fiyat"], f["indirim_orani"],
+                  f["havayolu"], f["gecerlilik"],
+                  f.get("aktarma", 0), f.get("sure_dk", 0), f["id"]))
+            conn.commit()
+            istatistik["fiyat_kaydedilen"] += 1
+            log.debug("    DB: Fırsat #%d güncellendi (%s→%s, %d₺)", f["id"], f["cikis"], f["varis"], f["fiyat"])
+            return f
+        else:
+            cur = conn.execute("""
+                INSERT INTO firsatlar
+                (cikis,varis,varis_sehir,fiyat,normal_fiyat,indirim_orani,
+                 ucus_tarihi,donus_tarihi,havayolu,gecerlilik,aktarma,sure_dk)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+            """, (f["cikis"], f["varis"], f.get("varis_sehir"), f["fiyat"],
+                  f["normal_fiyat"], f["indirim_orani"], f["ucus_tarihi"],
+                  f["donus_tarihi"], f["havayolu"], f["gecerlilik"],
+                  f.get("aktarma", 0), f.get("sure_dk", 0)))
+            f["id"] = cur.lastrowid
+            conn.commit()
+            istatistik["fiyat_kaydedilen"] += 1
+            log.debug("    DB: Fırsat #%d kaydedildi (%s→%s, %d₺)", f["id"], f["cikis"], f["varis"], f["fiyat"])
+            return f if f["id"] else None
     except Exception as e:
         log.error("    DB HATA: %s", e)
         return None

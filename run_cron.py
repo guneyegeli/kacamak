@@ -15,19 +15,19 @@ logging.basicConfig(
 from agents.ucus_tarayici import cron_tarama
 import sqlite3
 
-# 48 saatten eski fırsatları pasife çek
+# 7 günden eski fırsatları pasife çek
 DB = os.getenv("DATABASE_PATH", "data/kacamak.db")
 try:
     conn = sqlite3.connect(DB)
     pasif = conn.execute("""
         UPDATE firsatlar SET aktif = 0
-        WHERE aktif = 1 AND olusturulma < datetime('now', '-48 hours')
+        WHERE aktif = 1 AND olusturulma < datetime('now', '-7 days')
     """)
     pasif_sayi = pasif.rowcount
     conn.commit()
     conn.close()
     if pasif_sayi > 0:
-        logging.info("%d eski fırsat pasife alındı (48 saat+)", pasif_sayi)
+        logging.info("%d eski fırsat pasife alındı (7 gün+)", pasif_sayi)
 except Exception as e:
     logging.warning("Eski fırsat pasife alma hatası: %s", e)
 

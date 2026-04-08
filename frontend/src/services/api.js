@@ -2,7 +2,13 @@ const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001'
 const KULLANICI_ID = 1
 
 export const api = {
-  firsatlar: () => fetch(`${BASE}/api/firsatlar`).then(r => r.json()),
+  firsatlar: (cikis, direkt) => {
+    const params = new URLSearchParams()
+    if (cikis) params.set('cikis', cikis)
+    if (direkt) params.set('direkt', '1')
+    const qs = params.toString()
+    return fetch(`${BASE}/api/firsatlar${qs ? `?${qs}` : ''}`).then(r => r.json())
+  },
   firsatDetay: (id) => fetch(`${BASE}/api/firsatlar/${id}`).then(r => r.json()),
   tercihGetir: () => fetch(`${BASE}/api/tercihler/${KULLANICI_ID}`).then(r => r.json()),
   tercihGuncelle: (data) => fetch(`${BASE}/api/tercihler/${KULLANICI_ID}`, {

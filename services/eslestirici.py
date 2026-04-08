@@ -37,8 +37,9 @@ def tercih_profili_olustur(kullanici_id: int, data: dict):
                 kullanici_id, cikis_havaalani, maks_butce,
                 min_indirim_orani, yetiskin_sayisi, cocuk_var,
                 esnek_tarih, direkt_ucus, otel_yildiz,
+                otel_yildizlar, otel_butce, otel_konum, kahvalti_dahil,
                 min_gece, max_gece, tercih_tipleri
-            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         """, (
             kullanici_id, havaalani,
             data.get("maks_butce", 10000),
@@ -48,6 +49,10 @@ def tercih_profili_olustur(kullanici_id: int, data: dict):
             int(data.get("esnek_tarih", True)),
             int(data.get("direkt_ucus", False)),
             data.get("otel_yildiz", 3),
+            json.dumps(data.get("otel_yildizlar", [3, 4])),
+            data.get("otel_butce", 2000),
+            data.get("otel_konum", "farketmez"),
+            int(data.get("kahvalti_dahil", False)),
             data.get("min_gece", 2),
             data.get("max_gece", 7),
             json.dumps(data.get("tercih_tipleri", []))

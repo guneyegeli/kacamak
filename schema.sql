@@ -18,6 +18,10 @@ CREATE TABLE IF NOT EXISTS tercihler (
     esnek_tarih INTEGER DEFAULT 1,
     direkt_ucus INTEGER DEFAULT 0,
     otel_yildiz INTEGER DEFAULT 3,
+    otel_yildizlar TEXT DEFAULT '[3,4]',
+    otel_butce INTEGER DEFAULT 2000,
+    otel_konum TEXT DEFAULT 'farketmez',
+    kahvalti_dahil INTEGER DEFAULT 0,
     min_gece INTEGER DEFAULT 2,
     max_gece INTEGER DEFAULT 7,
     tercih_tipleri TEXT DEFAULT '[]',
@@ -51,6 +55,8 @@ CREATE TABLE IF NOT EXISTS firsatlar (
     ucus_no TEXT,
     affiliate_link TEXT,
     gecerlilik TIMESTAMP,
+    aktarma INTEGER DEFAULT 0,
+    sure_dk INTEGER DEFAULT 0,
     aktif INTEGER DEFAULT 1,
     olusturulma TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -7,21 +7,153 @@ log = logging.getLogger("firsatlar")
 
 @bp.route("/api/firsatlar", methods=["GET"])
 def firsatlar_listele():
+    from services.bolge import YURTICI
+    from services.koordinat import ULKE_ADLARI, SEHIR_ADLARI
+
+    # Popüler turistik şehirler — sıralamada öncelik alır
+    POPULER = {
+        'CDG', 'PAR', 'LHR', 'LON', 'FCO', 'ROM', 'BCN', 'AMS', 'BER',
+        'PRG', 'BUD', 'VIE', 'ATH', 'LIS', 'MAD', 'MXP', 'DUB', 'CPH',
+        'BKK', 'DXB', 'SIN', 'HND', 'NRT', 'ICN', 'JFK', 'MLE',
+        'TBS', 'GYD', 'OTP', 'BEG', 'ZAG', 'SJJ',
+    }
+    MAKS_YURTICI = 5
+    MAKS_ULKE = 3
+
+    # Çıkış havalimanı filtresi (tercihlerden)
+    cikis_param = request.args.get("cikis", "")
+    cikis_filtre = set(cikis_param.split(",")) if cikis_param else None
+    direkt_ucus = request.args.get("direkt", "") == "1"
+    MIN_INDIRIM = 10  # %10'dan düşük indirimleri gösterme
+
+    MIN_TOPLAM = 30
+    MIN_YURTICI = 10
+    MIN_YURTDISI = 20
+
     conn = sqlite3.connect(DB)
     conn.row_factory = sqlite3.Row
+    # Her varış noktası için en ucuz fırsatları çek (rota çeşitliliği için)
     rows = conn.execute("""
-        SELECT *,
-            CASE WHEN olusturulma > datetime('now', '-24 hours') THEN 1 ELSE 0 END AS yeni
-        FROM firsatlar
-        WHERE (aktif = 1 OR aktif IS NULL)
-        AND (gecerlilik > datetime('now') OR gecerlilik IS NULL)
-        ORDER BY
-            CASE WHEN olusturulma > datetime('now', '-24 hours') THEN 0 ELSE 1 END,
-            indirim_orani DESC
-        LIMIT 50
+        SELECT f.*,
+            CASE WHEN f.olusturulma > datetime('now', '-24 hours') THEN 1 ELSE 0 END AS yeni
+        FROM firsatlar f
+        INNER JOIN (
+            SELECT varis, cikis, MIN(fiyat) as min_fiyat
+            FROM firsatlar
+            WHERE (aktif = 1 OR aktif IS NULL)
+            AND (ucus_tarihi >= date('now') OR ucus_tarihi IS NULL)
+            GROUP BY varis, cikis
+        ) g ON f.varis = g.varis AND f.cikis = g.cikis AND f.fiyat = g.min_fiyat
+        WHERE (f.aktif = 1 OR f.aktif IS NULL)
+        AND (f.ucus_tarihi >= date('now') OR f.ucus_tarihi IS NULL)
+        GROUP BY f.varis, f.cikis
+        ORDER BY f.fiyat ASC
     """).fetchall()
+
+    tumu = [dict(r) for r in rows]
+
+    # Yeterli fırsat yoksa pasif olanları da dahil et
+    if len(tumu) < MIN_TOPLAM * 3:
+        pasif_rows = conn.execute("""
+            SELECT *,
+                0 AS yeni
+            FROM firsatlar
+            WHERE aktif = 0
+            AND (ucus_tarihi >= date('now') OR ucus_tarihi IS NULL)
+            ORDER BY olusturulma DESC, fiyat ASC
+            LIMIT 500
+        """).fetchall()
+        gorulmus = {(d["varis"], d["cikis"]) for d in tumu}
+        for r in pasif_rows:
+            d = dict(r)
+            if (d["varis"], d["cikis"]) not in gorulmus:
+                tumu.append(d)
     conn.close()
-    return jsonify([dict(r) for r in rows])
+
+    # Minimum indirim filtresi
+    tumu = [d for d in tumu if (d.get("indirim_orani") or 0) >= MIN_INDIRIM]
+
+    # Çıkış filtresi uygula
+    if cikis_filtre:
+        tumu = [d for d in tumu if d.get("cikis") in cikis_filtre]
+
+    # Direkt uçuş filtresi
+    if direkt_ucus:
+        tumu = [d for d in tumu if (d.get("aktarma") or 0) == 0]
+
+    # Varış bazında grupla — her varış için en ucuz fırsatı ana, diğerlerini ek kalkış olarak göster
+    varis_gruplari = {}
+    for d in tumu:
+        varis = d.get("varis", "")
+        cikis = d.get("cikis", "")
+        fiyat = d.get("fiyat", 0)
+        if varis not in varis_gruplari:
+            varis_gruplari[varis] = {"ana": d, "diger": []}
+        else:
+            grup = varis_gruplari[varis]
+            mevcut_cikislar = {grup["ana"]["cikis"]} | {x["cikis"] for x in grup["diger"]}
+            if cikis in mevcut_cikislar:
+                continue
+            if fiyat < grup["ana"]["fiyat"]:
+                eski = grup["ana"]
+                grup["diger"].append({
+                    "cikis": eski["cikis"],
+                    "cikis_sehir": SEHIR_ADLARI.get(eski["cikis"], eski["cikis"]),
+                    "fiyat": eski["fiyat"],
+                })
+                grup["ana"] = d
+            else:
+                grup["diger"].append({
+                    "cikis": cikis,
+                    "cikis_sehir": SEHIR_ADLARI.get(cikis, cikis),
+                    "fiyat": fiyat,
+                })
+
+    # Grupları yurtiçi / yurtdışı olarak ayır
+    gruplar = sorted(varis_gruplari.values(), key=lambda g: -(g["ana"].get("indirim_orani") or 0))
+    yurtici_gruplar = [g for g in gruplar if g["ana"].get("varis", "") in YURTICI]
+    yurtdisi_gruplar = [g for g in gruplar if g["ana"].get("varis", "") not in YURTICI]
+
+    # Toplam fırsat az ise ülke limitlerini esnet
+    esnek = len(gruplar) < MIN_TOPLAM
+    maks_yurtici_limit = 999 if esnek else MAKS_YURTICI
+    maks_ulke_limit = 999 if esnek else MAKS_ULKE
+
+    def gruptan_firsat(g):
+        d = g["ana"]
+        d["cikis_sehir"] = SEHIR_ADLARI.get(d.get("cikis", ""), d.get("cikis", ""))
+        diger = sorted(g["diger"], key=lambda x: x["fiyat"])[:3]
+        d["diger_cikislar"] = diger
+        return d
+
+    # Yurtiçi: minimum MIN_YURTICI garanti
+    yurtici_sonuc = [gruptan_firsat(g) for g in yurtici_gruplar[:max(MIN_YURTICI, maks_yurtici_limit)]]
+
+    # Yurtdışı: ülke çeşitliliği filtresiyle
+    ulke_sayac = {}
+    yurtdisi_sonuc = []
+    for g in yurtdisi_gruplar:
+        d = g["ana"]
+        ulke = ULKE_ADLARI.get(d.get("varis", ""), d.get("varis", ""))
+        ulke_sayac[ulke] = ulke_sayac.get(ulke, 0) + 1
+        if ulke_sayac[ulke] > maks_ulke_limit:
+            continue
+        yurtdisi_sonuc.append(gruptan_firsat(g))
+        if len(yurtdisi_sonuc) >= 40:
+            break
+
+    # Birleştir
+    sonuc = yurtici_sonuc + yurtdisi_sonuc
+
+    # Sıralama: önce yeni, sonra direkt uçuşlar, sonra popüler, sonra indirim oranı
+    sonuc.sort(key=lambda d: (
+        0 if d.get("yeni") else 1,
+        0 if (d.get("aktarma") or 0) == 0 else 1,
+        0 if d.get("varis") in POPULER else 1,
+        -(d.get("indirim_orani") or 0),
+    ))
+
+    return jsonify(sonuc[:50])
 
 @bp.route("/api/firsatlar/<int:firsat_id>", methods=["GET"])
 def firsat_detay(firsat_id):

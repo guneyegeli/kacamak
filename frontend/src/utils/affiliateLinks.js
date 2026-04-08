@@ -33,6 +33,14 @@ const KIWI_SLUGS = {
   // Uzak
   BKK: 'bangkok-thailand', HND: 'tokyo-japan', ICN: 'seoul-south-korea',
   SIN: 'singapore-singapore', JFK: 'new-york-united-states',
+  // Balkanlar
+  OTP: 'bucharest-romania', SOF: 'sofia-bulgaria', BEG: 'belgrade-serbia',
+  SKP: 'skopje-north-macedonia', TIA: 'tirana-albania', ZAG: 'zagreb-croatia',
+  SJJ: 'sarajevo-bosnia-and-herzegovina',
+  // Uzak
+  NRT: 'tokyo-japan', KUL: 'kuala-lumpur-malaysia', MLE: 'male-maldives',
+  HRG: 'hurghada-egypt', SSH: 'sharm-el-sheikh-egypt',
+  HEL: 'helsinki-finland', ARN: 'stockholm-sweden', OSL: 'oslo-norway',
 }
 
 /**
@@ -59,7 +67,7 @@ export function generateAffiliateUrl(platform, origin, destination, departDate, 
     case 'aviasales': {
       // Format: /search/{ORIGIN}{DDMM}{DEST}{DDMM}1?marker=...
       const retPart = ret ? `${destination}${ret.dd}${ret.mm}` : destination
-      return `https://www.aviasales.com/search/${origin}${dep.dd}${dep.mm}${retPart}1?marker=${MARKER}`
+      return `https://www.aviasales.com/search/${origin}${dep.dd}${dep.mm}${retPart}1?marker=${MARKER}&locale=tr&currency=try&sorting=price`
     }
 
     case 'skyscanner': {
@@ -67,7 +75,7 @@ export function generateAffiliateUrl(platform, origin, destination, departDate, 
       const depCode = `${dep.yy}${dep.mm}${dep.dd}`
       const retCode = ret ? `${ret.yy}${ret.mm}${ret.dd}` : ''
       const retPath = retCode ? `/${retCode}` : ''
-      return `https://www.skyscanner.com.tr/transport/flights/${origin.toLowerCase()}/${destination.toLowerCase()}/${depCode}${retPath}/?adultsv2=1`
+      return `https://www.skyscanner.com.tr/transport/flights/${origin.toLowerCase()}/${destination.toLowerCase()}/${depCode}${retPath}/?adultsv2=1&currency=TRY`
     }
 
     case 'kiwi': {
@@ -75,7 +83,7 @@ export function generateAffiliateUrl(platform, origin, destination, departDate, 
       const oSlug = KIWI_SLUGS[origin] || origin.toLowerCase()
       const dSlug = KIWI_SLUGS[destination] || destination.toLowerCase()
       const retPath = ret ? `/${ret.full}` : ''
-      return `https://www.kiwi.com/en/search/tiles/${oSlug}/${dSlug}/${dep.full}${retPath}`
+      return `https://www.kiwi.com/tr/search/tiles/${oSlug}/${dSlug}/${dep.full}${retPath}?lang=tr&curr=TRY`
     }
 
     default:

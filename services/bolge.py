@@ -4,6 +4,9 @@
 YURTICI = {
     'AYT', 'DLM', 'ADB', 'ESB', 'TZX', 'GZT', 'ADA', 'BJV', 'NAV', 'VAN',
     'ERZ', 'SZF', 'DIY', 'IST', 'SAW', 'IZM', 'ANK', 'COV', 'GZP', 'TRS',
+    'KYA', 'MLX', 'EZS', 'ASR', 'NOP', 'ONQ', 'HTY', 'GNY', 'MQM', 'IGD',
+    'MSR', 'KSY', 'EDO', 'CKZ', 'TEQ', 'USQ', 'DNZ', 'ISE', 'AFY', 'BZI',
+    'YEI', 'RZV', 'VAS',
 }
 
 # Avrupa ülkeleri
@@ -11,7 +14,7 @@ AVRUPA = {
     'BCN', 'CDG', 'PAR', 'AMS', 'FCO', 'ROM', 'LHR', 'LON', 'PRG', 'BUD',
     'VIE', 'ATH', 'LIS', 'MUC', 'BER', 'WAW', 'ZAG', 'OTP', 'SOF', 'BEG',
     'SKP', 'TIA', 'MAD', 'MXP', 'DUB', 'CPH', 'OSL', 'ARN', 'HEL', 'ZRH',
-    'BRU', 'TGD', 'TIV', 'SKD',
+    'BRU', 'TGD', 'TIV', 'SKD', 'SJJ',
     # Rusya (Avrupa yakını)
     'MOW', 'LED', 'KRR', 'AER', 'MRV', 'MCX', 'KZN', 'RMO', 'SVX',
     'GRV', 'OGZ', 'CEK', 'UFA', 'PEE', 'GOJ', 'KGD', 'RTW',
@@ -24,7 +27,7 @@ AVRUPA = {
 YAKIN = {
     'TBS', 'GYD', 'BAK',  # Kafkasya
     'TLV', 'BEY',  # İsrail, Lübnan
-    'CAI', 'SSH',  # Mısır
+    'CAI', 'SSH', 'HRG',  # Mısır
     'CMN', 'TUN',  # Fas, Tunus
     'JED', 'MED', 'DXB', 'DOH',  # Orta Doğu
     'GNJ',  # Azerbaycan
