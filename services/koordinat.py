@@ -70,6 +70,7 @@ SEHIR_KOORDINATLARI = {
     "AFY": {"isim": "Afyon", "lat": 38.7507, "lon": 30.6011},
     "BZI": {"isim": "Balikesir", "lat": 39.6192, "lon": 27.9260},
     "DLM": {"isim": "Dalaman", "lat": 36.7711, "lon": 28.7925},
+    "OGU": {"isim": "Ordu-Giresun", "lat": 40.9660, "lon": 38.0810},
     "NAV": {"isim": "Nevsehir", "lat": 38.6252, "lon": 34.7249},
     # Yeni varış destinasyonları — Balkanlar
     "OTP": {"isim": "Bucharest", "lat": 44.4268, "lon": 26.1025},
@@ -84,6 +85,25 @@ SEHIR_KOORDINATLARI = {
     "KUL": {"isim": "Kuala Lumpur", "lat": 3.1390, "lon": 101.6869},
     "MLE": {"isim": "Male", "lat": 4.1755, "lon": 73.5093},
     "HRG": {"isim": "Hurghada", "lat": 27.1783, "lon": 33.7990},
+    # Metropolitan / şehir kodları (havalimanı değil, API'den gelebilir)
+    "YTO": {"isim": "Toronto", "lat": 43.6532, "lon": -79.3832},
+    "YMQ": {"isim": "Montreal", "lat": 45.5017, "lon": -73.5673},
+    "YVR": {"isim": "Vancouver", "lat": 49.2827, "lon": -123.1207},
+    "BUE": {"isim": "Buenos Aires", "lat": -34.6037, "lon": -58.3816},
+    "BJS": {"isim": "Beijing", "lat": 39.9042, "lon": 116.4074},
+    "SHA": {"isim": "Shanghai", "lat": 31.2304, "lon": 121.4737},
+    "OSA": {"isim": "Osaka", "lat": 34.6937, "lon": 135.5023},
+    "TYO": {"isim": "Tokyo", "lat": 35.6762, "lon": 139.6503},
+    "LON": {"isim": "London", "lat": 51.5074, "lon": -0.1278},
+    "PAR": {"isim": "Paris", "lat": 48.8566, "lon": 2.3522},
+    "ROM": {"isim": "Rome", "lat": 41.9028, "lon": 12.4964},
+    "MIL": {"isim": "Milan", "lat": 45.4642, "lon": 9.1900},
+    "NYC": {"isim": "New York", "lat": 40.7128, "lon": -74.0060},
+    "MOW": {"isim": "Moscow", "lat": 55.7558, "lon": 37.6173},
+    "SEL": {"isim": "Seoul", "lat": 37.5665, "lon": 126.9780},
+    "RIO": {"isim": "Rio de Janeiro", "lat": -22.9068, "lon": -43.1729},
+    "SAO": {"isim": "Sao Paulo", "lat": -23.5505, "lon": -46.6333},
+    "CHI": {"isim": "Chicago", "lat": 41.8781, "lon": -87.6298},
 }
 
 
@@ -130,7 +150,7 @@ SEHIR_ADLARI = {
     "HEL": "Helsinki", "ZRH": "Zürih", "BRU": "Brüksel", "WAW": "Varşova",
     "BEG": "Belgrad", "TGD": "Podgorica", "TIV": "Tivat", "SKD": "Semerkand",
     # Türkiye — ek
-    "YEI": "Bursa", "RZV": "Rize-Artvin", "VAS": "Sivas",
+    "YEI": "Bursa", "RZV": "Rize-Artvin", "VAS": "Sivas", "OGU": "Ordu-Giresun",
     # Avrupa — ek
     "BTS": "Bratislava", "PRN": "Priştine", "NAP": "Napoli",
     "MRS": "Marsilya", "RTM": "Rotterdam", "POZ": "Poznan",
@@ -172,6 +192,21 @@ SEHIR_ADLARI = {
     # Balkanlar
     "OTP": "Bükreş", "SOF": "Sofya", "SKP": "Üsküp",
     "TIA": "Tiran", "ZAG": "Zagreb", "SJJ": "Saraybosna",
+    # API farklı kodla dönen şehirler (metropolitan / şehir kodları)
+    "NYC": "New York", "SEL": "Seul", "TYO": "Tokyo",
+    "BJS": "Pekin", "SHA": "Şangay", "RIO": "Rio de Janeiro",
+    "SAO": "Sao Paulo", "BUE": "Buenos Aires", "MIL": "Milano",
+    "CHI": "Chicago",
+    "YTO": "Toronto", "YMQ": "Montreal", "YVR": "Vancouver",
+    "OSA": "Osaka", "LON": "Londra", "PAR": "Paris", "ROM": "Roma",
+    "MOW": "Moskova",
+    # Türkiye — eksik
+    "OGU": "Ordu", "ERC": "Erzincan", "NAJ": "Nakhchivan",
+    "TJK": "Tokat", "UGC": "Uşak", "BUS": "Batum",
+    # Yurtdışı — eksik
+    "CPT": "Cape Town", "NBO": "Nairobi", "MRU": "Mauritius",
+    "SEZ": "Seyşeller", "GVA": "Cenevre", "JTR": "Santorini",
+    "BOG": "Bogota", "LIM": "Lima", "SCL": "Santiago", "CAN": "Guangzhou",
 }
 
 
@@ -280,6 +315,18 @@ ULKE_ADLARI = {
     "MRU": "Mauritius",
     "SEZ": "Seyşeller",
     "MLE": "Maldivler",
+    # API farklı kodla dönen şehirler
+    "NYC": "ABD", "SEL": "Güney Kore", "TYO": "Japonya",
+    "BJS": "Çin", "SHA": "Çin", "RIO": "Brezilya",
+    "SAO": "Brezilya", "BUE": "Arjantin", "MIL": "İtalya",
+    "CHI": "ABD",
+    "YTO": "Kanada", "YMQ": "Kanada", "YVR": "Kanada",
+    "OSA": "Japonya", "LON": "İngiltere", "PAR": "Fransa",
+    "ROM": "İtalya", "MOW": "Rusya",
+    # Eksikler
+    "GVA": "İsviçre", "JTR": "Yunanistan",
+    "BOG": "Kolombiya", "LIM": "Peru", "SCL": "Şili", "CAN": "Çin",
+    "BUS": "Gürcistan",
 }
 
 

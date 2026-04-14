@@ -37,9 +37,9 @@ export default function App() {
   return (
     <div className="app">
       {bildirim && (
-        <div style={{position:'fixed',top:12,left:12,right:12,zIndex:999,background:'rgba(27,31,59,0.95)',backdropFilter:'blur(16px)',border:'1px solid var(--accent)',borderRadius:'var(--radius)',padding:'16px 18px',animation:'slideDown 0.3s ease',boxShadow:'0 8px 32px rgba(0,0,0,0.4)'}}>
-          <div style={{fontSize:14,fontWeight:600,marginBottom:3,color:'var(--accent)'}}>{bildirim.baslik}</div>
-          <div style={{fontSize:13,color:'var(--text2)'}}>{bildirim.mesaj}</div>
+        <div style={{position:'fixed',top:12,left:12,right:12,zIndex:999,background:'var(--bg-secondary)',backdropFilter:'blur(16px)',border:'1px solid var(--accent-orange)',borderRadius:'var(--radius)',padding:'16px 18px',animation:'slideDown 0.3s ease',boxShadow:'var(--shadow-dropdown)'}}>
+          <div style={{fontSize:14,fontWeight:600,marginBottom:3,color:'var(--accent-orange)'}}>{bildirim.baslik}</div>
+          <div style={{fontSize:13,color:'var(--text-secondary)'}}>{bildirim.mesaj}</div>
         </div>
       )}
       {sayfa === 'ana' && <AnaSayfa onFirsat={(f) => sayfaGoster('detay', f)} onTercih={() => sayfaGoster('tercihler')} />}

@@ -47,3 +47,11 @@ log.info("=" * 50)
 log.info("SONUÇ: %d rota tarandi, %d fiyat kaydedildi, %d firsat bulundu",
          sonuc['rota'], sonuc['fiyat_kaydedilen'], sonuc['firsat'])
 log.info("=" * 50)
+
+# Otel verisi olmayan fırsatları güncelle
+try:
+    from services.otel_eslestirici import mevcut_firsatlari_guncelle
+    otel_guncellenen = mevcut_firsatlari_guncelle(limit=30)
+    log.info("Otel güncelleme: %d fırsat işlendi", otel_guncellenen)
+except Exception as e:
+    log.warning("Otel güncelleme hatası: %s", e)

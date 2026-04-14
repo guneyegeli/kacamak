@@ -7,7 +7,6 @@ log = logging.getLogger("firsatlar")
 
 @bp.route("/api/firsatlar", methods=["GET"])
 def firsatlar_listele():
-    from services.bolge import YURTICI
     from services.koordinat import ULKE_ADLARI, SEHIR_ADLARI
 
     # Popüler turistik şehirler — sıralamada öncelik alır
@@ -20,10 +19,35 @@ def firsatlar_listele():
     MAKS_YURTICI = 5
     MAKS_ULKE = 3
 
-    # Çıkış havalimanı filtresi (tercihlerden)
+    from datetime import datetime, timedelta
+    from services.bolge import YURTICI as YURTICI_SET, AVRUPA, YAKIN, UZAK_DESTINASYONLAR
+
+    # Filtre parametreleri
     cikis_param = request.args.get("cikis", "")
     cikis_filtre = set(cikis_param.split(",")) if cikis_param else None
     direkt_ucus = request.args.get("direkt", "") == "1"
+    gidis_tarihi = request.args.get("gidis_tarihi", "")
+    donus_tarihi = request.args.get("donus_tarihi", "")
+    varis_param = request.args.get("varis", "")
+    varis_filtre = set(varis_param.split(",")) if varis_param else None
+    varis_bolge_param = request.args.get("varis_bolge", "")
+    varis_bolge_filtre = set(varis_bolge_param.split(",")) if varis_bolge_param else None
+    varis_sehir_param = request.args.get("varis_sehir", "").strip().lower()
+    min_fiyat = request.args.get("min_fiyat", type=int)
+    max_fiyat = request.args.get("max_fiyat", type=int)
+    geceler_param = request.args.get("geceler", "")
+    geceler_filtre = geceler_param.split(",") if geceler_param else None
+    tip_param = request.args.get("tip", "")  # yurtici / yurtdisi
+    siralama_param = request.args.get("siralama", "varsayilan")
+
+    # Bölge → IATA kodları mapping
+    BOLGE_MAP = {
+        'avrupa': AVRUPA,
+        'asya': {'BKK','HKT','KUL','SIN','MNL','DPS','HND','NRT','ICN','PEK','PVG','HKG','DEL','BOM','CMB','TAS','BSZ','NQZ','ALA','MSQ','CIT','OSS','SKD'},
+        'ortadogu': YAKIN,
+        'afrika': {'CAI','SSH','HRG','CMN','RAK','TUN','CPT','NBO','MRU','SEZ'},
+        'amerika': {'JFK','LAX','MIA','SFO','ORD','ATL','YYZ','MEX','CUN','GRU','GIG','EZE'},
+    }
     MIN_INDIRIM = 10  # %10'dan düşük indirimleri gösterme
 
     MIN_TOPLAM = 30
@@ -33,50 +57,128 @@ def firsatlar_listele():
     conn = sqlite3.connect(DB)
     try:
         conn.row_factory = sqlite3.Row
+        # Tüm aktif uçuşları çek — filtreleme ve gruplama Python'da yapılır
         rows = conn.execute("""
-            SELECT f.*,
-                CASE WHEN f.olusturulma > datetime('now', '-24 hours') THEN 1 ELSE 0 END AS yeni
-            FROM firsatlar f
-            INNER JOIN (
-                SELECT varis, cikis, MIN(fiyat) as min_fiyat
-                FROM firsatlar
-                WHERE (aktif = 1 OR aktif IS NULL)
-                AND (ucus_tarihi >= date('now') OR ucus_tarihi IS NULL)
-                GROUP BY varis, cikis
-            ) g ON f.varis = g.varis AND f.cikis = g.cikis AND f.fiyat = g.min_fiyat
-            WHERE (f.aktif = 1 OR f.aktif IS NULL)
-            AND (f.ucus_tarihi >= date('now') OR f.ucus_tarihi IS NULL)
-            GROUP BY f.varis, f.cikis
-            ORDER BY f.fiyat ASC
+            SELECT *,
+                CASE WHEN olusturulma > datetime('now', '-24 hours') THEN 1 ELSE 0 END AS yeni
+            FROM firsatlar
+            WHERE (aktif = 1 OR aktif IS NULL)
+            AND (ucus_tarihi >= date('now') OR ucus_tarihi IS NULL)
+            ORDER BY fiyat ASC
         """).fetchall()
-
         tumu = [dict(r) for r in rows]
-
-        if len(tumu) < MIN_TOPLAM * 3:
-            pasif_rows = conn.execute("""
-                SELECT *, 0 AS yeni FROM firsatlar
-                WHERE aktif = 0
-                AND (ucus_tarihi >= date('now') OR ucus_tarihi IS NULL)
-                ORDER BY olusturulma DESC, fiyat ASC LIMIT 500
-            """).fetchall()
-            gorulmus = {(d["varis"], d["cikis"]) for d in tumu}
-            for r in pasif_rows:
-                d = dict(r)
-                if (d["varis"], d["cikis"]) not in gorulmus:
-                    tumu.append(d)
     finally:
         conn.close()
+
+    # === TÜM FİLTRELER — gruplamadan ÖNCE uygulanır ===
 
     # Minimum indirim filtresi
     tumu = [d for d in tumu if (d.get("indirim_orani") or 0) >= MIN_INDIRIM]
 
-    # Çıkış filtresi uygula
+    # Çıkış filtresi
     if cikis_filtre:
         tumu = [d for d in tumu if d.get("cikis") in cikis_filtre]
 
     # Direkt uçuş filtresi
     if direkt_ucus:
         tumu = [d for d in tumu if (d.get("aktarma") or 0) == 0]
+
+    # Yurtiçi / yurtdışı tip filtresi
+    if tip_param == "yurtici":
+        tumu = [d for d in tumu if d.get("varis") in YURTICI_SET]
+    elif tip_param == "yurtdisi":
+        tumu = [d for d in tumu if d.get("varis") not in YURTICI_SET]
+
+    # Varış havalimanı filtresi
+    if varis_filtre:
+        tumu = [d for d in tumu if d.get("varis") in varis_filtre]
+
+    # Varış bölge filtresi
+    if varis_bolge_filtre:
+        izinli_kodlar = set()
+        for bolge in varis_bolge_filtre:
+            izinli_kodlar |= BOLGE_MAP.get(bolge, set())
+        tumu = [d for d in tumu if d.get("varis") in izinli_kodlar]
+
+    # Varış şehir arama filtresi
+    if varis_sehir_param:
+        from services.koordinat import SEHIR_ADLARI as SEHIR_DB
+        tumu = [d for d in tumu if varis_sehir_param in (
+            (d.get("varis_sehir") or SEHIR_DB.get(d.get("varis",""), d.get("varis",""))).lower()
+        )]
+
+    # Fiyat aralığı filtresi
+    if min_fiyat is not None:
+        tumu = [d for d in tumu if (d.get("fiyat") or 0) >= min_fiyat]
+    if max_fiyat is not None:
+        tumu = [d for d in tumu if (d.get("fiyat") or 0) <= max_fiyat]
+
+    # Kesin tarih filtresi (±1 gün tolerans)
+    if gidis_tarihi:
+        try:
+            gidis_dt = datetime.strptime(gidis_tarihi, "%Y-%m-%d")
+            gidis_min = (gidis_dt - timedelta(days=1)).strftime("%Y-%m-%d")
+            gidis_max = (gidis_dt + timedelta(days=1)).strftime("%Y-%m-%d")
+            tumu = [d for d in tumu if d.get("ucus_tarihi") and gidis_min <= d["ucus_tarihi"] <= gidis_max]
+        except ValueError:
+            pass
+    if donus_tarihi:
+        try:
+            donus_dt = datetime.strptime(donus_tarihi, "%Y-%m-%d")
+            donus_min = (donus_dt - timedelta(days=1)).strftime("%Y-%m-%d")
+            donus_max = (donus_dt + timedelta(days=1)).strftime("%Y-%m-%d")
+            tumu = [d for d in tumu if d.get("donus_tarihi") and donus_min <= d["donus_tarihi"] <= donus_max]
+        except ValueError:
+            pass
+
+    # Gece sayısı hesaplama yardımcısı
+    def _gece_hesapla(d):
+        ut = d.get("ucus_tarihi")
+        dt = d.get("donus_tarihi")
+        if not ut or not dt:
+            return None
+        try:
+            return (datetime.strptime(dt, "%Y-%m-%d") - datetime.strptime(ut, "%Y-%m-%d")).days
+        except ValueError:
+            return None
+
+    # Gece sayısı filtresi
+    if geceler_filtre:
+        def _gece_uygun(gece):
+            if gece is None:
+                return False
+            for aralik in geceler_filtre:
+                if "-" in aralik:
+                    parcalar = aralik.split("-")
+                    try:
+                        alt = int(parcalar[0])
+                        ust = int(parcalar[1])
+                        if alt <= gece <= ust:
+                            return True
+                    except (ValueError, IndexError):
+                        pass
+                elif aralik.endswith("+"):
+                    try:
+                        alt = int(aralik[:-1])
+                        if gece >= alt:
+                            return True
+                    except ValueError:
+                        pass
+            return False
+
+        tumu = [d for d in tumu if _gece_uygun(_gece_hesapla(d))]
+    else:
+        # Varsayılan: gece filtresi seçilmemişse max 10 gece göster
+        def _varsayilan_gece_uygun(d):
+            gece = _gece_hesapla(d)
+            if gece is None:
+                return True
+            if d.get("varis") in UZAK_DESTINASYONLAR:
+                return True  # Uzak rotalar gece limitinden muaf
+            return gece <= 10
+        tumu = [d for d in tumu if _varsayilan_gece_uygun(d)]
+
+    # === GRUPLAMA — filtrelerden SONRA yapılır ===
 
     # Varış bazında grupla — her varış için en ucuz fırsatı ana, diğerlerini ek kalkış olarak göster
     varis_gruplari = {}
@@ -108,8 +210,8 @@ def firsatlar_listele():
 
     # Grupları yurtiçi / yurtdışı olarak ayır
     gruplar = sorted(varis_gruplari.values(), key=lambda g: -(g["ana"].get("indirim_orani") or 0))
-    yurtici_gruplar = [g for g in gruplar if g["ana"].get("varis", "") in YURTICI]
-    yurtdisi_gruplar = [g for g in gruplar if g["ana"].get("varis", "") not in YURTICI]
+    yurtici_gruplar = [g for g in gruplar if g["ana"].get("varis", "") in YURTICI_SET]
+    yurtdisi_gruplar = [g for g in gruplar if g["ana"].get("varis", "") not in YURTICI_SET]
 
     # Toplam fırsat az ise ülke limitlerini esnet
     esnek = len(gruplar) < MIN_TOPLAM
@@ -142,13 +244,27 @@ def firsatlar_listele():
     # Birleştir
     sonuc = yurtici_sonuc + yurtdisi_sonuc
 
-    # Sıralama: önce yeni, sonra direkt uçuşlar, sonra popüler, sonra indirim oranı
-    sonuc.sort(key=lambda d: (
-        0 if d.get("yeni") else 1,
-        0 if (d.get("aktarma") or 0) == 0 else 1,
-        0 if d.get("varis") in POPULER else 1,
-        -(d.get("indirim_orani") or 0),
-    ))
+    # Sıralama
+    if siralama_param == "fiyat_artan":
+        sonuc.sort(key=lambda d: d.get("fiyat") or 999999)
+    elif siralama_param == "fiyat_azalan":
+        sonuc.sort(key=lambda d: -(d.get("fiyat") or 0))
+    elif siralama_param == "yeni":
+        sonuc.sort(key=lambda d: d.get("olusturulma") or "", reverse=True)
+    elif siralama_param == "yakin_tarih":
+        sonuc.sort(key=lambda d: d.get("ucus_tarihi") or "9999-99-99")
+    elif siralama_param == "uzak_tarih":
+        sonuc.sort(key=lambda d: d.get("ucus_tarihi") or "", reverse=True)
+    elif siralama_param == "indirim":
+        sonuc.sort(key=lambda d: -(d.get("indirim_orani") or 0))
+    else:
+        # Varsayılan: önce yeni, sonra direkt, sonra popüler, sonra indirim
+        sonuc.sort(key=lambda d: (
+            0 if d.get("yeni") else 1,
+            0 if (d.get("aktarma") or 0) == 0 else 1,
+            0 if d.get("varis") in POPULER else 1,
+            -(d.get("indirim_orani") or 0),
+        ))
 
     return jsonify(sonuc[:50])
 

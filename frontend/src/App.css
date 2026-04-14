@@ -1,19 +1,39 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --bg: #1B1F3B;
-  --bg2: rgba(255,255,255,0.08);
-  --bg3: rgba(255,255,255,0.06);
-  --accent: #FF6B35;
-  --accent2: #F7C948;
-  --success: #2EC4B6;
-  --text: #FFFFFF;
-  --text2: rgba(255,255,255,0.5);
-  --text3: rgba(255,255,255,0.4);
-  --border: rgba(255,255,255,0.1);
+  --bg-primary: #0D1B2A;
+  --bg-secondary: #1B2B4B;
+  --bg-tertiary: #0F2235;
+  --bg-hover: #243B55;
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255,255,255,0.75);
+  --text-muted: rgba(255,255,255,0.45);
+  --accent-orange: #FF5C1A;
+  --accent-green: #00C896;
+  --accent-blue: #0066FF;
+  --accent-amber: #F59E0B;
+  --accent-purple: #7C3AED;
+  --accent-error: #FF4444;
+  --border-color: rgba(255,255,255,0.08);
+  --border-light: rgba(255,255,255,0.15);
+  --shadow-card: 0 4px 16px rgba(0,0,0,0.2);
+  --shadow-dropdown: 0 8px 32px rgba(0,0,0,0.4);
   --radius: 16px;
   --font: system-ui, -apple-system, sans-serif;
   --max-w: 430px;
+  /* Legacy aliases — used by existing var() refs */
+  --bg: var(--bg-primary);
+  --bg2: var(--bg-secondary);
+  --bg3: var(--bg-tertiary);
+  --accent: var(--accent-orange);
+  --accent2: var(--accent-blue);
+  --success: var(--accent-green);
+  --amber: var(--accent-amber);
+  --purple: var(--accent-purple);
+  --text: var(--text-primary);
+  --text2: var(--text-secondary);
+  --text3: var(--text-muted);
+  --border: var(--border-color);
 }
 
 @media (min-width: 768px) {
@@ -69,7 +89,7 @@ html, body {
   left: 0;
   right: 0;
   padding: 12px 40px 16px;
-  background: linear-gradient(transparent, rgba(27,31,59,0.97) 30%);
+  background: linear-gradient(transparent, rgba(15,34,53,0.97) 30%);
   backdrop-filter: blur(12px);
   z-index: 50;
 }
@@ -117,8 +137,8 @@ html, body {
   to { opacity: 1; }
 }
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 6px rgba(255,107,53,0.4); }
-  50% { box-shadow: 0 0 16px rgba(255,107,53,0.8); }
+  0%, 100% { box-shadow: 0 0 6px rgba(255,92,26,0.4); }
+  50% { box-shadow: 0 0 16px rgba(255,92,26,0.8); }
 }
 .yeni-badge {
   animation: pulse-glow 2s ease-in-out infinite;

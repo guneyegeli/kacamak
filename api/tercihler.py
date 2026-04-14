@@ -43,7 +43,16 @@ def tercih_getir(kullanici_id):
             "min_gece": r["min_gece"],
             "max_gece": r["max_gece"],
             "tercih_tipleri": json.loads(r["tercih_tipleri"] or "[]"),
-            "paket": dict(paket) if paket else {}
+            "paket": dict(paket) if paket else {},
+            "bildirim_aktif": bool(r["bildirim_aktif"]) if r["bildirim_aktif"] is not None else True,
+            "min_indirim_esigi": r["min_indirim_esigi"] or 30,
+            "bildirim_sikligi": r["bildirim_sikligi"] or "anlik",
+            "yurtici_bildirim": bool(r["yurtici_bildirim"]) if r["yurtici_bildirim"] is not None else True,
+            "yurtdisi_bildirim": bool(r["yurtdisi_bildirim"]) if r["yurtdisi_bildirim"] is not None else True,
+            "sessiz_baslangic": r["sessiz_baslangic"] or "23:00",
+            "sessiz_bitis": r["sessiz_bitis"] or "07:00",
+            "gidis_tarihi": r["gidis_tarihi"] if r["gidis_tarihi"] else None,
+            "donus_tarihi": r["donus_tarihi"] if r["donus_tarihi"] else None,
         }
     })
 

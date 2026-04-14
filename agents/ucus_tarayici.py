@@ -4,25 +4,29 @@ import logging
 import time
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-from services.travelpayouts import ucuz_ucuslar_getir, aylik_matris_getir, alternatif_tarihler_getir
+from services.travelpayouts import ucuz_ucuslar_getir, aylik_matris_getir, alternatif_tarihler_getir, hedef_ucuslar_getir
 from services.eslestirici import firsat_icin_kullanicilar_bul
 from services.firebase_service import bildirim_gonder
 from agents.itinerary_uretici import itinerary_olustur
-from services.bolge import bolge_bul, maks_gece
+from services.bolge import bolge_bul, maks_gece, varsayilan_gece, YURTICI, UZAK_DESTINASYONLAR
 from services.koordinat import sehir_adi_getir
 
 load_dotenv()
 DB = os.getenv("DATABASE_PATH", "data/kacamak.db")
 INDIRIM_ESIGI = 0.80  # %20 indirim eşiği (fiyat < normal * 0.80)
+INDIRIM_ESIGI_UZAK = 0.85  # Uzak rotalar için %15 indirim eşiği (zaten pahalı)
 ILK_TARAMA_EN_UCUZ = 10  # Geçmiş veri yoksa en ucuz N uçuşu kaydet
 API_BEKLEME = 2  # Havalimanları arası bekleme süresi (saniye) — rate limit koruması
+
+# Sadece büyük hub'lardan uzak rota tarası yap (küçük havalimanlarından direkt uçuş yok)
+UZAK_HUBLAR = {'IST', 'SAW', 'ADB', 'AYT', 'ESB'}
 
 # Türkiye'nin uluslararası uçuş yapan tüm havalimanları
 HAVAALANLARI = [
     # Büyük hub'lar
     "IST", "SAW", "ADB", "AYT", "ESB",
     # Karadeniz
-    "TZX", "SZF",
+    "TZX", "SZF", "OGU",
     # Güneydoğu / Doğu
     "GZT", "ADA", "DIY", "VAN", "ERZ", "MLX", "EZS", "HTY", "GNY", "MQM",
     "IGD", "MSR", "KSY",
@@ -38,8 +42,71 @@ HAVAALANLARI = [
 
 log = logging.getLogger("ucus_tarayici")
 
+# Travelpayouts şehir verileri cache'i (tarama boyunca bir kez yüklenir)
+_sehir_cache = None
+
+
+def _travelpayouts_sehir_adi(iata_kodu: str) -> str | None:
+    """Travelpayouts cities API'den şehir adı çeker. Bulamazsa None döndürür."""
+    global _sehir_cache
+    if _sehir_cache is None:
+        try:
+            import requests
+            r = requests.get(
+                "https://api.travelpayouts.com/data/en/cities.json",
+                timeout=10
+            )
+            if r.ok:
+                _sehir_cache = {c["code"]: c.get("name", "") for c in r.json() if c.get("code")}
+            else:
+                _sehir_cache = {}
+        except Exception as e:
+            log.warning("Travelpayouts cities API hatası: %s", e)
+            _sehir_cache = {}
+    return _sehir_cache.get(iata_kodu) or None
+
+
 # Tarama istatistikleri
 istatistik = {"rota": 0, "fiyat_kaydedilen": 0, "firsat": 0}
+
+
+def _bildirim_gonderilebilir_mi(kullanici: dict, firsat: dict) -> bool:
+    """Kullanıcının bildirim tercihlerine göre gönderilip gönderilemeyeceğini kontrol eder."""
+    # Bildirim kapalı
+    if not kullanici.get("bildirim_aktif", 1):
+        return False
+
+    # Minimum indirim eşiği
+    esik = kullanici.get("min_indirim_esigi") or 30
+    if (firsat.get("indirim_orani") or 0) < esik:
+        return False
+
+    # Yurtiçi / yurtdışı filtresi
+    varis = firsat.get("varis", "")
+    yurtici_mi = varis in YURTICI
+    if yurtici_mi and not kullanici.get("yurtici_bildirim", 1):
+        return False
+    if not yurtici_mi and not kullanici.get("yurtdisi_bildirim", 1):
+        return False
+
+    # Sessiz saatler kontrolü
+    sessiz_bas = kullanici.get("sessiz_baslangic") or "23:00"
+    sessiz_bit = kullanici.get("sessiz_bitis") or "07:00"
+    try:
+        simdi = datetime.now().strftime("%H:%M")
+        if sessiz_bas > sessiz_bit:
+            # Gece yarısını geçen aralık (ör. 23:00-07:00)
+            if simdi >= sessiz_bas or simdi < sessiz_bit:
+                log.info("    ⏸ Sessiz saatler içinde (%s-%s), bildirim atlanıyor", sessiz_bas, sessiz_bit)
+                return False
+        else:
+            if sessiz_bas <= simdi < sessiz_bit:
+                log.info("    ⏸ Sessiz saatler içinde (%s-%s), bildirim atlanıyor", sessiz_bas, sessiz_bit)
+                return False
+    except (ValueError, TypeError):
+        pass
+
+    return True
 
 
 def cron_tarama():
@@ -63,6 +130,8 @@ def cron_tarama():
             itinerary = itinerary_olustur(firsat)
             firsat_itinerary_kaydet(firsat["id"], itinerary)
             for k in kullanicilar:
+                if not _bildirim_gonderilebilir_mi(k, firsat):
+                    continue
                 indirim = firsat["indirim_orani"]
                 sehir = firsat.get("varis_sehir", firsat["varis"])
                 fiyat = f"{firsat['fiyat']:,}₺"
@@ -73,6 +142,45 @@ def cron_tarama():
                     {"firsat_id": str(firsat["id"])}
                 )
                 bildirim_kaydet(k["id"], firsat["id"])
+
+    # Uzak destinasyonlar — sadece büyük hub'lardan hedefli tarama
+    log.info("=" * 60)
+    log.info("UZAK ROTA TARAMASI — %d destinasyon, %d hub", len(UZAK_DESTINASYONLAR), len(UZAK_HUBLAR))
+    log.info("=" * 60)
+    for origin in UZAK_HUBLAR:
+        for dest in UZAK_DESTINASYONLAR:
+            time.sleep(1)  # Rate limit
+            try:
+                sonuc = hedef_ucuslar_getir(origin, dest, limit=3)
+                for varis, veri in sonuc.items():
+                    istatistik["rota"] += 1
+                    fiyat = veri.get("price", 0)
+                    if fiyat <= 0:
+                        continue
+                    normal = tarihsel_ortalama(origin, varis)
+                    if not normal:
+                        # Uzak rota, geçmiş veri yok — mevcut fiyatı %20 artırarak normal fiyat tahmin et
+                        normal = int(fiyat * 1.2)
+                    indirim = int((1 - fiyat / normal) * 100)
+                    if indirim > 0:
+                        f = _firsat_olustur_ve_kaydet(origin, varis, veri, fiyat, normal, max(indirim, 1))
+                        if f:
+                            firsatlar_list = [f]
+                            for firsat in firsatlar_list:
+                                kullanicilar = firsat_icin_kullanicilar_bul(firsat)
+                                for k in kullanicilar:
+                                    if not _bildirim_gonderilebilir_mi(k, firsat):
+                                        continue
+                                    sehir = firsat.get("varis_sehir", firsat["varis"])
+                                    bildirim_gonder(
+                                        k["fcm_token"],
+                                        f"{sehir} {firsat['fiyat']:,}₺!",
+                                        f"%{indirim} ucuz! Komple program hazır.",
+                                        {"firsat_id": str(firsat["id"])}
+                                    )
+                                    bildirim_kaydet(k["id"], firsat["id"])
+            except Exception as e:
+                log.warning("    Uzak rota hatası [%s→%s]: %s", origin, dest, e)
 
     log.info("=" * 60)
     log.info("TARAMA TAMAMLANDI — %d rota tarandi, %d fiyat kaydedildi, %d firsat bulundu",
@@ -116,14 +224,16 @@ def havaalani_tara(origin: str) -> list:
 
         tum_rotalar.append({"varis": varis, "veri": veri, "fiyat": fiyat, "normal": normal, "indirim": indirim})
 
-        if fiyat < normal * INDIRIM_ESIGI:
-            log.info("    ✓ [%s→%s] FIRSAT! %%%d indirim (eşik: %%%d)", origin, varis, indirim, int((1 - INDIRIM_ESIGI) * 100))
+        # Uzak rotalar için daha düşük indirim eşiği
+        esik = INDIRIM_ESIGI_UZAK if varis in set(UZAK_DESTINASYONLAR) else INDIRIM_ESIGI
+        if fiyat < normal * esik:
+            log.info("    ✓ [%s→%s] FIRSAT! %%%d indirim (eşik: %%%d)", origin, varis, indirim, int((1 - esik) * 100))
             f = _firsat_olustur_ve_kaydet(origin, varis, veri, fiyat, normal, indirim)
             if f:
                 firsatlar.append(f)
         else:
             if indirim > 0:
-                log.info("    ✗ [%s→%s] Eşik altı — %%%d < %%%d gerekli", origin, varis, indirim, int((1 - INDIRIM_ESIGI) * 100))
+                log.info("    ✗ [%s→%s] Eşik altı — %%%d < %%%d gerekli", origin, varis, indirim, int((1 - esik) * 100))
             else:
                 log.info("    ✗ [%s→%s] İndirim yok (fiyat ortalama üstü)", origin, varis)
 
@@ -215,10 +325,13 @@ def _firsat_olustur_ve_kaydet(origin, varis, veri, fiyat, normal, indirim):
         except ValueError:
             pass
 
-    if not donus_tarihi and ucus_tarihi:
+    # Dönüş tarihi yoksa veya gidişle aynı günse, varsayılan süre ekle
+    donus_eksik = not donus_tarihi or donus_tarihi == ucus_tarihi
+    if donus_eksik and ucus_tarihi:
         try:
             gidis = datetime.strptime(ucus_tarihi, "%Y-%m-%d")
-            donus_tarihi = (gidis + timedelta(days=4)).strftime("%Y-%m-%d")
+            varsayilan_gun = varsayilan_gece(varis)
+            donus_tarihi = (gidis + timedelta(days=varsayilan_gun)).strftime("%Y-%m-%d")
         except ValueError:
             donus_tarihi = ""
 
@@ -232,6 +345,16 @@ def _firsat_olustur_ve_kaydet(origin, varis, veri, fiyat, normal, indirim):
         return None
 
     varis_sehir = sehir_adi_getir(varis)
+
+    # Bilinmeyen IATA kodu kontrolü — mapping'de yoksa API'den dene, o da yoksa atla
+    if varis_sehir == varis:
+        api_isim = _travelpayouts_sehir_adi(varis)
+        if api_isim:
+            varis_sehir = api_isim
+            log.info("    ℹ [%s] Mapping'de yok, API'den bulundu: %s", varis, api_isim)
+        else:
+            log.warning("    ✗ Bilinmeyen IATA: %s (mapping ve API'de yok), atlanıyor", varis)
+            return None
 
     f = firsat_kaydet({
         "cikis": origin, "varis": varis, "varis_sehir": varis_sehir,

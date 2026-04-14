@@ -38,6 +38,35 @@ def ucuz_ucuslar_getir(origin: str, limit: int = 30) -> dict:
         return sonuc
     return {}
 
+def hedef_ucuslar_getir(origin: str, destination: str, limit: int = 5) -> dict:
+    """Belirli bir varış noktasına en ucuz uçuşları çeker."""
+    r = requests.get(f"{BASE}/v2/prices/latest", params={
+        "origin": origin, "destination": destination, "currency": "try",
+        "limit": limit, "sorting": "price", "token": TOKEN,
+    }, timeout=10)
+    if r.ok:
+        data = r.json().get("data", [])
+        sonuc = {}
+        for d in data:
+            varis = d.get("destination")
+            if not varis:
+                continue
+            if varis not in sonuc or d.get("value", 0) < sonuc[varis].get("price", 0):
+                sonuc[varis] = {
+                    "price": d.get("value", 0),
+                    "airline": d.get("airline", ""),
+                    "departure_at": d.get("depart_date", ""),
+                    "return_at": d.get("return_date", ""),
+                    "expires_at": d.get("found_at", ""),
+                    "aktarma": d.get("number_of_changes", 0),
+                    "sure_dk": d.get("duration", 0),
+                    "mesafe_km": d.get("distance", 0),
+                    "gate": d.get("gate", ""),
+                }
+        return sonuc
+    return {}
+
+
 def aylik_matris_getir(origin: str, varis: str) -> list:
     r = requests.get(f"{BASE}/v2/prices/month-matrix", params={
         "origin": origin, "destination": varis,

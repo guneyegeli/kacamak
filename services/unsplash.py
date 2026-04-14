@@ -84,6 +84,17 @@ SEHIR_ISIMLERI = {
     "GNY": "Sanliurfa", "HTY": "Hatay Antakya", "IGD": "Igdir",
     "ISE": "Isparta", "KSY": "Kars", "MLX": "Malatya", "MQM": "Mardin",
     "NOP": "Sinop", "ONQ": "Zonguldak", "CKZ": "Canakkale",
+    "OGU": "Ordu Turkey", "ERC": "Erzincan", "TJK": "Tokat Turkey",
+    "UGC": "Usak Turkey", "BUS": "Batumi",
+    # API farklı kodla dönen şehirler
+    "NYC": "New York", "SEL": "Seoul", "BJS": "Beijing", "SHA": "Shanghai",
+    "RIO": "Rio de Janeiro", "SAO": "Sao Paulo", "BUE": "Buenos Aires",
+    "MIL": "Milan", "CHI": "Chicago",
+    # Eksik yurtdışı
+    "CPT": "Cape Town", "NBO": "Nairobi", "MRU": "Mauritius",
+    "SEZ": "Seychelles", "GVA": "Geneva", "JTR": "Santorini",
+    "BOG": "Bogota", "LIM": "Lima", "SCL": "Santiago Chile",
+    "CAN": "Guangzhou", "NAJ": "Nakhchivan",
 }
 
 
@@ -155,11 +166,39 @@ IATA_ARAMA_TERIMLERI = {
     "TIA": "Skanderbeg Square Tirana",
     "ZAG": "Zagreb Cathedral Ban Jelacic",
     "SJJ": "Sarajevo Latin Bridge Bascarsija",
-    # Uzak
-    "NRT": "Tokyo Tower Shibuya",
-    "KUL": "Petronas Towers Kuala Lumpur",
-    "MLE": "Maldives overwater bungalow",
+    # Uzak Doğu
+    "NRT": "Tokyo Tower Shibuya", "HKT": "Phuket beach Thailand",
+    "KUL": "Petronas Towers Kuala Lumpur", "DPS": "Bali temple rice terrace",
+    "MLE": "Maldives overwater bungalow", "HKG": "Hong Kong skyline Victoria Peak",
+    "PEK": "Great Wall of China Beijing", "PVG": "Shanghai Bund skyline",
+    "DEL": "Taj Mahal India", "BOM": "Gateway of India Mumbai",
+    "CMB": "Sigiriya Sri Lanka", "MNL": "Manila skyline Philippines",
     "HRG": "Hurghada Red Sea coral reef",
+    # Amerika
+    "NYC": "Statue of Liberty New York", "MIA": "Miami Beach South Beach",
+    "LAX": "Hollywood sign Los Angeles", "SFO": "Golden Gate Bridge",
+    "ORD": "Chicago skyline Millennium Park", "ATL": "Atlanta skyline",
+    "YYZ": "Toronto CN Tower", "CUN": "Cancun beach Caribbean",
+    "MEX": "Mexico City Zocalo", "GRU": "Sao Paulo skyline",
+    "GIG": "Christ the Redeemer Rio", "EZE": "Buenos Aires Obelisco",
+    "BOG": "Bogota Monserrate", "LIM": "Lima Miraflores",
+    "SCL": "Santiago Chile Andes",
+    # Okyanusya / Afrika
+    "SYD": "Sydney Opera House harbour", "MEL": "Melbourne Flinders Street",
+    "AKL": "Auckland skyline New Zealand", "CPT": "Cape Town Table Mountain",
+    "NBO": "Nairobi Kenya safari", "MRU": "Mauritius beach",
+    "SEZ": "Seychelles beach paradise",
+    # API varyant kodları
+    "SEL": "Gyeongbokgung Palace Seoul", "TYO": "Tokyo Tower Shibuya",
+    "BJS": "Great Wall of China Beijing", "SHA": "Shanghai Bund skyline",
+    "RIO": "Christ the Redeemer Rio", "SAO": "Sao Paulo skyline",
+    "BUE": "Buenos Aires Obelisco", "MIL": "Milan Cathedral Duomo",
+    "CHI": "Chicago skyline Millennium Park",
+    # Türkiye eksik
+    "OGU": "Ordu Turkey Boztepe", "ERC": "Erzincan Turkey",
+    "BUS": "Batumi Georgia",
+    # Diğer eksik
+    "GVA": "Geneva lake Switzerland", "JTR": "Santorini blue dome Greece",
 }
 
 # Sabit fotoğraflar — API'ye bağımlı olmadan her zaman doğru sonuç
@@ -224,6 +263,60 @@ def _unsplash_ara(query: str, adet: int) -> list:
         return []
 
 
+def _ulke_bul(iata: str) -> str | None:
+    """IATA kodundan İngilizce ülke adı döndürür (Unsplash araması için)."""
+    try:
+        from services.bolge import YURTICI, AVRUPA_YAKIN
+    except ImportError:
+        return None
+    if iata in YURTICI:
+        return "Turkey"
+    ULKE_MAP = {
+        'PAR': 'France', 'CDG': 'France', 'ORY': 'France', 'MRS': 'France',
+        'LHR': 'England', 'LON': 'England', 'LGW': 'England',
+        'FCO': 'Italy', 'ROM': 'Italy', 'MXP': 'Italy', 'NAP': 'Italy', 'MIL': 'Italy',
+        'BCN': 'Spain', 'MAD': 'Spain',
+        'BER': 'Germany', 'FRA': 'Germany', 'MUC': 'Germany',
+        'ATH': 'Greece', 'JTR': 'Greece',
+        'TBS': 'Georgia', 'GYD': 'Azerbaijan', 'BAK': 'Azerbaijan', 'BUS': 'Georgia',
+        'DXB': 'UAE', 'DOH': 'Qatar', 'CAI': 'Egypt', 'SSH': 'Egypt', 'HRG': 'Egypt',
+        'BKK': 'Thailand', 'HKT': 'Thailand',
+        'JFK': 'USA', 'LAX': 'USA', 'MIA': 'USA', 'NYC': 'USA', 'CHI': 'USA',
+        'NRT': 'Japan', 'HND': 'Japan', 'TYO': 'Japan',
+        'ICN': 'South Korea', 'SEL': 'South Korea',
+        'SIN': 'Singapore', 'KUL': 'Malaysia', 'DPS': 'Indonesia',
+        'SYD': 'Australia', 'MEL': 'Australia',
+        'CPT': 'South Africa', 'NBO': 'Kenya',
+        'GRU': 'Brazil', 'SAO': 'Brazil', 'RIO': 'Brazil', 'GIG': 'Brazil',
+        'MLE': 'Maldives', 'MRU': 'Mauritius', 'SEZ': 'Seychelles',
+    }
+    return ULKE_MAP.get(iata)
+
+
+def _bolge_fallback(iata: str) -> str | None:
+    """Destinasyon için bölge bazlı genel arama terimi döndürür."""
+    try:
+        from services.bolge import YURTICI, AVRUPA, YAKIN, UZAK_DESTINASYONLAR
+    except ImportError:
+        return None
+    if iata in YURTICI:
+        return "Turkey travel"
+    if iata in AVRUPA:
+        return "Europe city travel"
+    if iata in YAKIN:
+        return "Middle East travel"
+    ASYA = {'BKK', 'HKT', 'DPS', 'SIN', 'KUL', 'HND', 'NRT', 'ICN', 'HKG', 'PEK', 'PVG', 'DEL', 'BOM', 'CMB', 'MNL', 'TYO', 'SEL', 'BJS', 'SHA'}
+    if iata in ASYA:
+        return "Asia travel"
+    AMERIKA = {'JFK', 'LAX', 'MIA', 'SFO', 'ORD', 'ATL', 'YYZ', 'GRU', 'GIG', 'EZE', 'CUN', 'MEX', 'NYC', 'CHI', 'RIO', 'SAO', 'BUE', 'BOG', 'LIM', 'SCL'}
+    if iata in AMERIKA:
+        return "America travel"
+    AFRIKA = {'NBO', 'CPT', 'MRU', 'SEZ', 'MLE'}
+    if iata in AFRIKA:
+        return "Africa landscape"
+    return "travel landscape scenic"
+
+
 @lru_cache(maxsize=200)
 def foto_getir(destinasyon: str, adet: int = 3) -> list:
     # Sabit fotoğraf varsa öncelikle onu döndür
@@ -243,20 +336,42 @@ def foto_getir(destinasyon: str, adet: int = 3) -> list:
     # Şehir adını çöz
     sehir = _sehir_adi_coz(destinasyon)
     if not sehir:
-        return []
+        sehir = destinasyon
 
-    # 2. Şehir + landmark
+    # Ülke adını belirle (fallback arama için)
+    ulke = _ulke_bul(destinasyon)
+
+    # 2. Şehir + ülke
+    if ulke:
+        sonuc = _unsplash_ara(f"{sehir} {ulke}", adet)
+        if sonuc:
+            return sonuc
+
+    # 3. Şehir + landmark
     sonuc = _unsplash_ara(f"{sehir} landmark", adet)
     if sonuc:
         return sonuc
 
-    # 3. Sadece şehir adı
+    # 4. Sadece şehir adı
     sonuc = _unsplash_ara(sehir, adet)
     if sonuc:
         return sonuc
 
-    # 4. Genel fallback: "travel scenic"
-    return _unsplash_ara("travel landscape scenic", adet)
+    # 5. Sadece ülke
+    if ulke:
+        sonuc = _unsplash_ara(ulke, adet)
+        if sonuc:
+            return sonuc
+
+    # 6. Bölge bazlı fallback
+    bolge_terim = _bolge_fallback(destinasyon)
+    if bolge_terim:
+        sonuc = _unsplash_ara(bolge_terim, adet)
+        if sonuc:
+            return sonuc
+
+    # 7. Son çare
+    return []
 
 
 # Galeri için destinasyona özel çoklu arama terimleri — spesifik landmark isimleri

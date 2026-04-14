@@ -55,6 +55,19 @@ def itinerary_olustur(firsat: dict, tercihler: dict = {}, gece: int = None) -> d
         pratik_format = '"pratik":{{"ulasim":"...","para":"...","dil":"...","guvenlik":"...","ipuclari":["..."]}}'
         pratik_kural = f"- Sehir rehberi (pratik bolumu) {varis_sehir} icin olmali — ulasim, para birimi, dil, guvenlik bilgisi ver"
 
+    # Yurtdışı ise hizmet sıralama talimatı ekle
+    hizmet_sirala = ""
+    if not yurtici:
+        hizmet_sirala = f"""
+- Destinasyona ozel hizmet ihtiyacini degerlendir ve "hizmet_siralama" alaninda su hizmetleri oncelik sirasina gore sirala:
+  Secenekler: "esim", "arac", "sigorta", "valiz", "transfer"
+  Kurallar:
+    * Adalar veya uzak bolgeler (Bali, Maldivler, Phuket vb) → "arac" ve "esim" once
+    * Buyuk sehir merkezi (Paris, Londra, Roma vb) → "transfer" ve "valiz" once
+    * Schengen disi ulke → "esim" en basta
+    * {gece}+ gece seyahat → "sigorta" en basta
+  5 hizmeti de sirala, en cok gerekli olan basta olsun."""
+
     prompt = f"""Turkce, {varis_sehir} sehri icin tam {gun} gunluk ({gece} gece) seyahat programi hazirla.
 
 ONEMLI: Varis sehri {varis_sehir}. Tum program {varis_sehir} icin olmali. Cikis sehri {cikis_sehir} hakkinda bilgi verme, sadece {varis_sehir} sehrindeki gezilecek yerler, restoranlar ve aktiviteleri yaz.
@@ -67,11 +80,11 @@ Kurallar:
 - Her zaman diliminde emoji, aktivite, detay, ulasim, harcama_eur ver
 - Oglen ve aksamda {varis_sehir} sehrinde restoran oner
 - Her aktivite ve restoran icin google_maps_link alani ekle. Format: https://www.google.com/maps/search/?api=1&query=URL_ENCODED_MEKAN_ADI+{varis_sehir}
-{pratik_kural}
+{pratik_kural}{hizmet_sirala}
 - Kompakt JSON dondur, aciklama yazma
 
 JSON formati:
-{{"gunler":[{{"gun":1,"tema":"...","emoji":"...","sabah":{{"emoji":"...","aktivite":"...","detay":"...","google_maps_link":"https://www.google.com/maps/search/?api=1&query=Mekan+Adi+{varis_sehir}","ulasim":"...","harcama_eur":5}},"ogle":{{"emoji":"...","aktivite":"...","detay":"...","restoran":"Restoran Adi","restoran_maps_link":"https://www.google.com/maps/search/?api=1&query=Restoran+Adi+{varis_sehir}","google_maps_link":"https://www.google.com/maps/search/?api=1&query=Mekan+Adi+{varis_sehir}","ulasim":"...","harcama_eur":15}},"aksam":{{"emoji":"...","aktivite":"...","detay":"...","restoran":"Restoran Adi","restoran_maps_link":"https://www.google.com/maps/search/?api=1&query=Restoran+Adi+{varis_sehir}","google_maps_link":"https://www.google.com/maps/search/?api=1&query=Mekan+Adi+{varis_sehir}","ulasim":"...","harcama_eur":25}},"gun_toplam_eur":45,"ipucu":"..."}}],{pratik_format},"toplam_aktivite_eur":150,"en_iyi_zaman":"..."}}"""
+{{"gunler":[{{"gun":1,"tema":"...","emoji":"...","sabah":{{"emoji":"...","aktivite":"...","detay":"...","google_maps_link":"https://www.google.com/maps/search/?api=1&query=Mekan+Adi+{varis_sehir}","ulasim":"...","harcama_eur":5}},"ogle":{{"emoji":"...","aktivite":"...","detay":"...","restoran":"Restoran Adi","restoran_maps_link":"https://www.google.com/maps/search/?api=1&query=Restoran+Adi+{varis_sehir}","google_maps_link":"https://www.google.com/maps/search/?api=1&query=Mekan+Adi+{varis_sehir}","ulasim":"...","harcama_eur":15}},"aksam":{{"emoji":"...","aktivite":"...","detay":"...","restoran":"Restoran Adi","restoran_maps_link":"https://www.google.com/maps/search/?api=1&query=Restoran+Adi+{varis_sehir}","google_maps_link":"https://www.google.com/maps/search/?api=1&query=Mekan+Adi+{varis_sehir}","ulasim":"...","harcama_eur":25}},"gun_toplam_eur":45,"ipucu":"..."}}],{pratik_format},"toplam_aktivite_eur":150,"en_iyi_zaman":"..."{(',"hizmet_siralama":["esim","transfer","arac","sigorta","valiz"]' if not yurtici else '')}}}"""
 
     sonuc = claude_sor(prompt, json_mod=True, max_tokens=8192)
 

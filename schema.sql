@@ -86,6 +86,27 @@ CREATE TABLE IF NOT EXISTS yenileme_kuyrugu (
     islendi INTEGER DEFAULT 0
 );
 
+-- Otel bilgileri (v0.7)
+ALTER TABLE firsatlar ADD COLUMN otel_min_fiyat INTEGER;
+ALTER TABLE firsatlar ADD COLUMN otel_toplam INTEGER;
+ALTER TABLE firsatlar ADD COLUMN otel_adi TEXT;
+ALTER TABLE firsatlar ADD COLUMN otel_yildiz INTEGER;
+ALTER TABLE firsatlar ADD COLUMN toplam_tahmini INTEGER;
+ALTER TABLE firsatlar ADD COLUMN otel_id TEXT;
+
+-- Tarih tercihleri (v0.6)
+ALTER TABLE tercihler ADD COLUMN gidis_tarihi TEXT;
+ALTER TABLE tercihler ADD COLUMN donus_tarihi TEXT;
+
+-- Bildirim tercihleri (v0.5)
+ALTER TABLE tercihler ADD COLUMN bildirim_aktif INTEGER DEFAULT 1;
+ALTER TABLE tercihler ADD COLUMN min_indirim_esigi INTEGER DEFAULT 30;
+ALTER TABLE tercihler ADD COLUMN bildirim_sikligi TEXT DEFAULT 'anlik';
+ALTER TABLE tercihler ADD COLUMN yurtici_bildirim INTEGER DEFAULT 1;
+ALTER TABLE tercihler ADD COLUMN yurtdisi_bildirim INTEGER DEFAULT 1;
+ALTER TABLE tercihler ADD COLUMN sessiz_baslangic TEXT DEFAULT '23:00';
+ALTER TABLE tercihler ADD COLUMN sessiz_bitis TEXT DEFAULT '07:00';
+
 CREATE INDEX IF NOT EXISTS idx_tercihler_kullanici ON tercihler(kullanici_id);
 CREATE INDEX IF NOT EXISTS idx_tercihler_havaalani ON tercihler(cikis_havaalani);
 CREATE INDEX IF NOT EXISTS idx_firsatlar_cikis ON firsatlar(cikis);
@@ -97,3 +118,19 @@ CREATE INDEX IF NOT EXISTS idx_firsatlar_aktif ON firsatlar(aktif);
 CREATE INDEX IF NOT EXISTS idx_paketler_kullanici ON paketler(kullanici_id);
 CREATE INDEX IF NOT EXISTS idx_paketler_firsat ON paketler(firsat_id);
 CREATE INDEX IF NOT EXISTS idx_bildirimler_kullanici ON bildirimler(kullanici_id);
+
+-- Otel cache (v0.8) — real-time Hotellook arama sonuçları
+CREATE TABLE IF NOT EXISTS otel_cache (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sehir TEXT NOT NULL,
+    checkin DATE NOT NULL,
+    checkout DATE NOT NULL,
+    yetiskin INTEGER DEFAULT 2,
+    cocuk INTEGER DEFAULT 0,
+    oteller TEXT,
+    durum TEXT DEFAULT 'searching',
+    search_id TEXT,
+    olusturulma TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_otel_cache_arama ON otel_cache(sehir, checkin, checkout);
