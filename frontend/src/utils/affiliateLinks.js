@@ -1,4 +1,4 @@
-const MARKER = import.meta.env.VITE_TRAVELPAYOUTS_MARKER || '516181'
+const MARKER = import.meta.env.VITE_TRAVELPAYOUTS_MARKER || '518734'
 
 // Kiwi.com uses English city-country slugs
 const KIWI_SLUGS = {
@@ -55,9 +55,41 @@ function parseTarih(dateStr) {
 }
 
 /**
+ * Zaten Türkçe desteği olan siteler — Google Translate proxy kullanma
+ */
+const TURKCE_DESTEKLI = [
+  'aviasales.com',
+  'skyscanner.com.tr',
+  'hotellook.com',
+  'kiwi.com',
+]
+
+/**
+ * URL'in Türkçe destekli bir sitede olup olmadığını kontrol eder
+ */
+function turkceSiteMi(url) {
+  if (!url) return false
+  try {
+    const hostname = new URL(url).hostname
+    return TURKCE_DESTEKLI.some(site => hostname.includes(site))
+  } catch {
+    return false
+  }
+}
+
+/**
+ * İngilizce siteleri Google Translate proxy ile Türkçeye çevirir.
+ * Türkçe destekli siteler direkt açılır.
+ */
+function googleTranslateWrap(url) {
+  if (!url || turkceSiteMi(url)) return url
+  return `https://translate.google.com/translate?sl=auto&tl=tr&u=${encodeURIComponent(url)}`
+}
+
+/**
  * Platform bazında affiliate URL'i oluşturur
  */
-export function generateAffiliateUrl(platform, origin, destination, departDate, returnDate) {
+export function generateAffiliateUrl(platform, origin, destination, departDate, returnDate, yolcu) {
   const dep = parseTarih(departDate)
   const ret = parseTarih(returnDate)
 
@@ -65,9 +97,10 @@ export function generateAffiliateUrl(platform, origin, destination, departDate, 
 
   switch (platform) {
     case 'aviasales': {
-      // Format: /search/{ORIGIN}{DDMM}{DEST}{DDMM}1?marker=...
+      // Format: /search/{ORIGIN}{DDMM}{DEST}{DDMM}{ADULTS}?marker=...
       const retPart = ret ? `${destination}${ret.dd}${ret.mm}` : destination
-      return `https://www.aviasales.com/search/${origin}${dep.dd}${dep.mm}${retPart}1?marker=${MARKER}&locale=tr&currency=try&sorting=price`
+      const adults = yolcu?.yetiskin || 1
+      return `https://www.aviasales.com/search/${origin}${dep.dd}${dep.mm}${retPart}${adults}?marker=${MARKER}&locale=tr&currency=try&sorting=price${yolcu?.cocuk ? `&children=${yolcu.cocuk}` : ''}${yolcu?.bebek ? `&infants=${yolcu.bebek}` : ''}`
     }
 
     case 'skyscanner': {
@@ -75,7 +108,7 @@ export function generateAffiliateUrl(platform, origin, destination, departDate, 
       const depCode = `${dep.yy}${dep.mm}${dep.dd}`
       const retCode = ret ? `${ret.yy}${ret.mm}${ret.dd}` : ''
       const retPath = retCode ? `/${retCode}` : ''
-      return `https://www.skyscanner.com.tr/transport/flights/${origin.toLowerCase()}/${destination.toLowerCase()}/${depCode}${retPath}/?adultsv2=1&currency=TRY`
+      return `https://www.skyscanner.com.tr/transport/flights/${origin.toLowerCase()}/${destination.toLowerCase()}/${depCode}${retPath}/?adultsv2=${yolcu?.yetiskin || 1}${yolcu?.cocuk ? `&childrenv2=${new Array(yolcu.cocuk).fill('8').join('%7C')}` : ''}&currency=TRY`
     }
 
     case 'kiwi': {
@@ -94,10 +127,18 @@ export function generateAffiliateUrl(platform, origin, destination, departDate, 
 /**
  * Tüm platformların linklerini tek seferde üretir
  */
-export function generateAllLinks(origin, destination, departDate, returnDate) {
+export function generateAllLinks(origin, destination, departDate, returnDate, yolcu) {
   return {
-    aviasales: generateAffiliateUrl('aviasales', origin, destination, departDate, returnDate),
-    skyscanner: generateAffiliateUrl('skyscanner', origin, destination, departDate, returnDate),
-    kiwi: generateAffiliateUrl('kiwi', origin, destination, departDate, returnDate),
+    aviasales: generateAffiliateUrl('aviasales', origin, destination, departDate, returnDate, yolcu),
+    skyscanner: generateAffiliateUrl('skyscanner', origin, destination, departDate, returnDate, yolcu),
+    kiwi: generateAffiliateUrl('kiwi', origin, destination, departDate, returnDate, yolcu),
   }
+}
+
+/**
+ * Affiliate linki açar. İngilizce siteler Google Translate proxy ile Türkçeye çevrilir.
+ */
+export function openAffiliate(url) {
+  if (!url) return
+  window.open(googleTranslateWrap(url), '_blank')
 }
