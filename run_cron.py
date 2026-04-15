@@ -22,6 +22,7 @@ logging.basicConfig(
 log = logging.getLogger("cron")
 
 from agents.ucus_tarayici import cron_tarama
+from agents.fiyat_guncelleyici import fiyat_guncelle
 import sqlite3
 
 # 7 günden eski fırsatları pasife çek
@@ -55,3 +56,11 @@ try:
     log.info("Otel güncelleme: %d fırsat işlendi", otel_guncellenen)
 except Exception as e:
     log.warning("Otel güncelleme hatası: %s", e)
+
+# Fiyat güncelleme
+try:
+    fiyat_sonuc = fiyat_guncelle()
+    log.info("Fiyat güncelleme: %d kontrol, %d güncellendi",
+             fiyat_sonuc.get('kontrol', 0), fiyat_sonuc.get('guncellenen', 0))
+except Exception as e:
+    log.warning("Fiyat güncelleme hatası: %s", e)
