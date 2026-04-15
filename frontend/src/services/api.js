@@ -67,4 +67,10 @@ export const api = {
     if (cocuk) params.set('cocuk', cocuk)
     return fetch(`${BASE}/api/otel-ara?${params}`).then(r => r.json())
   },
+  canliFiyat: ({ cikis, varis, gidis, donus, yetiskin }) => {
+    const params = new URLSearchParams({ cikis, varis, gidis })
+    if (donus) params.set('donus', donus)
+    if (yetiskin) params.set('yetiskin', yetiskin)
+    return fetch(`${BASE}/api/canli-fiyat?${params}`).then(r => r.json())
+  },
 }

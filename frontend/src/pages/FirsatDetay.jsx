@@ -156,11 +156,20 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
   const [itUretiliyor, setItUretiliyor] = useState(false)
   const [detayHata, setDetayHata] = useState(null)
   const [otelLinkler, setOtelLinkler] = useState(null)
+  const [canliFiyat, setCanliFiyat] = useState(null)
+  const [canliFiyatYukleniyor, setCanliFiyatYukleniyor] = useState(false)
 
   useEffect(() => {
     if (!firsat?.id) return
     setDetay(null); setYukleniyor(true); setItUretiliyor(false); setDetayHata(null)
     setFoto(null); setGaleri([]); setBenzer([]); setAltTarihler([]); setKanalVideo(null)
+    setCanliFiyat(null); setCanliFiyatYukleniyor(true)
+    if (firsat.cikis && firsat.varis && firsat.ucus_tarihi) {
+      api.canliFiyat({ cikis: firsat.cikis, varis: firsat.varis, gidis: firsat.ucus_tarihi, donus: firsat.donus_tarihi, yetiskin: yolcu.yetiskin || 1 })
+        .then(r => { if (r?.canli_fiyat) setCanliFiyat(r) })
+        .catch(() => {})
+        .finally(() => setCanliFiyatYukleniyor(false))
+    } else { setCanliFiyatYukleniyor(false) }
     api.firsatDetay(firsat.id).then(d => {
       setDetay(d)
       // Itinerary yoksa otomatik üret
@@ -337,6 +346,8 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
                         {!tekKisi && <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 2 }}>Kişi başı: {firsat?.fiyat?.toLocaleString('tr-TR')} ₺</div>}
                         <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Normal: <span style={{ textDecoration: 'line-through', color: 'var(--text-muted)', fontSize: 16 }}>{((firsat?.normal_fiyat || 0) * kisiSayisi).toLocaleString('tr-TR')} ₺</span></div>
                         {yolcu.bebek > 0 && <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>+ bebek ücreti ayrıca</div>}
+                        {canliFiyatYukleniyor && <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 6 }}>✈ Anlık fiyat kontrol ediliyor...</div>}
+                        {canliFiyat && <div style={{ fontSize: 13, color: 'var(--accent-green)', fontWeight: 600, marginTop: 6 }}>Güncel fiyat: {canliFiyat.canli_fiyat.toLocaleString('tr-TR')} ₺ <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-muted)' }}>({canliFiyat.guncelleme} itibarıyla)</span></div>}
                       </div>
                       <div style={{ background: 'linear-gradient(135deg, #FF5C1A, #FF8C42)', borderRadius: 10, padding: '8px 14px', textAlign: 'center' }}>
                         <div style={{ fontSize: 20, fontWeight: 700, color: '#fff' }}>%{firsat?.indirim_orani}</div>
