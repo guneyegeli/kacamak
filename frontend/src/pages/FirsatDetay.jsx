@@ -3,6 +3,8 @@ import { api } from '../services/api'
 import { generateAllLinks, openAffiliate } from '../utils/affiliateLinks'
 import YURTICI_KODLARI from '../utils/yurticiKodlari'
 
+const isMobile = window.innerWidth < 768
+
 const CIKIS_SEHIRLERI = {
   IST:'İstanbul',SAW:'İstanbul',ADB:'İzmir',AYT:'Antalya',ESB:'Ankara',
   ADA:'Adana',TZX:'Trabzon',GZT:'Gaziantep',BJV:'Bodrum',DLM:'Dalaman',
@@ -135,7 +137,7 @@ const encodeQuery = (text) => encodeURIComponent(trToAscii(text))
 
 function _yolcuOku() {
   try { const s = localStorage.getItem('kacamak_yolcu'); if (s) return JSON.parse(s) } catch {}
-  return { yetiskin: 2, cocuk: 0, bebek: 0 }
+  return { yetiskin: 1, cocuk: 0, bebek: 0 }
 }
 
 export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
@@ -218,8 +220,8 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
       ? [['Sabah', gun.sabah], ['Ogle', gun.ogle], ['Aksam', gun.aksam]]
       : [['Sabah', { aktivite: gun.sabah, emoji: '🌅' }], ['Ogle', { aktivite: gun.ogle, emoji: '☀️' }], ['Aksam', { aktivite: gun.aksam, emoji: '🌙' }]]
     return (
-      <div style={{ ...cs, borderLeft: '3px solid var(--accent-orange)', padding: 20, marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+      <div style={{ ...cs, borderLeft: '3px solid var(--accent-orange)', padding: 20, marginBottom: 12, overflow: 'hidden', maxWidth: '100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, flexWrap: 'wrap', gap: 8 }}>
           <div>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 500 }}>{gun.emoji || '📍'} Gun {gun.gun}</div>
             <div style={{ fontSize: 17, fontWeight: 500, color: 'var(--text-primary)', marginTop: 4 }}>{gun.tema}</div>
@@ -230,9 +232,9 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
           <div key={zaman} style={{ marginBottom: 14, paddingLeft: 14, borderLeft: '2px solid var(--accent-orange)' }}>
             <div style={{ fontSize: 14, color: 'var(--accent-amber)', marginBottom: 6, fontWeight: 500 }}>{ic?.emoji || '🕐'} {zaman}</div>
             {typeof ic === 'object' ? (<>
-              <div style={{ fontSize: 18, fontWeight: 500, marginBottom: 2 }}>
+              <div style={{ fontSize: isMobile ? 15 : 18, fontWeight: 500, marginBottom: 2, wordBreak: 'break-word', maxWidth: '100%' }}>
                 {ic.google_maps_link
-                  ? <a href={ic.google_maps_link} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ color: 'var(--accent-green)', textDecoration: 'underline', textUnderlineOffset: 2 }}>{ic.aktivite}</a>
+                  ? <a href={ic.google_maps_link} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ color: 'var(--accent-green)', textDecoration: 'underline', textUnderlineOffset: 2, wordBreak: 'break-word' }}>{ic.aktivite}</a>
                   : <span style={{ color: 'var(--text-primary)' }}>{ic.aktivite}</span>}
               </div>
               {ic.detay && <div style={{ fontSize: 15, color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: 6, fontStyle: 'italic' }}>{ic.detay}</div>}
@@ -240,8 +242,8 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
                 ? <a href={ic.restoran_maps_link} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ color: 'var(--accent-green)', textDecoration: 'underline', textUnderlineOffset: 2 }}>{ic.restoran}</a>
                 : <span style={{ color: 'var(--accent-green)' }}>{ic.restoran}</span>}
               </div>}
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-                {ic.ulasim && <span style={{ fontSize: 14, color: 'var(--text-muted)' }}>🚌 {ic.ulasim}</span>}
+              <div style={{ display: 'flex', gap: isMobile ? 6 : 12, flexWrap: 'wrap', alignItems: 'center' }}>
+                {ic.ulasim && <span style={{ fontSize: 14, color: 'var(--text-muted)', maxWidth: '100%' }}>🚌 {ic.ulasim}</span>}
                 {ic.harcama_eur != null && <span style={{ fontSize: 14, color: 'var(--accent-orange)' }}>💰 €{ic.harcama_eur}</span>}
                 {ic.aktivite && !YURTICI_KODLARI.has(firsat?.varis) && (
                   <span onClick={e => { e.stopPropagation(); openAffiliate(`https://www.getyourguide.com/s/?q=${encodeQuery(ic.aktivite + ' ' + sehirAd)}`) }} style={{ fontSize: 13, color: 'var(--accent-orange)', fontWeight: 600, textDecoration: 'none', cursor: 'pointer' }}>🎟️ GetYourGuide'da ara →</span>
@@ -256,12 +258,12 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-tertiary)', paddingBottom: 80 }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-tertiary)', paddingBottom: 80, overflowX: 'hidden' }}>
       {/* HERO — full width 100vw */}
       <div style={{ position: 'relative', width: '100vw', marginLeft: 'calc(-50vw + 50%)', height: 320, overflow: 'hidden', background: foto ? undefined : 'linear-gradient(135deg, #1e293b 0%, #334155 40%, #FF5C1A 100%)' }}>
         {foto && <img src={foto.url_orta} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
         <div style={{ position: 'absolute', inset: 0, background: foto ? 'linear-gradient(transparent 30%, rgba(0,0,0,0.7))' : 'radial-gradient(circle at 70% 30%, rgba(255,92,26,0.2) 0%, transparent 60%)' }} />
-        <button onClick={onGeri} onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.25)'} onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.15)'} style={{ position: 'absolute', top: 52, left: 24, background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 8, padding: '10px 20px', color: '#fff', cursor: 'pointer', fontSize: 15, fontWeight: 600, zIndex: 2, transition: 'background 0.2s' }}><span style={{ fontSize: 18, marginRight: 6 }}>‹</span>Geri</button>
+        <button onClick={onGeri} onMouseEnter={e => e.currentTarget.style.background='rgba(13,27,42,0.95)'} onMouseLeave={e => e.currentTarget.style.background='rgba(13,27,42,0.85)'} style={{ position: 'fixed', top: 60, left: 16, background: 'rgba(13,27,42,0.85)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: 8, padding: '10px 20px', color: '#fff', cursor: 'pointer', fontSize: 15, fontWeight: 600, zIndex: 100, transition: 'background 0.2s' }}><span style={{ fontSize: 18, marginRight: 6 }}>‹</span>Geri</button>
         <div style={{ position: 'absolute', bottom: 28, left: 28, right: 28 }}>
           <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', fontWeight: 500, marginBottom: 6 }}>{cikisSehir} ({o}) → {sehir} ({d}) · {tarihFormat(firsat?.ucus_tarihi)}{firsat?.donus_tarihi ? ` → ${tarihFormat(firsat.donus_tarihi)}` : ''}{geceSay(firsat?.ucus_tarihi, firsat?.donus_tarihi) ? ` (${geceSay(firsat.ucus_tarihi, firsat.donus_tarihi)} gece)` : ''}</div>
           <div style={{ fontSize: 36, fontWeight: 500, color: '#fff' }}>{sehir}</div>
@@ -328,9 +330,9 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
                   return (
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div>
-                        <div style={{ marginBottom: 4 }}>
+                        <div style={{ marginBottom: 4, display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: '0 6px' }}>
                           <span style={{ fontSize: 36, fontWeight: 700, color: 'var(--accent-orange)', letterSpacing: '-0.5px' }}>{toplamFiyat.toLocaleString('tr-TR')} ₺</span>
-                          <span style={{ fontSize: 13, color: 'var(--accent-orange)', fontWeight: 500, marginLeft: 6 }}>gidis-donus{tekKisi ? '' : ` (${kisiSayisi} kişi)`}</span>
+                          <span style={{ fontSize: 11, color: 'var(--accent-orange)', fontWeight: 500, whiteSpace: 'nowrap' }}>gidis-donus{tekKisi ? '' : ` (${kisiSayisi} kişi)`}</span>
                         </div>
                         {!tekKisi && <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 2 }}>Kişi başı: {firsat?.fiyat?.toLocaleString('tr-TR')} ₺</div>}
                         <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Normal: <span style={{ textDecoration: 'line-through', color: 'var(--text-muted)', fontSize: 16 }}>{((firsat?.normal_fiyat || 0) * kisiSayisi).toLocaleString('tr-TR')} ₺</span></div>
@@ -352,20 +354,32 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     <div onClick={() => openAffiliate(otelLinkler?.hotellook || otelBase)}
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: 'var(--bg-tertiary)', borderRadius: 10, border: '1px solid var(--border-color)', cursor: 'pointer' }}>
-                      <div>
+                      style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'space-between', gap: isMobile ? 6 : 0, padding: '12px 14px', background: 'var(--bg-tertiary)', borderRadius: 10, border: '1px solid var(--border-color)', cursor: 'pointer', overflow: 'hidden' }}>
+                      <div style={{ minWidth: 0, flex: 1 }}>
                         <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-primary)' }}>Hotellook</div>
                         <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>En ucuz otel fiyatlarını karşılaştır</div>
                       </div>
-                      <span style={{ fontSize: 12, color: 'var(--accent-green)', fontWeight: 600, flexShrink: 0 }}>Ara →</span>
+                      {isMobile ? (
+                        <div style={{ background: 'rgba(0,200,150,0.15)', borderRadius: 8, padding: 8, textAlign: 'center' }}>
+                          <span style={{ fontSize: 12, color: 'var(--accent-green)', fontWeight: 600 }}>Ara →</span>
+                        </div>
+                      ) : (
+                        <span style={{ fontSize: 12, color: 'var(--accent-green)', fontWeight: 600, flexShrink: 0, marginLeft: 8 }}>Ara →</span>
+                      )}
                     </div>
                     <div onClick={() => openAffiliate(otelLinkler?.booking || `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(sehirAd)}&checkin=${gidisTarih}&checkout=${donusTarih}&group_adults=${yolcu.yetiskin || 2}`)}
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: 'var(--bg-tertiary)', borderRadius: 10, border: '1px solid var(--border-color)', cursor: 'pointer' }}>
-                      <div>
+                      style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'space-between', gap: isMobile ? 6 : 0, padding: '12px 14px', background: 'var(--bg-tertiary)', borderRadius: 10, border: '1px solid var(--border-color)', cursor: 'pointer', overflow: 'hidden' }}>
+                      <div style={{ minWidth: 0, flex: 1 }}>
                         <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-primary)' }}>Booking.com</div>
                         <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>Geniş otel seçenekleri ve yorumlar</div>
                       </div>
-                      <span style={{ fontSize: 12, color: 'var(--accent-orange)', fontWeight: 600, flexShrink: 0 }}>Ara →</span>
+                      {isMobile ? (
+                        <div style={{ background: 'rgba(255,92,26,0.15)', borderRadius: 8, padding: 8, textAlign: 'center' }}>
+                          <span style={{ fontSize: 12, color: 'var(--accent-orange)', fontWeight: 600 }}>Ara →</span>
+                        </div>
+                      ) : (
+                        <span style={{ fontSize: 12, color: 'var(--accent-orange)', fontWeight: 600, flexShrink: 0, marginLeft: 8 }}>Ara →</span>
+                      )}
                     </div>
                   </div>
                   <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 8, fontStyle: 'italic' }}>
@@ -450,16 +464,25 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
           {/* Bilet Satın Al */}
           <div style={{ marginBottom: 16 }}>
             <div style={{ ...lbl, marginBottom: 10 }}>✈️ Bilet Satın Al</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {platformlar.map((p, i) => (
-                <div key={i} onClick={() => openAffiliate(p.link)} style={{ ...cs, padding: '16px 18px', cursor: 'pointer', borderLeft: `4px solid ${p.renk}`, display: 'flex', alignItems: 'center', gap: 14, transition: 'border-color 0.15s' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 8 : 10 }}>
+              {platformlar.map((p, i) => isMobile ? (
+                <div key={i} onClick={() => openAffiliate(p.link)} style={{ ...cs, padding: 14, cursor: 'pointer', borderLeft: `4px solid ${p.renk}`, overflow: 'hidden', maxWidth: '100%' }}>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>{p.emoji} {p.isim}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: p.renk, marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.fiyatYazi}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>{tarihBilgi}</div>
+                  <div style={{ background: `${p.renk}20`, border: `1px solid ${p.renk}40`, borderRadius: 8, padding: '8px 12px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: p.renk }}>Sitede gör →</div>
+                  </div>
+                </div>
+              ) : (
+                <div key={i} onClick={() => openAffiliate(p.link)} style={{ ...cs, padding: '16px 18px', cursor: 'pointer', borderLeft: `4px solid ${p.renk}`, display: 'flex', alignItems: 'center', gap: 14, transition: 'border-color 0.15s', overflow: 'hidden', maxWidth: '100%' }}>
                   <div style={{ fontSize: 28, flexShrink: 0 }}>{p.emoji}</div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
                     <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>{p.isim}</div>
-                    <div style={{ fontSize: 16, fontWeight: 600, color: p.renk }}>{p.fiyatYazi}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: p.renk, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>{p.fiyatYazi}</div>
                     <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2 }}>{tarihBilgi}</div>
                   </div>
-                  <div style={{ background: `${p.renk}20`, border: `1px solid ${p.renk}40`, borderRadius: 10, padding: '8px 12px', flexShrink: 0 }}>
+                  <div style={{ background: `${p.renk}20`, border: `1px solid ${p.renk}40`, borderRadius: 10, padding: '8px 12px', flexShrink: 0, marginLeft: 8 }}>
                     <div style={{ fontSize: 11, fontWeight: 600, color: p.renk, whiteSpace: 'nowrap' }}>{p.buton} ↗</div>
                   </div>
                 </div>
@@ -597,7 +620,7 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
           {aktiviteler.length > 0 && (<>
             <div style={{ ...lbl, marginTop: 8 }}>🎯 Aktiviteler & Turlar</div>
             {aktiviteler.map((a, i) => (
-              <div key={i} style={{ ...cs, padding: 16, marginBottom: 10 }}>
+              <div key={i} style={{ ...cs, padding: 16, marginBottom: 10, overflow: 'hidden', width: '100%' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
                   <div style={{ flex: 1, marginRight: 12 }}>
                     <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-primary)', marginBottom: 4 }}>{a.emoji} {a.baslik}</div>
@@ -610,9 +633,9 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
                 </div>
                 {a.sure && <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 8 }}>⏱️ {a.sure}</div>}
                 {!YURTICI_KODLARI.has(firsat?.varis) && (
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button onClick={(e) => { e.stopPropagation(); openAffiliate(`https://www.getyourguide.com/s/?q=${encodeQuery(a.baslik + ' ' + sehirAd)}`) }} style={{ flex: 1, background: 'rgba(255,92,26,0.15)', border: '1px solid rgba(255,92,26,0.2)', borderRadius: 8, padding: '7px 10px', color: 'var(--accent-orange)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>GetYourGuide'da ara ↗</button>
-                    <button onClick={(e) => { e.stopPropagation(); openAffiliate(`https://www.viator.com/searchResults/all?text=${encodeQuery(a.baslik + ' ' + sehirAd)}`) }} style={{ flex: 1, background: 'rgba(0,200,150,0.15)', border: '1px solid rgba(0,200,150,0.2)', borderRadius: 8, padding: '7px 10px', color: 'var(--accent-green)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Viator'da ara ↗</button>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <button onClick={(e) => { e.stopPropagation(); openAffiliate(`https://www.getyourguide.com/s/?q=${encodeQuery(a.baslik + ' ' + sehirAd)}`) }} style={{ flex: 1, minWidth: 0, background: 'rgba(255,92,26,0.15)', border: '1px solid rgba(255,92,26,0.2)', borderRadius: 8, padding: '7px 10px', color: 'var(--accent-orange)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>GetYourGuide'da ara ↗</button>
+                    <button onClick={(e) => { e.stopPropagation(); openAffiliate(`https://www.viator.com/searchResults/all?text=${encodeQuery(a.baslik + ' ' + sehirAd)}`) }} style={{ flex: 1, minWidth: 0, background: 'rgba(0,200,150,0.15)', border: '1px solid rgba(0,200,150,0.2)', borderRadius: 8, padding: '7px 10px', color: 'var(--accent-green)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Viator'da ara ↗</button>
                   </div>
                 )}
               </div>
@@ -715,13 +738,13 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
       </div>
 
       {/* Sticky bar — tam genislik, kolonlarin disinda */}
-      <div className="detay-sticky-bar">
-        <div className="detay-sticky-inner">
-          <button style={{ flex: 1, padding: 14, background: 'var(--accent-orange)', border: 'none', borderRadius: 'var(--radius)', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 20px rgba(255,92,26,0.4)' }} onClick={() => openAffiliate(links.aviasales)}>✈️ Bilet ara</button>
-          <button style={{ flex: 1, padding: 14, background: 'var(--accent-green)', border: 'none', borderRadius: 'var(--radius)', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,200,150,0.4)' }} onClick={() => openAffiliate(hotellookLink)}>🏨Otel bul</button>
+      <div className="detay-sticky-bar" style={isMobile ? { padding: '6px 16px 8px' } : undefined}>
+        <div style={{ padding: isMobile ? '3px 16px' : '4px 12px 0', textAlign: 'center', overflow: 'hidden' }}>
+          <p style={{ fontSize: isMobile ? 9 : 12, color: isMobile ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.55)', fontStyle: 'italic', whiteSpace: isMobile ? 'nowrap' : undefined, overflow: isMobile ? 'hidden' : undefined, textOverflow: isMobile ? 'ellipsis' : undefined, margin: 0, lineHeight: isMobile ? undefined : 1.4 }}>Uçuş fiyatı Aviasales üzerinden alınmıştır. Otel fiyatları için Hotellook'u ziyaret edin. Fiyatlar değişkenlik gösterebilir. Dedektif Gezgin aracı platformdur, bilet veya otel satışı yapmaz.</p>
         </div>
-        <div style={{ padding: '4px 16px 8px', textAlign: 'center' }}>
-          <p style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic', lineHeight: 1.4 }}>Uçuş fiyatı Aviasales üzerinden alınmıştır. Otel fiyatları için Hotellook'u ziyaret edin. Fiyatlar değişkenlik gösterebilir. Dedektif Gezgin aracı platformdur, bilet veya otel satışı yapmaz.</p>
+        <div className="detay-sticky-inner" style={{ padding: isMobile ? '10px 0' : '8px 16px 12px', gap: isMobile ? 8 : undefined }}>
+          <button style={{ flex: 1, padding: isMobile ? 10 : 12, background: 'var(--accent-orange)', border: 'none', borderRadius: 'var(--radius)', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 20px rgba(255,92,26,0.4)' }} onClick={() => openAffiliate(links.aviasales)}>✈️ Bilet ara</button>
+          <button style={{ flex: 1, padding: isMobile ? 10 : 12, background: 'var(--accent-green)', border: 'none', borderRadius: 'var(--radius)', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,200,150,0.4)' }} onClick={() => openAffiliate(hotellookLink)}>🏨Otel bul</button>
         </div>
       </div>
 

@@ -504,7 +504,7 @@ function yolcuYukle() {
     const s = localStorage.getItem('kacamak_yolcu')
     if (s) return JSON.parse(s)
   } catch {}
-  return { yetiskin: 2, cocuk: 0, bebek: 0 }
+  return { yetiskin: 1, cocuk: 0, bebek: 0 }
 }
 
 function yolcuKaydet(y) {
@@ -598,6 +598,7 @@ export default function AnaSayfa({ onFirsat, onTercih }) {
   // Yolcu state (her iki bölüm ortak, localStorage'da saklanır)
   const [yolcu, setYolcu] = useState(yolcuYukle)
   const [yolcuAcik, setYolcuAcik] = useState(false)
+  const [aktifTab, setAktifTab] = useState('yurtdisi')
   const yolcuDegistir = (y) => { setYolcu(y); yolcuKaydet(y) }
 
   const firsatCek = (tercihData, yiFiltre, ydFiltre, yiSort, ydSort) => {
@@ -712,6 +713,24 @@ export default function AnaSayfa({ onFirsat, onTercih }) {
         </div>
       </div>
 
+      {/* Tab Butonları */}
+      <div style={{display:'flex',gap:8,padding:'12px 20px',background:'rgba(0,0,0,0.2)',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+        <button onClick={() => setAktifTab('yurtici')} style={{
+          flex:1,padding:'12px 0',borderRadius:12,border:'none',cursor:'pointer',
+          fontSize:14,fontWeight:700,letterSpacing:'0.03em',transition:'all 0.2s',
+          background: aktifTab === 'yurtici' ? 'linear-gradient(135deg, #FF5C1A, #FF8C42)' : 'rgba(255,255,255,0.06)',
+          color: aktifTab === 'yurtici' ? '#fff' : 'rgba(255,255,255,0.45)',
+          boxShadow: aktifTab === 'yurtici' ? '0 4px 15px rgba(255,92,26,0.4)' : 'none',
+        }}>✈️ Yurtiçi</button>
+        <button onClick={() => setAktifTab('yurtdisi')} style={{
+          flex:1,padding:'12px 0',borderRadius:12,border:'none',cursor:'pointer',
+          fontSize:14,fontWeight:700,letterSpacing:'0.03em',transition:'all 0.2s',
+          background: aktifTab === 'yurtdisi' ? 'linear-gradient(135deg, #00C896, #00A070)' : 'rgba(255,255,255,0.06)',
+          color: aktifTab === 'yurtdisi' ? '#fff' : 'rgba(255,255,255,0.45)',
+          boxShadow: aktifTab === 'yurtdisi' ? '0 4px 15px rgba(0,200,150,0.4)' : 'none',
+        }}>🌍 Yurtdışı</button>
+      </div>
+
       {/* Disclaimer */}
       <div style={{margin:'12px 20px 0',padding:'10px 16px',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',textAlign:'center'}}>
         <p style={{fontSize:11,color:'rgba(255,255,255,0.4)',lineHeight:1.5,margin:0}}>
@@ -746,18 +765,18 @@ export default function AnaSayfa({ onFirsat, onTercih }) {
         {!yukleniyor && !hata && firsatlar.length > 0 && (
           <div className="firsatlar-grid">
             {/* Yurtiçi Kolon */}
-            <div className="firsatlar-kolon">
-              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,justifyContent:'space-between'}}>
+            {aktifTab === 'yurtici' && <div className="firsatlar-kolon">
+              <div className="firsat-baslik-satiri">
                 <div style={{display:'flex',alignItems:'center',gap:8}}>
                   <div style={{width:4,height:20,borderRadius:2,background:'var(--accent-orange)'}} />
                   <h2 style={{fontSize:14,fontWeight:600,letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--text-primary)'}}>Yurtiçi Fırsatlar</h2>
                 </div>
-                <div style={{display:'flex',gap:6,alignItems:'center',flexWrap:'wrap',justifyContent:'flex-end'}}>
-                  <div style={{position:'relative'}}>
+                <div className="firsat-kontroller">
+                  <div style={{position:'relative',flex:1}}>
                     <button onClick={() => { setYolcuAcik(p => !p); setYiSiralamaAcik(false); setYdSiralamaAcik(false) }} style={{
                       display:'flex',alignItems:'center',gap:5,background:'var(--bg-secondary)',
                       border:'1px solid var(--border-light)',borderRadius:10,padding:'6px 12px',cursor:'pointer',
-                      color:'rgba(255,255,255,0.85)',fontSize:12,fontWeight:500,minHeight:44,
+                      color:'rgba(255,255,255,0.85)',fontSize:12,fontWeight:500,minHeight:44,width:'100%',justifyContent:'center',whiteSpace:'nowrap',
                     }}>
                       <span style={{fontSize:14}}>👤</span>
                       <span>{yolcuLabel(yolcu)}</span>
@@ -765,11 +784,11 @@ export default function AnaSayfa({ onFirsat, onTercih }) {
                     </button>
                     <YolcuDropdown acik={yolcuAcik} yolcu={yolcu} onDegistir={yolcuDegistir} onKapat={() => setYolcuAcik(false)} />
                   </div>
-                  <div style={{position:'relative'}}>
+                  <div style={{position:'relative',flex:1}}>
                     <button onClick={() => { setYiSiralamaAcik(p => !p); setYdSiralamaAcik(false); setYolcuAcik(false) }} style={{
                       display:'flex',alignItems:'center',gap:5,background:'var(--bg-secondary)',
                       border: yiSiralama !== 'varsayilan' ? '1px solid var(--accent-orange)' : '1px solid var(--border-light)',borderRadius:10,padding:'6px 12px',cursor:'pointer',
-                      color: yiSiralama !== 'varsayilan' ? 'var(--accent-orange)' : 'rgba(255,255,255,0.85)',fontSize:12,fontWeight:500,minHeight:44,
+                      color: yiSiralama !== 'varsayilan' ? 'var(--accent-orange)' : 'rgba(255,255,255,0.85)',fontSize:12,fontWeight:500,minHeight:44,width:'100%',justifyContent:'center',
                     }}>
                       <span>↕</span>
                       <span>{yiSiralama !== 'varsayilan' ? (SIRALAMA_SECENEKLERI.find(s=>s.kod===yiSiralama)?.isim||'Sırala') : 'Sırala'}</span>
@@ -781,7 +800,7 @@ export default function AnaSayfa({ onFirsat, onTercih }) {
                   </div>
                   <button onClick={() => { setGeciciYurtici({...yurticiFiltre}); setYurticiPanelAcik(true) }} style={{
                     display:'flex',alignItems:'center',gap:6,background:'var(--bg-secondary)',border:'1px solid var(--border-light)',
-                    borderRadius:10,padding:'6px 12px',cursor:'pointer',color:'rgba(255,255,255,0.85)',fontSize:12,fontWeight:500,minHeight:44,
+                    borderRadius:10,padding:'6px 12px',cursor:'pointer',color:'rgba(255,255,255,0.85)',fontSize:12,fontWeight:500,minHeight:44,flex:1,justifyContent:'center',
                   }}>
                     <span style={{fontSize:14}}>&#9660;</span>
                     <span>Filtrele</span>
@@ -795,21 +814,21 @@ export default function AnaSayfa({ onFirsat, onTercih }) {
               {yurtici.map(f => (
                 <FirsatKart key={f.id} f={f} fotolar={fotolar} altTarihler={altTarihler} onFirsat={onFirsat} yolcu={yolcu} />
               ))}
-            </div>
+            </div>}
 
             {/* Yurtdışı Kolon */}
-            <div className="firsatlar-kolon">
-              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,justifyContent:'space-between'}}>
+            {aktifTab === 'yurtdisi' && <div className="firsatlar-kolon">
+              <div className="firsat-baslik-satiri">
                 <div style={{display:'flex',alignItems:'center',gap:8}}>
                   <div style={{width:4,height:20,borderRadius:2,background:'var(--accent-orange)'}} />
                   <h2 style={{fontSize:14,fontWeight:600,letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--text-primary)'}}>Yurtdışı Fırsatlar</h2>
                 </div>
-                <div style={{display:'flex',gap:6,alignItems:'center',flexWrap:'wrap',justifyContent:'flex-end'}}>
-                  <div style={{position:'relative'}}>
+                <div className="firsat-kontroller">
+                  <div style={{position:'relative',flex:1}}>
                     <button onClick={() => { setYolcuAcik(p => !p); setYiSiralamaAcik(false); setYdSiralamaAcik(false) }} style={{
                       display:'flex',alignItems:'center',gap:5,background:'var(--bg-secondary)',
                       border:'1px solid var(--border-light)',borderRadius:10,padding:'6px 12px',cursor:'pointer',
-                      color:'rgba(255,255,255,0.85)',fontSize:12,fontWeight:500,minHeight:44,
+                      color:'rgba(255,255,255,0.85)',fontSize:12,fontWeight:500,minHeight:44,width:'100%',justifyContent:'center',whiteSpace:'nowrap',
                     }}>
                       <span style={{fontSize:14}}>👤</span>
                       <span>{yolcuLabel(yolcu)}</span>
@@ -817,11 +836,11 @@ export default function AnaSayfa({ onFirsat, onTercih }) {
                     </button>
                     <YolcuDropdown acik={yolcuAcik} yolcu={yolcu} onDegistir={yolcuDegistir} onKapat={() => setYolcuAcik(false)} />
                   </div>
-                  <div style={{position:'relative'}}>
+                  <div style={{position:'relative',flex:1}}>
                     <button onClick={() => { setYdSiralamaAcik(p => !p); setYiSiralamaAcik(false); setYolcuAcik(false) }} style={{
                       display:'flex',alignItems:'center',gap:5,background:'var(--bg-secondary)',
                       border: ydSiralama !== 'varsayilan' ? '1px solid var(--accent-orange)' : '1px solid var(--border-light)',borderRadius:10,padding:'6px 12px',cursor:'pointer',
-                      color: ydSiralama !== 'varsayilan' ? 'var(--accent-orange)' : 'rgba(255,255,255,0.85)',fontSize:12,fontWeight:500,minHeight:44,
+                      color: ydSiralama !== 'varsayilan' ? 'var(--accent-orange)' : 'rgba(255,255,255,0.85)',fontSize:12,fontWeight:500,minHeight:44,width:'100%',justifyContent:'center',
                     }}>
                       <span>↕</span>
                       <span>{ydSiralama !== 'varsayilan' ? (SIRALAMA_SECENEKLERI.find(s=>s.kod===ydSiralama)?.isim||'Sırala') : 'Sırala'}</span>
@@ -833,7 +852,7 @@ export default function AnaSayfa({ onFirsat, onTercih }) {
                   </div>
                   <button onClick={() => { setGeciciYurtdisi({...yurtdisiFiltre}); setYurtdisiPanelAcik(true) }} style={{
                     display:'flex',alignItems:'center',gap:6,background:'var(--bg-secondary)',border:'1px solid var(--border-light)',
-                    borderRadius:10,padding:'6px 12px',cursor:'pointer',color:'rgba(255,255,255,0.85)',fontSize:12,fontWeight:500,minHeight:44,
+                    borderRadius:10,padding:'6px 12px',cursor:'pointer',color:'rgba(255,255,255,0.85)',fontSize:12,fontWeight:500,minHeight:44,flex:1,justifyContent:'center',
                   }}>
                     <span style={{fontSize:14}}>&#9660;</span>
                     <span>Filtrele</span>
@@ -847,7 +866,7 @@ export default function AnaSayfa({ onFirsat, onTercih }) {
               {yurtdisi.map(f => (
                 <FirsatKart key={f.id} f={f} fotolar={fotolar} altTarihler={altTarihler} onFirsat={onFirsat} yolcu={yolcu} />
               ))}
-            </div>
+            </div>}
           </div>
         )}
       </div>

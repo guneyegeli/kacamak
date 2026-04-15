@@ -10,4 +10,65 @@ html, body {
 
 #root {
   min-height: 100svh;
+  overflow-x: hidden;
+}
+
+.page-constrained {
+  overflow-x: hidden;
+}
+
+/* Fırsat başlık + kontroller */
+.firsat-baslik-satiri {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  justify-content: space-between;
+}
+
+.firsat-kontroller {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+@media (max-width: 767px) {
+  .firsat-baslik-satiri {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .firsat-kontroller {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+    margin-top: 8px;
+    flex-wrap: nowrap;
+  }
+  .firsat-kontroller button {
+    flex: 1;
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+    white-space: nowrap;
+    border-radius: 8px !important;
+    min-height: 38px !important;
+  }
+  .firsat-kontroller > div {
+    flex: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  * { box-sizing: border-box !important; }
+  body { overflow-x: hidden !important; }
+  .detay-cols {
+    display: block !important;
+    padding: 0 12px !important;
+    overflow-x: hidden !important;
+  }
+  .detay-col-sol, .detay-col-orta, .detay-col-sag {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
 }
