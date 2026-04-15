@@ -160,9 +160,32 @@ def parse_mfa_data(html):
     return ulke_vize
 
 
+def umuma_ozet(vize_metni):
+    """Umuma mahsus pasaport için kısa özet cümle çıkar."""
+    metin = vize_metni.strip()
+    # İlk cümleyi al (genellikle "Umuma mahsus ... vizeden muaftır." veya "... vizeye tabidir.")
+    cumleler = re.split(r'(?<=[.!])\s+', metin)
+    for cumle in cumleler:
+        lower = cumle.lower()
+        if 'umuma' in lower or 'pasaport hamil' in lower:
+            # Fazla uzunsa kısalt
+            temiz = re.sub(r'\s+', ' ', cumle).strip()
+            if len(temiz) > 200:
+                temiz = temiz[:197] + '...'
+            return temiz
+    # Umuma bulunamadıysa ilk cümle
+    if cumleler:
+        temiz = re.sub(r'\s+', ' ', cumleler[0]).strip()
+        if len(temiz) > 200:
+            temiz = temiz[:197] + '...'
+        return temiz
+    return None
+
+
 def match_with_mapping(ulke_vize, mapping):
     """Ülke adlarını IATA kodlarıyla eşleştir."""
     sonuc = {'vizesiz': [], 'evize': [], 'kapida': []}
+    detay = {}  # IATA kodu → özet bilgi
 
     # Mapping'deki her ülke için MFA verisinde ara
     for mapping_ulke, iata_kodlari in mapping.items():
@@ -193,8 +216,13 @@ def match_with_mapping(ulke_vize, mapping):
             kategori = kategorize(en_iyi_eslesme)
             if kategori in sonuc:
                 sonuc[kategori].extend(iata_kodlari)
+            # Detay bilgisi çıkar
+            ozet = umuma_ozet(en_iyi_eslesme)
+            if ozet:
+                for kod in iata_kodlari:
+                    detay[kod] = ozet
 
-    return sonuc
+    return sonuc, detay
 
 
 def fallback_data():
@@ -236,6 +264,7 @@ def main():
 
     # MFA sayfasını çek ve parse et
     sonuc = None
+    detay = {}
     try:
         print('MFA sayfası indiriliyor...')
         html = fetch_page(MFA_URL)
@@ -245,7 +274,7 @@ def main():
         print(f'{len(ulke_vize)} ülke verisi parse edildi')
 
         if ulke_vize:
-            sonuc = match_with_mapping(ulke_vize, mapping)
+            sonuc, detay = match_with_mapping(ulke_vize, mapping)
     except Exception as e:
         print(f'MFA sayfası çekilemedi: {e}')
 
@@ -253,6 +282,7 @@ def main():
     if not sonuc or (not sonuc['vizesiz'] and not sonuc['evize']):
         print('MFA verileri yetersiz, fallback liste kullanılıyor...')
         sonuc = fallback_data()
+        detay = {}
 
     # Tekrar eden kodları temizle, sırala
     for key in sonuc:
@@ -264,6 +294,7 @@ def main():
         'vizesiz': sonuc['vizesiz'],
         'evize': sonuc['evize'],
         'kapida': sonuc['kapida'],
+        'detay': detay,
     }
 
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)

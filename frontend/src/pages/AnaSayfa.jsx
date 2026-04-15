@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { api } from '../services/api'
 import { openAffiliate } from '../utils/affiliateLinks'
 import YURTICI_KODLARI from '../utils/yurticiKodlari'
-import { isVizesiz, isEvize } from '../utils/vizesiz'
+import { isVizesiz, isEvize, vizeDetay } from '../utils/vizesiz'
 
 const MARKER = import.meta.env.VITE_TRAVELPAYOUTS_MARKER || '518734'
 
@@ -348,6 +348,17 @@ function FirsatKart({ f, fotolar, altTarihler, onFirsat, yolcu }) {
           <span style={{fontSize:12,color:'rgba(255,255,255,0.6)',fontWeight:500}}><span style={{fontSize:15,lineHeight:1}}>🏨</span> Otel{gece ? ` · ${gece} gece` : ''}</span>
           <span style={{fontSize:12,color:'rgba(255,255,255,0.35)',fontWeight:500}}>Detayda görün</span>
         </div>
+        {!YURTICI_KODLARI.has(f.varis) && vizeDetay(f.varis) && (
+          <div style={{marginTop:6,paddingTop:6,borderTop:'1px solid rgba(255,255,255,0.08)'}}>
+            <div style={{display:'flex',alignItems:'flex-start',gap:6}}>
+              <span style={{fontSize:13,lineHeight:1,flexShrink:0}}>🛂</span>
+              <div>
+                <div style={{fontSize:11,color:'rgba(255,255,255,0.55)',lineHeight:1.5}}>{vizeDetay(f.varis)}</div>
+                <div style={{fontSize:9,color:'rgba(255,255,255,0.25)',marginTop:3,fontStyle:'italic'}}>Kaynak: T.C. Dışişleri Bakanlığı</div>
+              </div>
+            </div>
+          </div>
+        )}
         {f.diger_cikislar?.length > 0 && (
           <div style={{marginTop:8,paddingTop:8,borderTop:'1px solid rgba(255,255,255,0.08)',fontSize:13,color:'rgba(255,255,255,0.5)'}}>
             <span style={{color:'#00C896',fontWeight:600}}>Diğer kalkışlar: </span>
