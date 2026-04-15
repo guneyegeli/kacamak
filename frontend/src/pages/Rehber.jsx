@@ -133,6 +133,24 @@ export default function Rehber({ iata, onGeri, onFirsat }) {
           )}
         </div>
 
+        {/* Gizli Nokta & Uyarı */}
+        {(rehber.gizli_nokta || rehber.uyari) && (
+          <div style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+            {rehber.gizli_nokta && (
+              <div style={{ ...cs, padding: 16, flex: 1, minWidth: 200, borderLeft: '3px solid var(--accent-green)' }}>
+                <div style={lbl}>🗝️ Gizli Nokta</div>
+                <div style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{rehber.gizli_nokta}</div>
+              </div>
+            )}
+            {rehber.uyari && (
+              <div style={{ ...cs, padding: 16, flex: 1, minWidth: 200, borderLeft: '3px solid var(--accent-amber)' }}>
+                <div style={lbl}>⚠️ Dikkat</div>
+                <div style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{rehber.uyari}</div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Bu şehre uçuş fırsatları */}
         {firsatlar.length > 0 && (
           <div style={{ marginBottom: 16 }}>
@@ -154,9 +172,11 @@ export default function Rehber({ iata, onGeri, onFirsat }) {
           </div>
         )}
 
-        {/* Kaynak notu */}
-        <div style={{ textAlign: 'center', padding: '20px 0', fontSize: 11, color: 'var(--text-muted)', fontStyle: 'italic' }}>
-          Bu rehber AI tarafından üretilmiştir. Güncel bilgiler için resmi kaynakları kontrol edin.
+        {/* Yazar & Güncelleme */}
+        <div style={{ textAlign: 'center', padding: '20px 0', borderTop: '1px solid var(--border-color)', marginTop: 8 }}>
+          {rehber.yazar && <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>✍️ {rehber.yazar}</div>}
+          {rehber.son_guncelleme && <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Son güncelleme: {rehber.son_guncelleme}</div>}
+          <div style={{ fontSize: 10, color: 'var(--text-muted)', fontStyle: 'italic', marginTop: 6 }}>Güncel bilgiler için resmi kaynakları kontrol edin.</div>
         </div>
       </div>
     </div>

@@ -95,47 +95,59 @@ def rehber_durumu(iata):
 
 def rehber_uret(iata, sehir_adi):
     """Tek şehir için Claude ile rehber üret."""
-    prompt = f"""{sehir_adi} için kapsamlı bir Türkçe seyahat rehberi yaz.
-Şunları içermeli:
-- Şehir hakkında kısa tanıtım (2-3 paragraf)
-- Mutlaka görülmesi gereken 5 yer (her biri: isim, açıklama, ipucu)
-- Yerel yemek önerileri (5 yemek: isim, açıklama)
-- Pratik seyahat ipuçları (ulaşım, para, dil, güvenlik)
-- En iyi ziyaret zamanı
-- Tahmini günlük bütçe (ekonomik/orta/lüks — EUR cinsinden)
-- SEO için 160 karakterlik meta açıklaması
+    prompt = f"""Sen deneyimli bir Türk gezgin ve seyahat yazarısın.
+{sehir_adi}'e bizzat gitmiş, orada yaşamış gibi yazıyorsun.
+
+Aşağıdaki kurallara kesinlikle uy:
+- Klişe turizm dili KULLANMA ("büyüleyici", "muhteşem", "eşsiz" gibi kelimelerden kaçın)
+- Kişisel gözlem gibi yaz: "Sabah erken gitmenizi öneririm çünkü..."
+- Yerel detaylar ver: fiyatlar, saatler, küçük ipuçları
+- Turistlerin bilmediği bir-iki gizli nokta ekle
+- Olumsuz bir şey de söyle: "Şunu yapmayın çünkü...", "Bu bölgeden uzak durun..."
+- Türk gezginlere özel ipuçları: "Türkçe konuşan esnaf var", "Türk restoranı bulduk" vb.
+- Paragraflar kısa ve akıcı olsun
+- Sanki arkadaşına anlatır gibi yaz, resmi değil
+- Minimum 800 kelime toplam içerik olsun
 
 JSON formatında döndür:
 {{
   "sehir": "{sehir_adi}",
   "ulke": "...",
-  "tanitim": "...",
+  "tanitim": "... (3 paragraf, ilki dikkat çekici bir kişisel gözlemle başlasın)",
   "gezilecek_yerler": [
-    {{"isim": "...", "aciklama": "...", "ipucu": "..."}},
-    ...
+    {{"isim": "...", "aciklama": "... (neden git, ne zaman git)", "ipucu": "... (dikkat et, pratik bilgi)"}},
+    ... (5 yer)
   ],
   "yemekler": [
-    {{"isim": "...", "aciklama": "..."}},
-    ...
+    {{"isim": "...", "aciklama": "... (nerede bulunur, yaklaşık fiyat)"}},
+    ... (5 yemek)
   ],
   "ipuclari": {{
-    "ulasim": "...",
-    "para": "...",
-    "dil": "...",
-    "guvenlik": "..."
+    "ulasim": "... (spesifik, pratik)",
+    "para": "... (kur, kart, nakit durumu)",
+    "dil": "... (Türk gezginler için)",
+    "guvenlik": "... (gerçekçi, abartısız)"
   }},
+  "gizli_nokta": "... (turistlerin bilmediği bir yer veya ipucu)",
+  "uyari": "... (mutlaka kaçınılması gereken bir şey)",
   "en_iyi_zaman": "...",
-  "butce": {{"ekonomik": "...", "orta": "...", "luks": "..."}},
-  "meta_description": "... (max 160 karakter)"
+  "butce": {{"ekonomik": "... EUR/gün", "orta": "... EUR/gün", "luks": "... EUR/gün"}},
+  "meta_description": "... (max 160 karakter, SEO uyumlu)"
 }}"""
 
-    sonuc = claude_sor(prompt, json_mod=True, max_tokens=4000)
+    sonuc = claude_sor(prompt, json_mod=True, max_tokens=6000)
     if not sonuc or not isinstance(sonuc, dict) or 'sehir' not in sonuc:
         log.warning("Rehber üretilemedi: %s (%s)", sehir_adi, iata)
         return None
 
     sonuc['iata'] = iata
     sonuc['olusturulma'] = datetime.now().isoformat()
+    sonuc['yazar'] = 'Dedektif Gezgin Ekibi'
+    sonuc['son_guncelleme'] = datetime.now().strftime('%d %B %Y').replace(
+        'January','Ocak').replace('February','Şubat').replace('March','Mart').replace(
+        'April','Nisan').replace('May','Mayıs').replace('June','Haziran').replace(
+        'July','Temmuz').replace('August','Ağustos').replace('September','Eylül').replace(
+        'October','Ekim').replace('November','Kasım').replace('December','Aralık')
     return sonuc
 
 
