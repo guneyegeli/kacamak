@@ -100,7 +100,7 @@ export function generateAffiliateUrl(platform, origin, destination, departDate, 
       // Format: /search/{ORIGIN}{DDMM}{DEST}{DDMM}{ADULTS}?marker=...
       const retPart = ret ? `${destination}${ret.dd}${ret.mm}` : destination
       const adults = yolcu?.yetiskin || 1
-      return `https://www.aviasales.com/search/${origin}${dep.dd}${dep.mm}${retPart}${adults}?marker=${MARKER}&locale=tr&currency=try&sorting=price${yolcu?.cocuk ? `&children=${yolcu.cocuk}` : ''}${yolcu?.bebek ? `&infants=${yolcu.bebek}` : ''}`
+      return `https://www.aviasales.com/search/${origin}${dep.dd}${dep.mm}${retPart}${adults}?marker=${MARKER}&locale=tr&currency=try&lang=tr&sorting=price${yolcu?.cocuk ? `&children=${yolcu.cocuk}` : ''}${yolcu?.bebek ? `&infants=${yolcu.bebek}` : ''}`
     }
 
     case 'skyscanner': {
