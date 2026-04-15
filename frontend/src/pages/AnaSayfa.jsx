@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { api } from '../services/api'
 import { openAffiliate } from '../utils/affiliateLinks'
 import YURTICI_KODLARI from '../utils/yurticiKodlari'
+import { isVizesiz, isEvize } from '../utils/vizesiz'
 
 const MARKER = import.meta.env.VITE_TRAVELPAYOUTS_MARKER || '518734'
 
@@ -303,9 +304,23 @@ function FirsatKart({ f, fotolar, altTarihler, onFirsat, yolcu }) {
             <><span style={{color:'rgba(255,255,255,0.35)'}}>·</span><span><span style={{fontSize:15,lineHeight:1}}>🧳</span> {bgj.kisa}</span></>
           </div>
         </div>
-        {yeni && (
-          <div className="yeni-badge" style={{position:'absolute',top:10,left:10,background:'#00C896',borderRadius:6,padding:'3px 8px',fontSize:10,fontWeight:700,color:'#fff',letterSpacing:'0.05em',boxShadow:'0 0 12px rgba(0,200,150,0.6)'}}>
-            YEN&#304;
+        {(yeni || (!YURTICI_KODLARI.has(f.varis) && (isVizesiz(f.varis) || isEvize(f.varis)))) && (
+          <div style={{position:'absolute',top:10,left:10,display:'flex',gap:6}}>
+            {yeni && (
+              <span className="yeni-badge" style={{background:'#00C896',borderRadius:6,padding:'3px 8px',fontSize:10,fontWeight:700,color:'#fff',letterSpacing:'0.05em',boxShadow:'0 0 12px rgba(0,200,150,0.6)'}}>
+                YEN&#304;
+              </span>
+            )}
+            {!YURTICI_KODLARI.has(f.varis) && isVizesiz(f.varis) && (
+              <span style={{background:'linear-gradient(135deg, #00C896, #00A070)',color:'#fff',fontSize:9,fontWeight:700,padding:'2px 7px',borderRadius:4,letterSpacing:'0.06em',boxShadow:'0 0 8px rgba(0,200,150,0.5)'}}>
+                V&#304;ZES&#304;Z
+              </span>
+            )}
+            {!YURTICI_KODLARI.has(f.varis) && !isVizesiz(f.varis) && isEvize(f.varis) && (
+              <span style={{background:'linear-gradient(135deg, #0066FF, #0044CC)',color:'#fff',fontSize:9,fontWeight:700,padding:'2px 7px',borderRadius:4,letterSpacing:'0.06em',boxShadow:'0 0 8px rgba(0,102,255,0.5)'}}>
+                E-V&#304;ZE
+              </span>
+            )}
           </div>
         )}
         <div style={{position:'absolute',top:10,right:10,background:'#FF5C1A',borderRadius:8,padding:'6px 10px',textAlign:'center'}}>

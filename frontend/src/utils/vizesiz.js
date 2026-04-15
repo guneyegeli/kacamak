@@ -49,4 +49,17 @@ export const VIZESIZ_ULKELER = new Set([
   'ECN', 'LCA', 'PFO',// Kıbrıs (KKTC dahil)
 ])
 
+export const EVIZE_ULKELER = new Set([
+  'MOW', 'SVO', 'VKO', 'DME', 'LED', 'AER', 'KRR',
+  'RMO', 'ROV', 'VOZ', 'KZN', 'SVX', 'MRV', 'MCX',
+  'GRV', 'OGZ', 'CEK', 'UFA', 'PEE', 'GOJ', 'OMS',
+  'KJA', 'TJM', 'KGD', 'RTW', 'OVB', 'KUF',  // Rusya (e-vize)
+  'SSH', 'HRG', 'CAI',  // Mısır (kapıda vize)
+  'DXB', 'AUH', 'SHJ',  // BAE (e-vize)
+  'DOH',                 // Katar (e-vize)
+  'RUH', 'JED', 'MED',  // Suudi Arabistan (e-vize)
+  'CMB',                 // Sri Lanka (e-vize)
+])
+
 export const isVizesiz = (iataKod) => VIZESIZ_ULKELER.has(iataKod)
+export const isEvize = (iataKod) => EVIZE_ULKELER.has(iataKod)
