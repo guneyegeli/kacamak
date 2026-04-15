@@ -1,0 +1,69 @@
+{
+  "sehir": "Kopenhag",
+  "ulke": "Danimarka",
+  "tanitim": "Kopenhag, Danimarka'nın büyüleyici başkenti olarak Kuzey Avrupa'nın en çekici şehirlerinden biridir. Renkli evleri, tarihi sarayları ve modern Skandinav tasarımıyla ünlü olan bu şehir, geleneksel Danimarka kültürü ile çağdaş yaşam tarzını mükemmel bir şekilde harmanlıyor. Hans Christian Andersen'in masallarından ilham alan atmosferi, dünya çapında ünlü Tivoli Gardens eğlence parkı ve bisiklet dostu sokakları ile Kopenhag, her yaştan ziyaretçisini büyülüyor.\n\nŞehir, 'hygge' (hüge) olarak bilinen Danimarka yaşam felsefesinin merkezi olarak kabul edilir - bu kavram sıcaklık, rahatlık ve hayattan zevk alma anlamına gelir. Kopenhag'ın kompakt yapısı sayesinde başlıca turistik yerler yürüyerek veya bisikletle kolayca gezilir. Şehrin sürdürülebilirlik konusundaki öncü yaklaşımı, temiz sokakları ve yüksek yaşam kalitesi onu dünyanın en yaşanabilir şehirlerinden biri yapar.",
+  "gezilecek_yerler": [
+    {
+      "isim": "Nyhavn (Yeni Liman)",
+      "aciklama": "17. yüzyıldan kalma renkli evleri, tarihi ahşap gemileri ve canlı atmosferiyle Kopenhag'ın en ikonik bölgesi. Kanala paralel uzanan bu eski ticaret limanı, bugün çok sayıda restoran, kafe ve bara ev sahipliği yapıyor.",
+      "ipucu": "Fotoğraf çekmek için öğleden sonra güneş ışığı en güzel açıyı verir. Kanalda tekne turu yaparak şehri farklı perspektiften görün."
+    },
+    {
+      "isim": "Tivoli Gardens",
+      "aciklama": "1843'te açılan dünyanın en eski eğlence parklarından biri. Büyülü bahçeleri, heyecan verici lunapark aletleri, konserler ve özel etkinlikleri ile hem çocuklar hem yetişkinler için mükemmel bir deneyim sunuyor.",
+      "ipucu": "Akşam ışıklandırması muhteşem görünüyor. Gündüz ve akşam için ayrı biletler alıp ikisini birden deneyimlemeyi planlayın."
+    },
+    {
+      "isim": "Küçük Deniz Kızı Heykeli",
+      "aciklama": "Hans Christian Andersen'in ünlü masalından ilham alınarak yapılmış olan bu heykel, 1913'ten beri Langelinie promentadında bulunuyor. Kopenhag'ın sembolü haline gelmiş küçük ama etkileyici bir sanat eseri.",
+      "ipucu": "Heykelin boyutunun düşündüğünüzden küçük olabileceğini unutmayın. Sabah erken saatlerde kalabalıktan kaçınarak daha iyi fotoğraflar çekebilirsiniz."
+    },
+    {
+      "isim": "Rosenborg Kalesi",
+      "aciklama": "Rönesans tarzında inşa edilen bu 17. yüzyıl kalesi, Danimarka kraliyet ailesinin hazinelerini ve tacını barındırıyor. Muhteşem bahçeleri ve iç mekanları ile tarihi bir yolculuk sunuyor.",
+      "ipucu": "Taç mücevherlerini görmek için mutlaka rehberli tura katılın. Çevresdeki Kral Bahçesi'nde piknik yapmak için sandviç getirin."
+    },
+    {
+      "isim": "Christiania Özgür Şehri",
+      "aciklama": "1971'de kurulan alternatif toplum deneyi olan bu özerk bölge, renkli grafitileri, sanat galerileri ve özgün yaşam tarzıyla dikkat çekiyor. Kopenhag'ın bohemyen ruhunu yansıtan benzersiz bir deneyim.",
+      "ipucu": "Fotoğraf çekmeden önce izin isteyin. Ana cadde Pusher Street'te dikkatli olun ve kurallara saygı gösterin."
+    }
+  ],
+  "yemekler": [
+    {
+      "isim": "Smørrebrød",
+      "aciklama": "Danimarka'nın geleneksel açık sandviçi. Çavdar ekmeği üzerine çeşitli malzemelerle hazırlanan bu lezzetli yemek genellikle öğle yemeği olarak tüketilir. Klasik çeşitleri arasında gravlaks (tuzlu somon), frikadeller (köfte) ve sürk (tereyağlı balık) bulunur."
+    },
+    {
+      "isim": "Frikadeller",
+      "aciklama": "Danimarka usulü köfte. Genellikle domuz ve dana karışımından yapılan bu köfteler, patates ve kırmızı lahana ile servis edilir. Kopenhag'ın ev yemeklerinin vazgeçilmez lezzeti olarak kabul edilir."
+    },
+    {
+      "isim": "Flæskesteg",
+      "aciklama": "Çıtır çıtır derili domuz rostosu. Özellikle Noel döneminde popüler olan bu geleneksel yemek, kırmızı lahana ve karamelize edilmiş patateslerle servis edilir. Danimarka mutfağının başyapıtlarından biridir."
+    },
+    {
+      "isim": "Æbleskiver",
+      "aciklama": "Yuvarla şekilli Danimarka köftesi benzeri tatlı. Geleneksel olarak kış aylarında özellikle Noel döneminde tüketilen bu lezzet, pudra şekeri ve reçel ile servis edilir."
+    },
+    {
+      "isim": "Rugbrød",
+      "aciklama": "Koyu rengi çavdar ekmeği. Danimarka mutfağının temel taşı olan bu ekmek, yoğun dokusu ve besleyici özelliğiyle bilinir. Çoğu smørrebrød çeşidinin temelini oluşturur ve günlük diyetin önemli bir parçasıdır."
+    }
+  ],
+  "ipuclari": {
+    "ulasim": "Kopenhag karta (Copenhagen Card) ile toplu taşıma ücretsiz ve turistik yerlere indirimli giriş. Metro, otobüs ve trenler çok düzenli çalışıyor. Şehir bisiklet dostudur - günlük 15-25 EUR'ya bisiklet kiralayabilirsiniz. Merkez yürüyerek gezilebilir.",
+    "para": "Danimarka kronu (DKK) kullanılır. 1 EUR ≈ 7.5 DKK. Kartla ödeme her yerde kabul edilir, nakit kullanımı azdır. Bahşiş zorunlu değil ama %5-10 vermek kibarlıktır. Alkol ve yemek fiyatları yüksektir.",
+    "dil": "Resmi dil Danimarkaca. Neredeyse herkes mükemmel İngilizce konuşur. Temel nezaket: 'Tak' (teşekkürler), 'Hej' (merhaba/güle güle), 'Undskyld' (affedersiniz). Turistik alanlarda Almanca da anlaşılır.",
+    "guvenlik": "Avrupa'nın en güvenli şehirlerinden biri. Gece yalnız yürümek güvenli. Bisiklet hırsızlığı yaygın - kiralık bisikleti mutlaka kilitleyin. Acil durum: 112. Christiania'da dikkatli olun ve kurallara uyun."
+  },
+  "en_iyi_zaman": "Mayıs-Eylül arası ideal (18-22°C, uzun gün ışığı). Temmuz-Ağustos en sıcak ama kalabalık. Nisan-Mayıs ve Eylül-Ekim daha uygun fiyatlı. Kış soğuk ama Tivoli'nin Noel süslemeleri büyüleyici. Beyaz geceler için Haziran-Temmuz tercih edin.",
+  "butce": {
+    "ekonomik": "60-80 EUR/gün (hostel, sokak yemekleri, yürüyüş, ücretsiz müzeler)",
+    "orta": "120-180 EUR/gün (3* otel, orta segment restoranlar, toplu taşıma, müze girişleri)",
+    "luks": "300-500+ EUR/gün (lüks otel, Michelin yıldızlı restoranlar, özel turlar, taksi kullanımı)"
+  },
+  "meta_description": "Kopenhag seyahat rehberi: Nyhavn, Tivoli Gardens, gezilecek yerler, yerel lezzetler, ulaşım ipuçları ve bütçe önerileri. Danimarka başkenti rehberi.",
+  "iata": "CPH",
+  "olusturulma": "2026-04-15T13:12:18.243597"
+}

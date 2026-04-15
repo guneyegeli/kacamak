@@ -1,0 +1,69 @@
+{
+  "sehir": "Soçi",
+  "ulke": "Rusya",
+  "tanitim": "Karadeniz kıyısındaki incisi Soçi, Rusya'nın en önemli sahil tatil merkezlerinden biridir. 2014 Kış Olimpiyatları'na ev sahipliği yapan bu büyüleyici şehir, subtropikal iklimi, muhteşem plajları ve dağlık manzaralarıyla ziyaretçilerini karşılar. Palmiye ağaçları ile kar dağlarının bir arada görüldüğü nadir yerlerden olan Soçi, hem kış hem de yaz sporları için ideal imkanlar sunar.\n\nŞehir, zengin botanik bahçeleri, termal kaynakları ve lüks tatil köyleriyle ünlüdür. Stalinist mimari örnekleri ile modern yapıların harmanlandığı Soçi, aynı zamanda Rusya'nın en uzun sahil şeridine sahip şehridir. Kafkas mutfağının lezzetleri ve canlı gece hayatıyla da dikkat çeken bu destinasyon, her yaş grubundan ziyaretçi için unutulmaz deneyimler vaat eder.",
+  "gezilecek_yerler": [
+    {
+      "isim": "Olimpik Park",
+      "aciklama": "2014 Kış Olimpiyatları için inşa edilen bu dev kompleks, Fisht Stadyumu, Buz Sarayı ve diğer olimpik tesisleri barındırır. Akşamları muhteşem müzikli fıskiye gösterisi düzenlenir.",
+      "ipucu": "Akşam saatlerinde fıskiye gösterisi için erken gidin, kalabalık olabiliyor. Bisiklet kiralayarak parkı gezmek ideal."
+    },
+    {
+      "isim": "Rosa Khutor Kayak Merkezi",
+      "aciklama": "Kafkas Dağları'nda yer alan bu dünya standartlarındaki kayak merkezi, kışın kayak spoları, yazın ise dağcılık ve doğa yürüyüşü için mükemmel imkanlar sunar.",
+      "ipucu": "Teleferikle çıkın, manzara muhteşem. Yazın bile dağ başında hava soğuk olabilir, mont almayı unutmayın."
+    },
+    {
+      "isim": "Riviera Parkı",
+      "aciklama": "Soçi'nin en eski ve büyük parkı olan Riviera, 1898'den beri ziyaretçilerini ağırlıyor. İçinde lunapark, gül bahçesi ve çeşitli eğlence tesisleri bulunur.",
+      "ipucu": "Mayıs-Haziran arası gül bahçesi tam çiçek açtığında ziyaret edin. Akşamüstü saatleri yürüyüş için ideal."
+    },
+    {
+      "isim": "Soçi Arboretumu",
+      "aciklama": "1889'da kurulan bu botanik bahçe, subtropikal ve tropikal bitkilerden oluşan zengin koleksiyonuyla ünlüdür. Teleferikle üst kısmına çıkarak şehir manzarasının tadını çıkarabilirsiniz.",
+      "ipucu": "Teleferik biletini alın, hem bahçeyi gezersiniz hem şehrin panoramik manzarasını görürsünüz. Rahat ayakkabı giyin."
+    },
+    {
+      "isim": "Soçi Plajları",
+      "aciklama": "Karadeniz'in berrak sularında yüzebileceğiniz çakıl plajlar, güneşlenme ve su sporları için harika imkanlar sunar. Plaj kulüpleri ve restoranlar mevcuttur.",
+      "ipucu": "Özel plajlar daha temiz ama ücretli. Güneş kremi almayı unutmayın, güneş çok güçlü olabiliyor."
+    }
+  ],
+  "yemekler": [
+    {
+      "isim": "Şaşlık",
+      "aciklama": "Kafkas mutfağının vazgeçilmezi olan marine edilmiş et parçalarının mangalda pişirilmesiyle yapılan geleneksel lezzet."
+    },
+    {
+      "isim": "Hinkal",
+      "aciklama": "Hamurdan yapılan ve içine et konulan Kafkas mantısı. Yoğurt ve sarımsak sosuyla servis edilir."
+    },
+    {
+      "isim": "Harço",
+      "aciklama": "Gürcü mutfağından gelen, ceviz ve baharat sosu ile servis edilen tavuk yemeği. Soçi'nin meşhur lezzetlerinden."
+    },
+    {
+      "isim": "Borş",
+      "aciklama": "Kırmızı pancardan yapılan geleneksel Rus çorbası. Ekşi krema ile servis edilir ve çok besleyicidir."
+    },
+    {
+      "isim": "Karadeniz Balığı",
+      "aciklama": "Taze deniz ürünleri, özellikle kalkan ve barbunya balığı ızgara olarak servis edilir. Limon ve yeşilliklerle süslenir."
+    }
+  ],
+  "ipuclari": {
+    "ulasim": "Soçi Havalimanı şehir merkezine 30 km uzaklıkta. Otobüs, taksi veya kiralık araçla ulaşım mümkün. Şehir içinde otobüs, minibüs ve taksi kullanabilirsiniz. Olimpik Park'a özel trenler de var.",
+    "para": "Rus Rublesi (RUB) kullanılır. Kredi kartları kabul edilir ancak nakit para bulundurmanız tavsiye edilir. ATM'ler yaygın. 1 EUR ≈ 90-100 RUB arası.",
+    "dil": "Resmi dil Rusça. Turistik bölgelerde İngilizce bilen personel bulunabilir. Çeviri uygulaması indirin, temel Rusça kelimeleri öğrenin.",
+    "guvenlik": "Genel olarak güvenli bir şehir. Normal şehir güvenlik önlemlerini alın. Gece geç saatlerde merkezi olmayan bölgelerden kaçının. Önemli belgelerinizin kopyasını alın."
+  },
+  "en_iyi_zaman": "En iyi ziyaret zamanı Mayıs-Ekim arası. Yaz ayları (Haziran-Ağustos) plaj ve deniz için ideal ancak kalabalık. Bahar (Nisan-Mayıs) ve sonbahar (Eylül-Ekim) daha az kalabalık ve uygun fiyatlı. Kış sporları için Aralık-Mart arası.",
+  "butce": {
+    "ekonomik": "40-60 EUR/gün (hostel/pansiyon, yerel yemek, toplu taşıma)",
+    "orta": "80-120 EUR/gün (3 yıldızlı otel, restoran yemekleri, bazı aktiviteler)",
+    "luks": "200+ EUR/gün (5 yıldızlı otel, özel ulaşım, lüks restoranlar, spa)"
+  },
+  "meta_description": "Soçi seyahat rehberi: Karadeniz incisi Soçi'de görülecek yerler, yerel lezzetler, ulaşım ve konaklama ipuçları. 2024 güncel bilgiler.",
+  "iata": "AER",
+  "olusturulma": "2026-04-15T13:10:21.914739"
+}

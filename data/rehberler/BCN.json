@@ -1,0 +1,69 @@
+{
+  "sehir": "Barselona",
+  "ulke": "İspanya",
+  "tanitim": "Barselona, İspanya'nın Katalonya bölgesinin başkenti olarak Akdeniz kıyısında yer alan büyüleyici bir şehirdir. Antoni Gaudí'nin eşsiz mimarisi, zengin sanat mirası, canlı gece hayatı ve muhteşem plajlarıyla dünya çapında ün kazanmış bu kozmopolit kent, her yıl milyonlarca ziyaretçiyi ağırlıyor. Gotik Mahalle'nin dar sokakları ile modern Eixample bölgesinin geniş bulvarları arasında geçmişle geleceğin mükemmel uyumunu yaşayabilirsiniz.\n\nŞehir, sadece mimari harikalarıyla değil, aynı zamanda zengin mutfak kültürü, dünya çapında müzeleri ve La Ramblas gibi ikonik caddeleriyle de dikkat çekiyor. Katalan kültürünün kalbi olan Barselona, kendi dilini, geleneklerini ve yaşam tarzını koruyarak ziyaretçilerine özgün bir İspanyol deneyimi sunuyor. Deniz kenarındaki konumu sayesinde hem şehir turu hem de plaj keyfi yapmak isteyenler için mükemmel bir destinasyon.",
+  "gezilecek_yerler": [
+    {
+      "isim": "Sagrada Familia",
+      "aciklama": "Gaudí'nin başyapıtı olan bu muhteşem bazilika, 1882'den beri inşa halinde ve 2026'da tamamlanması planlanıyor. Gotik ve Art Nouveau formlarının benzersiz karışımı.",
+      "ipucu": "Biletinizi önceden online alın ve ses rehberi kiralayın. Sabah erken saatlerde ziyaret edin."
+    },
+    {
+      "isim": "Park Güell",
+      "aciklama": "Gaudí'nin tasarladığı renkli mozaiklerle süslü bu park, şehrin panoramik manzarasını sunar. Masal dünyasından çıkmış gibi görünen yapılarıyla ünlü.",
+      "ipucu": "Zaman sınırlı girişler için rezervasyon yapın. Günbatımından önce gidin, manzara harika!"
+    },
+    {
+      "isim": "La Ramblas ve Gotik Mahalle",
+      "aciklama": "Barselona'nın en ünlü caddesi La Ramblas ve ortaçağ sokakları ile büyüleyici Gotik Mahalle. Picasso Müzesi, Katedrali ve sayısız tapas barı burada.",
+      "ipucu": "Çantanızı sıkı tutun, turistik alan olduğu için yankesiciler aktif. Akşam saatlerinde daha güzel."
+    },
+    {
+      "isim": "Casa Batlló",
+      "aciklama": "Gaudí'nin modernist akımının en güzel örneklerinden biri. Renkli cam mozaikler ve organik formlarla süslü bu bina canlı bir sanat eseri.",
+      "ipucu": "Akıllı rehber dahil biletler alın. Çatı terasındaki manzara kaçırılmaz!"
+    },
+    {
+      "isim": "Barceloneta Plajı",
+      "aciklama": "Şehir merkezine sadece birkaç dakika mesafedeki altın sarısı kumlu plaj. Deniz kenarında yürüyüş, güneşlenme ve su sporları için ideal.",
+      "ipucu": "Metro ile kolayca ulaşılır. Plaj barlarında paella deneyin ve güneşten korunmayı unutmayın."
+    }
+  ],
+  "yemekler": [
+    {
+      "isim": "Paella Valenciana",
+      "aciklama": "Safran, tavuk, tavşan ve fasulye ile yapılan geleneksel İspanyol pilavı. Barselona'da deniz ürünlü versiyonları da çok popüler."
+    },
+    {
+      "isim": "Patatas Bravas",
+      "aciklama": "Kızarmış patates küpleri üzerine acılı domates sosu ve aioli ile servis edilen klasik tapas. Her bara gittiğinizde mutlaka deneyin."
+    },
+    {
+      "isim": "Jamón Ibérico",
+      "aciklama": "İspanya'nın gurur duyduğu İberyalı domuzdan yapılan dünya çapında ünlü jambon. İnce dilimler halinde servis edilir."
+    },
+    {
+      "isim": "Gazpacho",
+      "aciklama": "Domates, salatalık, biber ve soğan ile yapılan soğuk çorba. Sıcak yaz günlerinde serinletici ve besleyici bir seçenek."
+    },
+    {
+      "isim": "Crema Catalana",
+      "aciklama": "Vanilya kreması üzerine karamelize şeker tabakası olan geleneksel Katalan tatlısı. Crème brûlée'nin İspanyol versiyonu."
+    }
+  ],
+  "ipuclari": {
+    "ulasim": "Metro sistemi çok gelişmiş, T-Casual kartı alın (10 yolculuk). Havaalanından Aerobus veya metro ile merkeze ulaşabilirsiniz. Şehir içinde yürümek ve bisiklet kullanmak da popüler.",
+    "para": "Euro kullanılıyor. Kartla ödeme yaygın ama küçük tapas barları için nakit bulundurun. Bahşiş zorunlu değil, %5-10 yeterli.",
+    "dil": "Resmi diller Katalan ve İspanyolca. İngilizce turistik yerlerde konuşulur. Temel İspanyolca kelimeleri öğrenin: Hola (merhaba), Gracias (teşekkürler), Por favor (lütfen).",
+    "guvenlik": "Genel olarak güvenli ama yankesiciler turistik alanlarda aktif. Çantanızı önünüzde taşıyın, değerli eşyaları otelde bırakın. Gece geç saatlerde tek başına dolaşmaktan kaçının."
+  },
+  "en_iyi_zaman": "En iyi zaman Mayıs-Haziran ve Eylül-Ekim ayları. Hava ılık, kalabalık az. Temmuz-Ağustos çok sıcak ve kalabalık. Kış ayları ılık ama yağışlı olabilir.",
+  "butce": {
+    "ekonomik": "40-60 EUR/gün (hostel, street food, metro kartı, ücretsiz müzeler)",
+    "orta": "80-120 EUR/gün (3 yıldız otel, restoran yemekleri, ana turistik yerler, taksi kullanımı)",
+    "luks": "200+ EUR/gün (5 yıldız otel, fine dining, özel turlar, alışveriş, spa)"
+  },
+  "meta_description": "Barselona seyahat rehberi: Gaudí mimarisi, tapas kültürü, gezilecek yerler, pratik ipuçları ve bütçe önerileri. Katalonya'nın büyülü başkentini keşfedin!",
+  "iata": "BCN",
+  "olusturulma": "2026-04-15T13:11:12.449994"
+}

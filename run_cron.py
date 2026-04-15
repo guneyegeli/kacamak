@@ -64,3 +64,12 @@ try:
              fiyat_sonuc.get('kontrol', 0), fiyat_sonuc.get('guncellenen', 0))
 except Exception as e:
     log.warning("Fiyat güncelleme hatası: %s", e)
+
+# Rehber güncelleme (günlük 3 şehir)
+try:
+    from agents.rehber_uretici import rehberleri_guncelle
+    rehber_sonuc = rehberleri_guncelle(limit=3)
+    log.info("Rehber güncelleme: %d üretildi, %d atlandı, %d kalan",
+             rehber_sonuc.get('uretilen', 0), rehber_sonuc.get('atlanan', 0), rehber_sonuc.get('kalan', 0))
+except Exception as e:
+    log.warning("Rehber güncelleme hatası: %s", e)

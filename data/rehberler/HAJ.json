@@ -1,0 +1,69 @@
+{
+  "sehir": "Hannover",
+  "ulke": "Almanya",
+  "tanitim": "Aşağı Saksonya eyaletinin başkenti Hannover, Almanya'nın en önemli ticaret ve teknoloji merkezlerinden biridir. Şehir, her yıl düzenlenen dünya çapındaki fuarları, görkemli kraliyet bahçeleri ve zengin kültürel mirası ile ziyaretçilerini büyüler. Herrenhausen Sarayı bahçeleri ve tarihi şehir merkezi ile klasik Alman mimarisinin en güzel örneklerini sunan Hannover, hem iş hem de tatil seyahatleri için ideal bir destinasyondur.\n\nŞehir, İkinci Dünya Savaşı sonrası yeniden inşa edilmiş olmasına rağmen, tarihi dokusunu korumayı başarmıştır. Modern alışveriş caddeleri, yeşil parklar ve canlı kültür hayatı ile geleneksel Alman yaşam tarzını deneyimleyebileceğiniz bir şehirdir. Hannover aynı zamanda çevre bölgelere yapılacak günübirlik geziler için de mükemmel bir üs noktasıdır.",
+  "gezilecek_yerler": [
+    {
+      "isim": "Herrenhausen Bahçeleri",
+      "aciklama": "Avrupa'nın en güzel barok bahçelerinden biri olan Herrenhausen, 17. yüzyıldan kalma muhteşem saray bahçeleridir. Geometrik düzenlemeler, süs havuzları ve heykeller ile barok peyzaj sanatının en iyi örneklerini sergiler.",
+      "ipucu": "Yaz aylarında düzenlenen açık hava konserlerine katılmayı unutmayın. Giriş ücreti yaklaşık 8 EUR'dur."
+    },
+    {
+      "isim": "Hannover Belediye Binası",
+      "aciklama": "1913 yılında tamamlanan bu görkemli bina, benzersiz kubik mimarisi ile dikkat çeker. 98 metrelik kulesinden şehrin panoramik manzarasını izleyebilirsiniz.",
+      "ipucu": "Eğik asansör ile kuleye çıkış deneyimi oldukça etkileyicidir. Rehberli turlar Almanca ve İngilizce yapılmaktadır."
+    },
+    {
+      "isim": "Maschsee Gölü",
+      "aciklama": "Şehir merkezindeki yapay göl, yürüyüş, bisiklet ve su sporları için ideal bir rekreasyon alanıdır. Göl çevresinde kafeler ve restoranlar bulunmaktadır.",
+      "ipucu": "Tekne turları için yaz aylarını tercih edin. Göl kenarında piknik yapmak için harika alanlar mevcuttur."
+    },
+    {
+      "isim": "Hannover Hayvanat Bahçesi",
+      "aciklama": "Dünyanın en eski hayvanat bahçelerinden biri olan Erlebnis-Zoo, tematik alanları ve interaktif deneyimleri ile ünlüdür. 3000'den fazla hayvan türüne ev sahipliği yapar.",
+      "ipucu": "Tüm gün geçirebileceğiniz bir yer olduğu için sabah erken saatlerde girin. Online bilet alımında indirim yapılmaktadır."
+    },
+    {
+      "isim": "Eski Şehir Merkezi (Altstadt)",
+      "aciklama": "Savaş sonrası restore edilen tarihi merkez, yarı ahşap evler, taş döşeli sokaklar ve geleneksel Alman mimarisi ile büyüleyicidir. Marktkirche kilisesi ve çeşitli müzeler burada yer alır.",
+      "ipucu": "Kırmızı çizgi rehberini (Roter Faden) takip ederek şehrin önemli noktalarını keşfedebilirsiniz. Yürüyüş yaklaşık 4 km sürmektedir."
+    }
+  ],
+  "yemekler": [
+    {
+      "isim": "Calenberger Pfannenschlag",
+      "aciklama": "Hannover'un geleneksel köfte yemeği. Patates, soğan ve baharatlarla hazırlanan bu besleyici yemek, genellikle turşu ve ekmek ile servis edilir."
+    },
+    {
+      "isim": "Lüttje Lage",
+      "aciklama": "Yerel içecek geleneği olan bu ikili servis, bir bardak bira ve bir kadeh şnaps'tan oluşur. Her iki içeceği aynı anda tek hamlede içmek yerel adettir."
+    },
+    {
+      "isim": "Hannoversche Weiße",
+      "aciklama": "Bölgeye özgü beyaz bira çeşidi. Hafif ve ferahlatıcı tadı ile özellikle yaz aylarında tercih edilen geleneksel bir içecektir."
+    },
+    {
+      "isim": "Grünkohl mit Pinkel",
+      "aciklama": "Kış aylarının popüler yemeği olan lahana ve sosisli bu yemek, genellikle patates ve hardal ile servis edilir. Kuzey Almanya'nın karakteristik lezzetidir."
+    },
+    {
+      "isim": "Hannoveraner Leberwurst",
+      "aciklama": "Bölgeye özgü ciğer sosisi. Ekmek üzerinde soğan ve turşu ile birlikte tüketilen bu geleneksel lezzet, yerel şarküterilerde bulunabilir."
+    }
+  ],
+  "ipuclari": {
+    "ulasim": "HannoverCard ile toplu taşıma ve müze girişlerinde indirim sağlanır. Şehir içi ulaşım tramvay, otobüs ve S-Bahn ile mükemmeldir. Bisiklet kiralama sistemi çok yaygındır.",
+    "para": "Euro kullanılır. Kartla ödeme her yerde kabul edilir ancak küçük mekanlar için nakit bulundurun. Bahşiş %5-10 arasında beklenir.",
+    "dil": "Almanca ana dil olmakla birlikte, turist bölgelerinde ve otellerde İngilizce yaygın olarak konuşulur. Temel Almanca kelimeler öğrenmek faydalı olacaktır.",
+    "guvenlik": "Hannover çok güvenli bir şehirdir. Gece geç saatlerde bile şehir merkezi güvenlidir. Genel güvenlik önlemlerini almak yeterlidir."
+  },
+  "en_iyi_zaman": "Mayıs-Eylül arası en ideal dönemdir. Yaz aylarında hava sıcak ve güneşlidir, bahçeler ve parklar en güzel halindedir. Kış ayları soğuk olsa da Noel pazarları görülmeye değer.",
+  "butce": {
+    "ekonomik": "50-70 EUR/gün (hostel, sokak yemekleri, toplu taşıma)",
+    "orta": "90-130 EUR/gün (orta kategori otel, restoran yemekleri, müze girişleri)",
+    "luks": "200+ EUR/gün (lüks otel, fine dining restoranlar, özel turlar)"
+  },
+  "meta_description": "Hannover seyahat rehberi: Herrenhausen Bahçeleri, tarihi merkez, yerel lezzetler ve pratik ipuçları ile Almanya'nın kültür başkentini keşfedin.",
+  "iata": "HAJ",
+  "olusturulma": "2026-04-15T13:13:57.671534"
+}

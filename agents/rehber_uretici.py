@@ -1,6 +1,13 @@
 """
 Aktif fırsatların varış şehirleri için Claude API ile
 SEO destekli seyahat rehberleri üretir.
+
+Öncelik sırası:
+1. DB'deki aktif fırsatlardaki şehirler
+2. Popüler destinasyonlar (hardcoded)
+3. Diğer şehirler
+
+Günlük limit: varsayılan 3 (Claude API maliyeti kontrolü)
 """
 
 import os
@@ -22,7 +29,6 @@ DB = os.getenv("DATABASE_PATH", "data/kacamak.db")
 REHBER_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "rehberler")
 log = logging.getLogger("rehber_uretici")
 
-# IATA → şehir adı (FirsatDetay'dakiyle aynı)
 SEHIR_ADLARI = {
     'IST':'İstanbul','SAW':'İstanbul','ADB':'İzmir','AYT':'Antalya','ESB':'Ankara',
     'BCN':'Barselona','MAD':'Madrid','PAR':'Paris','CDG':'Paris','ORY':'Paris',
@@ -52,6 +58,39 @@ SEHIR_ADLARI = {
     'CPT':'Cape Town','NBO':'Nairobi','MRU':'Mauritius','SEZ':'Seyşeller',
     'KRR':'Krasnodar','AER':'Soçi',
 }
+
+# Popüler destinasyonlar — fırsat olmasa da rehber üretilmeli
+POPULER = [
+    'ATH', 'BCN', 'DXB', 'ROM', 'PAR', 'LON', 'AMS', 'PRG', 'BUD', 'LIS',
+    'BER', 'VIE', 'BKK', 'TBS', 'BEG', 'RAK', 'DPS', 'ICN', 'HND', 'SIN',
+    'GYD', 'MLE', 'SSH', 'HKT', 'CPH', 'MUC', 'MXP', 'MAD', 'ZRH', 'BRU',
+]
+
+
+def kelime_say(data):
+    """JSON rehber verisindeki toplam kelime sayısını tahmin et."""
+    text = json.dumps(data, ensure_ascii=False)
+    return len(text.split())
+
+
+def rehber_durumu(iata):
+    """Rehber dosyasının durumunu kontrol et.
+    Döner: ('yok', None) | ('eski', gun_sayisi) | ('guncel', gun_sayisi)
+    """
+    dosya = os.path.join(REHBER_DIR, f"{iata}.json")
+    if not os.path.exists(dosya):
+        return 'yok', None
+
+    try:
+        with open(dosya, 'r', encoding='utf-8') as f:
+            mevcut = json.load(f)
+        olusturulma = datetime.fromisoformat(mevcut.get('olusturulma', '2000-01-01'))
+        gun = (datetime.now() - olusturulma).days
+        if gun > 30:
+            return 'eski', gun
+        return 'guncel', gun
+    except Exception:
+        return 'yok', None
 
 
 def rehber_uret(iata, sehir_adi):
@@ -100,62 +139,100 @@ JSON formatında döndür:
     return sonuc
 
 
-def rehberleri_guncelle(limit=10):
-    """DB'deki aktif fırsatların varış şehirleri için rehber üret."""
+def rehberleri_guncelle(limit=3):
+    """Öncelik sırasına göre rehber üret/güncelle. Günlük limit varsayılan 3."""
     os.makedirs(REHBER_DIR, exist_ok=True)
 
-    conn = sqlite3.connect(DB)
+    # --- 1. DB'deki aktif fırsatlardan şehir listesi ---
+    db_sehirler = {}
     try:
+        conn = sqlite3.connect(DB)
         rows = conn.execute("""
             SELECT DISTINCT varis, varis_sehir FROM firsatlar
             WHERE aktif = 1 AND ucus_tarihi >= date('now')
             ORDER BY olusturulma DESC
         """).fetchall()
-    finally:
         conn.close()
+        for varis, varis_sehir in rows:
+            if varis not in db_sehirler:
+                db_sehirler[varis] = varis_sehir or SEHIR_ADLARI.get(varis, varis)
+    except Exception as e:
+        log.warning("DB okunamadı: %s", e)
 
-    # Benzersiz IATA kodları
-    sehirler = {}
-    for varis, varis_sehir in rows:
-        if varis not in sehirler:
-            sehir_adi = varis_sehir or SEHIR_ADLARI.get(varis, varis)
-            sehirler[varis] = sehir_adi
+    # --- 2. Öncelikli kuyruk oluştur ---
+    # Sıra: DB şehirleri → popüler → SEHIR_ADLARI'ndaki geri kalanlar
+    kuyruk = []
+    eklenen = set()
 
+    # Öncelik 1: aktif fırsatlardaki şehirler
+    for iata, sehir in db_sehirler.items():
+        if iata not in eklenen:
+            kuyruk.append((iata, sehir))
+            eklenen.add(iata)
+
+    # Öncelik 2: popüler destinasyonlar
+    for iata in POPULER:
+        if iata not in eklenen and iata in SEHIR_ADLARI:
+            kuyruk.append((iata, SEHIR_ADLARI[iata]))
+            eklenen.add(iata)
+
+    # Öncelik 3: diğer tüm şehirler
+    for iata, sehir in SEHIR_ADLARI.items():
+        if iata not in eklenen:
+            kuyruk.append((iata, sehir))
+            eklenen.add(iata)
+
+    # --- 3. Üretim / güncelleme döngüsü ---
     uretilen = 0
     atlanan = 0
-    esik = datetime.now() - timedelta(days=30)
+    toplam_kalan = 0
 
-    for iata, sehir_adi in list(sehirler.items())[:limit]:
-        dosya = os.path.join(REHBER_DIR, f"{iata}.json")
+    for iata, sehir_adi in kuyruk:
+        durum, gun = rehber_durumu(iata)
 
-        # Zaten varsa ve 30 günden yeni ise atla
-        if os.path.exists(dosya):
-            try:
-                with open(dosya, 'r', encoding='utf-8') as f:
-                    mevcut = json.load(f)
-                olusturulma = datetime.fromisoformat(mevcut.get('olusturulma', '2000-01-01'))
-                if olusturulma > esik:
-                    atlanan += 1
-                    continue
-            except Exception:
-                pass
+        if durum == 'guncel':
+            atlanan += 1
+            log.debug("Atlandı: %s (%s) - %d gün önce güncellendi", sehir_adi, iata, gun)
+            continue
 
-        log.info("Rehber üretiliyor: %s (%s)", sehir_adi, iata)
+        # Üretilmesi gereken ama limite takılan
+        if uretilen >= limit:
+            toplam_kalan += 1
+            continue
+
+        if durum == 'eski':
+            log.info("Güncelleniyor: %s (%s) - %d gün önce üretilmişti", sehir_adi, iata, gun)
+        else:
+            log.info("Rehber üretiliyor: %s (%s)", sehir_adi, iata)
+
         rehber = rehber_uret(iata, sehir_adi)
         if rehber:
+            dosya = os.path.join(REHBER_DIR, f"{iata}.json")
             with open(dosya, 'w', encoding='utf-8') as f:
                 json.dump(rehber, f, ensure_ascii=False, indent=2)
+            kelime = kelime_say(rehber)
             uretilen += 1
-            log.info("Rehber kaydedildi: %s", dosya)
+            log.info("Rehber üretildi: %s (%s) - %d kelime", sehir_adi, iata, kelime)
         else:
-            log.warning("Rehber üretilemedi: %s", iata)
+            log.warning("Rehber üretilemedi: %s (%s)", sehir_adi, iata)
 
         time.sleep(3)
 
-    log.info("Rehber güncelleme: %d üretildi, %d atlandı (güncel)", uretilen, atlanan)
-    return {"uretilen": uretilen, "atlanan": atlanan}
+    # Kalan sayısını hesapla (limite takılanlar)
+    for iata, _ in kuyruk:
+        if uretilen >= limit:
+            d, _ = rehber_durumu(iata)
+            if d != 'guncel':
+                pass  # zaten toplam_kalan'a eklendi
+
+    log.info("=" * 40)
+    log.info("Bugün %d rehber üretildi, %d atlandı (güncel), %d şehir kaldı",
+             uretilen, atlanan, toplam_kalan)
+    log.info("=" * 40)
+
+    return {"uretilen": uretilen, "atlanan": atlanan, "kalan": toplam_kalan}
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s", datefmt="%H:%M:%S")
-    rehberleri_guncelle(limit=10)
+    rehberleri_guncelle(limit=3)

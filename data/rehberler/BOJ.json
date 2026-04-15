@@ -1,0 +1,69 @@
+{
+  "sehir": "Bourgas",
+  "ulke": "Bulgaristan",
+  "tanitim": "Karadeniz kıyısında yer alan Bourgas, Bulgaristan'ın en büyük liman şehirlerinden biridir. Zengin tarihi, muhteşem plajları ve canlı kültürel yaşamıyla ziyaretçilerini büyüleyen bu şehir, hem dinlenmek hem de keşfetmek isteyenler için mükemmel bir destinasyondur. Şehir merkezi ile deniz arasındaki mükemmel uyum, modern yaşam ile geleneksel Bulgar kültürünün harmanlandığı eşsiz bir atmosfer yaratır.\n\nBourgas, sadece sahil güzelliğiyle değil, aynı zamanda doğa parkları, müzeleri ve tarihi yapılarıyla da dikkat çeker. Şehrin etrafındaki göller ve sulak alanlar, kuş gözlemcileri ve doğa severleri için gerçek bir cennet. Ayrıca, geleneksel Bulgar mutfağının lezzetli örneklerini tadabileceğiniz restoranlar ve canlı gece hayatı ile unutulmaz anılar biriktireceğiniz bir şehirdir.",
+  "gezilecek_yerler": [
+    {
+      "isim": "Bourgas Deniz Bahçesi",
+      "aciklama": "Şehrin kalbinde yer alan bu güzel park, deniz kıyısı boyunca uzanır ve yürüyüş yapmak, bisiklete binmek için idealdir. İçinde çeşitli heykeller, kafeler ve oyun alanları bulunur.",
+      "ipucu": "Günbatımı saatlerinde ziyaret edin, muhteşem fotoğraflar çekebilirsiniz."
+    },
+    {
+      "isim": "Sozopol Antik Kenti",
+      "aciklama": "Bourgas'tan 35 km uzaklıktaki bu tarihi kasaba, Trakya döneminden kalma antik kalıntıları ve taş evleriyle ünlüdür. UNESCO Dünya Mirası Listesi'nde yer alır.",
+      "ipucu": "Sabah erken saatlerde gidin, turistik kalabalıktan kaçının ve otantik atmosferi yaşayın."
+    },
+    {
+      "isim": "Poda Doğa Rezervi",
+      "aciklama": "400'den fazla kuş türüne ev sahipliği yapan bu sulak alan, kuş gözlemciliği ve doğa fotoğrafçılığı için mükemmel bir lokasyondur. Göçmen kuşların uğrak noktasıdır.",
+      "ipucu": "Dürbün ve uzun lensli fotoğraf makinesi getirin, rehber eşliğinde tur yapmanızı öneririm."
+    },
+    {
+      "isim": "Bourgas Arkeoloji Müzesi",
+      "aciklama": "Trakya, Roma ve Bizans dönemlerinden kalma eserlerle dolu bu müze, bölgenin zengin tarihini gözler önüne serer. Antik sikkeler ve takılar özellikle dikkat çekicidir.",
+      "ipucu": "Rehberli tur alın, tarihi eserler hakkında detaylı bilgi edinebilirsiniz."
+    },
+    {
+      "isim": "Sarafovo Plajı",
+      "aciklama": "Bourgas'ın en popüler plajlarından biri olan Sarafovo, temiz kumsalı ve berrak denizi ile ünlüdür. Su sporları ve plaj aktiviteleri için ideal.",
+      "ipucu": "Hafta içi daha sakin, plaj şemsiyesi ve sandalye kiralayabilirsiniz."
+    }
+  ],
+  "yemekler": [
+    {
+      "isim": "Shopska Salata",
+      "aciklama": "Domates, salatalık, soğan ve beyaz peynirle hazırlanan geleneksel Bulgar salatası. Ferah ve sağlıklı bir başlangıç."
+    },
+    {
+      "isim": "Kavarma",
+      "aciklama": "Domuz eti, soğan ve mantarla yavaş ateşte pişirilen geleneksel et yemeği. Genellikle pilav veya ekmek ile servis edilir."
+    },
+    {
+      "isim": "Balık Çorbası",
+      "aciklama": "Karadeniz'in taze balıkları ile hazırlanan zengin ve lezzetli çorba. Bourgas'ın liman şehri olmasının avantajı."
+    },
+    {
+      "isim": "Banitsa",
+      "aciklama": "Peynir, yumurta veya et ile hazırlanan çıtır çıtır börek türü hamur işi. Kahvaltıda veya atıştırmalık olarak tüketilir."
+    },
+    {
+      "isim": "Rakia",
+      "aciklama": "Üzüm, erik veya diğer meyvelerden distile edilen geleneksel Bulgar içkisi. Yemeklerden önce aperitif olarak içilir."
+    }
+  ],
+  "ipuclari": {
+    "ulasim": "Havalimanından şehir merkezine otobüs (№15) veya taksi ile ulaşım mümkün. Şehir içinde otobüsler ucuz ve düzenli. Sosopol gibi yakın yerlere minibüs seferleri var.",
+    "para": "Para birimi Bulgar Levası (BGN). 1 EUR ≈ 2 BGN. Kartlar yaygın kabul görür, ancak küçük işletmelerde nakit gerekebilir. ATM'ler bol.",
+    "dil": "Resmi dil Bulgarca (Kiril alfabesi). Turizm bölgelerinde İngilizce konuşulur. Rusça da anlaşılır. Temel Bulgarca kelimeler öğrenmek faydalı.",
+    "guvenlik": "Genel olarak güvenli bir şehir. Gece geç saatlerde merkez dışı bölgelerde dikkatli olun. Değerli eşyalarınızı otelde bırakın. Sahte polis kontrolüne dikkat."
+  },
+  "en_iyi_zaman": "En iyi ziyaret zamanı Mayıs-Eylül arası. Temmuz-Ağustos en sıcak dönem (25-30°C), deniz aktiviteleri için ideal. Mayıs-Haziran ve Eylül daha az kalabalık ve ılıman.",
+  "butce": {
+    "ekonomik": "30-50 EUR/gün (hostel, yerel restoranlar, toplu taşıma)",
+    "orta": "60-100 EUR/gün (3* otel, iyi restoranlar, bazı turlar)",
+    "luks": "120-200+ EUR/gün (4-5* otel, lüks restoranlar, özel turlar)"
+  },
+  "meta_description": "Bourgas seyahat rehberi: Bulgaristan'ın güzel liman şehri. Gezilecek yerler, yemekler, ulaşım ve bütçe bilgileri. Karadeniz tatili planınız için!",
+  "iata": "BOJ",
+  "olusturulma": "2026-04-15T13:15:35.036791"
+}

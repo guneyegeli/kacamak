@@ -1,0 +1,69 @@
+{
+  "sehir": "Elazığ",
+  "ulke": "Türkiye",
+  "tanitim": "Elazığ, Doğu Anadolu Bölgesi'nin batısında yer alan, tarihi ve doğal güzellikleri bir araya getiren büyüleyici bir şehirdir. Fırat Nehri'nin kıyısında kurulmuş olan şehir, Harput Kalesi gibi tarihi yapıları, Hazar Gölü gibi doğal harikalarıyla ziyaretçilerini kendine hayran bırakır. Elazığ aynı zamanda zengin kültürel mirası ve geleneksel el sanatlarıyla ünlüdür.\n\nŞehir, antik çağlardan günümüze kadar birçok medeniyete ev sahipliği yapmış olup, bu kültürel çeşitlilik günümüzde de hissedilmektedir. Özellikle Harput ilçesi, Anadolu'nun en eski yerleşim yerlerinden biri olarak kabul edilir ve UNESCO Dünya Mirası Geçici Listesi'nde yer almaktadır. Modern Elazığ merkezi ise 19. yüzyılda kurulmuş olup, geniş bulvarları ve modern yapılarıyla dikkat çeker.",
+  "gezilecek_yerler": [
+    {
+      "isim": "Harput Kalesi ve Ulu Cami",
+      "aciklama": "11. yüzyılda inşa edilmiş tarihi kale ve yanındaki Ulu Cami, Elazığ'ın en önemli tarihi yapılarıdır. Kale, şehrin panoramik manzarasını sunar ve Anadolu'nun en iyi korunmuş kalelerinden biridir.",
+      "ipucu": "Günbatımından önce ziyaret edin, manzara muhteşem olur. Rahat yürüyüş ayakkabıları giymeyi unutmayın."
+    },
+    {
+      "isim": "Hazar Gölü",
+      "aciklama": "Türkiye'nin en büyük tatlı su göllerinden biri olan Hazar Gölü, eşsiz doğal güzelliği ve berrak sularıyla ünlüdür. Göl kenarında piknik yapabilir, balık tutabilir ve su sporları yapabilirsiniz.",
+      "ipucu": "Yaz aylarında erken saatlerde gidin, öğleden sonra kalabalık olabilir. Göl kenarındaki lokantalar taze göl balığı servisi yapar."
+    },
+    {
+      "isim": "Buzluk Mağarası",
+      "aciklama": "Yazın bile içinde buz kütleleri bulunan bu doğal mağara, jeolojik bir harikadır. 150 metre derinliğindeki mağara, serin havası ile yaz aylarında doğal klima görevi görür.",
+      "ipucu": "Mağara içi oldukça soğuktur, mutlaka yanınıza mont alın. Rehber eşliğinde gezilmesi önerilir."
+    },
+    {
+      "isim": "Keban Baraj Gölü",
+      "aciklama": "Fırat Nehri üzerinde kurulmuş olan Keban Barajı, hem enerji üretimi hem de rekreasyon alanı olarak kullanılır. Tekne turları ve su sporları için ideal bir lokasyondur.",
+      "ipucu": "Baraj gölünde tekne turları düzenlenir, önceden rezervasyon yaptırın. Balık tutmak istiyorsanız izin almanız gerekir."
+    },
+    {
+      "isim": "Elazığ Arkeoloji ve Etnografya Müzesi",
+      "aciklama": "Bölgenin zengin tarihini ve kültürünü yansıtan eserlerle dolu müze, Urartu, Roma ve Bizans dönemlerine ait buluntuları sergiler. Geleneksel el sanatları bölümü de oldukça zengindir.",
+      "ipucu": "Müze Salı günleri kapalıdır. Rehberli tur almak eserleri daha iyi anlamanızı sağlar."
+    }
+  ],
+  "yemekler": [
+    {
+      "isim": "Elazığ Köftesi",
+      "aciklama": "Bulgur, kıyma ve baharatlarla hazırlanan, içi boş olan ve özel sosla servis edilen yöresel köfte çeşidi."
+    },
+    {
+      "isim": "Hazar Gölü Balığı",
+      "aciklama": "Hazar Gölü'nden çıkan taze balıklar, genellikle ızgara veya fırında pişirilerek servis edilir. Çok lezzetli ve besleyicidir."
+    },
+    {
+      "isim": "Harput Köftesi",
+      "aciklama": "Bulgur ve et karışımından yapılan, içine ceviz konularak pişirilen geleneksel yemek. Yoğurtlu servis edilir."
+    },
+    {
+      "isim": "Analı Kızlı",
+      "aciklama": "Mercimek köftesi benzeri ancak içine bulgur pilav konularak yapılan, üzerine sumak ve salça sosu dökülen özel yemek."
+    },
+    {
+      "isim": "Pestil ve Köme",
+      "aciklama": "Elazığ'ın ünlü tatlıları. Pestil kayısıdan, köme ise pestil ve ceviz karışımından yapılır. Doğal ve çok lezzetlidir."
+    }
+  ],
+  "ipuclari": {
+    "ulasim": "Elazığ Havaalanı şehir merkezine 12 km uzaklıkta. Otobüs terminali merkezi konumda. Şehir içi ulaşımda belediye otobüsleri ve dolmuşlar kullanılabilir. Taksi ücretleri makul seviyededir.",
+    "para": "Türk Lirası kullanılır. ATM'ler yaygın, kredi kartı çoğu yerde geçer. Pazarlarda ve küçük işletmelerde nakit tercih edilir. Bahşiş %10-15 arası normal karşılanır.",
+    "dil": "Türkçe ana dildir. Turizm alanlarında temel İngilizce konuşulur. Yerel halk çok misafirperver, yardım etmeye isteklidir. Kürtçe de yaygın olarak konuşulur.",
+    "guvenlik": "Elazığ güvenli bir şehirdir. Gece geç saatlerde merkez dışına çıkmaktan kaçının. Değerli eşyalarınızı otelde bırakın. Doğa yürüyüşlerinde rehber eşliği önerilir."
+  },
+  "en_iyi_zaman": "Mayıs-Ekim arası en ideal dönemdir. Yaz ayları sıcak ama Hazar Gölü için mükemmel. İlkbahar ve sonbahar daha serin ve rahat. Kış ayları soğuk ve kar yağışlı olabilir.",
+  "butce": {
+    "ekonomik": "25-35 EUR/gün (pansiyonlar, yerel lokantalar, toplu taşıma)",
+    "orta": "50-70 EUR/gün (3 yıldızlı oteller, restoran yemekleri, taksi kullanımı)",
+    "luks": "100-150 EUR/gün (lüks oteller, özel turlar, rehberli geziler)"
+  },
+  "meta_description": "Elazığ seyahat rehberi: Harput Kalesi, Hazar Gölü ve Buzluk Mağarası. Yerel lezzetler, ulaşım bilgileri ve bütçe önerileri ile kapsamlı gezi planı.",
+  "iata": "EZS",
+  "olusturulma": "2026-04-15T13:17:15.232503"
+}

@@ -1,0 +1,69 @@
+{
+  "sehir": "Kazablanka",
+  "ulke": "Fas",
+  "tanitim": "Kazablanka, Fas'ın ekonomik kalbi ve en büyük şehridir. Atlas Okyanusu kıyısında yer alan bu modern metropol, geleneksel Fas mimarisi ile çağdaş yapıların mükemmel uyumunu sergiler. Şehir, özellikle dünyanın en büyük camilerinden biri olan II. Hassan Camii ile ünlüdür.\n\nFransa sömürge dönemi etkisiyle şekillenen Kazablanka, art deco mimarisi, geniş bulvarları ve modern alışveriş merkezleriyle dikkat çeker. Humphrey Bogart'ın ünlü filmi sayesinde romantik bir aura kazanan şehir, aynı zamanda Fas'ın iş dünyasının merkezi konumundadır. Corniche sahil şeridi, canlı gece hayatı ve zengin mutfağıyla ziyaretçilerine unutulmaz deneyimler sunar.",
+  "gezilecek_yerler": [
+    {
+      "isim": "II. Hassan Camii",
+      "aciklama": "Dünyanın en büyük camilerinden biri olan bu muhteşem yapı, kısmen okyanus üzerine inşa edilmiştir. 210 metre yüksekliğindeki minaresi ile göz kamaştırır.",
+      "ipucu": "Müslüman olmayan ziyaretçiler için rehberli turlar mevcut. Rezervasyon yaptırmayı unutmayın ve uygun kıyafet giyin."
+    },
+    {
+      "isim": "Habous Çarşısı (Nouvelle Médina)",
+      "aciklama": "1930'larda inşa edilen bu çarşı, geleneksel Fas mimarisi ile modern planlama anlayışının birleşimidir. El sanatları ürünleri ve hediyelik eşyalar bulabilirsiniz.",
+      "ipucu": "Pazarlık yapmayı unutmayın ve değerli eşyalarınıza dikkat edin. Çarşı öğleden sonra daha canlı olur."
+    },
+    {
+      "isim": "Kornişe Ain Diab",
+      "aciklama": "Kazablanka'nın ünlü sahil şeridi. Plajlar, restoranlar, kafeler ve gece kulüpleri ile şehrin sosyal yaşamının merkezi konumundadır.",
+      "ipucu": "Güneşin batışını izlemek için ideal. Hafta sonları çok kalabalık olabileceği için hafta içi ziyaret etmeyi tercih edin."
+    },
+    {
+      "isim": "Rick's Café",
+      "aciklama": "Casablanca filminden esinlenerek açılan bu restoran, 1940'lar atmosferini yeniden yaratır. Canlı piyano müziği eşliğinde yemek keyfi sunar.",
+      "ipucu": "Rezervasyon şart. Akşam saatleri daha atmosferik. Fotoğraf çekmek için piano başını tercih edin."
+    },
+    {
+      "isim": "Mohammed V Meydanı",
+      "aciklama": "Şehrin kalbi sayılan bu meydan, önemli resmi binalarla çevrilidir. Fransız sömürge mimarisinin güzel örneklerini görebilirsiniz.",
+      "ipucu": "Yürüyüş için ideal. Güvercinleri beslemek isterseniz mısır satın alabilirsiniz. Çevredeki kafelerde mola verin."
+    }
+  ],
+  "yemekler": [
+    {
+      "isim": "Tagine",
+      "aciklama": "Fas'ın en ünlü yemeği. Kil kap içinde pişirilen et veya tavuk, sebze ve baharatların mükemmel uyumu. Kazablanka'da deniz ürünlü versiyonları özellikle popüler."
+    },
+    {
+      "isim": "Couscous",
+      "aciklama": "Cuma günleri geleneksel olarak tüketilen bu yemek, ince bulgur üzerine sebze, et ve nohutla servis edilir. Fas mutfağının vazgeçilmezi."
+    },
+    {
+      "isim": "Pastilla",
+      "aciklama": "Güvercin eti veya tavukla yapılan, tatlı ve tuzlu lezzetlerin bir arada olduğu çıtır börek. Badem ve tarçın ile tatlandırılır."
+    },
+    {
+      "isim": "Chermoula ile Balık",
+      "aciklama": "Atlas Okyanusu'ndan taze balıklar, chermoula sosuyla (maydanoz, kişniş, sarımsak, limon) marine edilip ızgara yapılır."
+    },
+    {
+      "isim": "Harira Çorbası",
+      "aciklama": "Mercimek, nohut, domates ve et ile hazırlanan besleyici çorba. Özellikle Ramazan ayında iftar sofrasının vazgeçilmezi."
+    }
+  ],
+  "ipuclari": {
+    "ulasim": "Mohammed V Havalimanından şehir merkezine tren (45 dk) veya taksi. Şehir içinde tramvay, otobüs ve taksi kullanabilirsiniz. Petit taxi şehir içi, grand taxi şehirlerarası için tercih edilir.",
+    "para": "Para birimi Fas Dirhemi (MAD). Euro ve dolar kabul edilir ancak dirhem daha avantajlı. ATM'ler yaygın. Bahşiş kültürü mevcut (%10-15).",
+    "dil": "Resmi diller Arapça ve Berber dili. Fransızca yaygın konuşulur. İngilizce turizm bölgelerinde anlaşılır. Temel Fransızca kelimeler öğrenmek faydalı.",
+    "guvenlik": "Genel olarak güvenli. Turistik bölgelerde cep telefonu ve cüzdanınıza dikkat edin. Kadın ziyaretçiler için muhafazakar giyim önerilir. Gece geç saatlerde grup halinde dolaşın."
+  },
+  "en_iyi_zaman": "En iyi ziyaret zamanı Nisan-Haziran ve Eylül-Kasım arası. Hava ılık ve yağış az. Yaz ayları sıcak ve nemli, kış ayları ise yağışlı geçer.",
+  "butce": {
+    "ekonomik": "30-50 EUR/gün (hostel, sokak yemeği, toplu taşıma)",
+    "orta": "60-100 EUR/gün (3 yıldızlı otel, orta segment restoranlar, taksi)",
+    "luks": "150-300 EUR/gün (5 yıldızlı otel, fine dining, özel transfer)"
+  },
+  "meta_description": "Kazablanka seyahat rehberi: II. Hassan Camii, Habous Çarşısı, Kornişe gezilecek yerler, tagine lezzetleri, ulaşım ipuçları ve bütçe önerileri.",
+  "iata": "CMN",
+  "olusturulma": "2026-04-15T13:13:07.672052"
+}

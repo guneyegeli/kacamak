@@ -1,0 +1,69 @@
+{
+  "sehir": "Minsk",
+  "ulke": "Belarus",
+  "tanitim": "Belarus'un başkenti Minsk, Doğu Avrupa'nın en az keşfedilmiş ama bir o kadar büyüleyici başkentlerinden biridir. 2 milyon nüfusuyla ülkenin kalbi konumundaki şehir, Sovyet mimarisi ile modern yapıların uyumlu bir şekilde bir araya geldiği benzersiz bir atmosfer sunar. Geniş bulvarları, temiz sokakları ve yeşil alanlarıyla dikkat çeken Minsk, ziyaretçilerini tarihsel derinliği ve samimi halkıyla karşılar.\n\nŞehir, İkinci Dünya Savaşı'nda büyük hasar görmüş ve neredeyse tamamen yeniden inşa edilmiştir. Bu süreçte ortaya çıkan planlı şehir yapısı, bugün Minsk'in düzenli ve ferah görünümünün temelini oluşturur. Sovyet döneminin izlerini taşıyan anıtsal yapılar, müzeler ve parklar, Belarus kültürüne dair zengin bir deneyim sunarken, modern kafeler, restoranlar ve eğlence mekanları da şehrin dinamik yüzünü yansıtır.",
+  "gezilecek_yerler": [
+    {
+      "isim": "Bağımsızlık Meydanı (Plošča Nezaležnasci)",
+      "aciklama": "Avrupa'nın en büyük meydanlarından biri olan bu alan, Belarus'un siyasi ve kültürel kalbini temsil eder. Devlet Hükümeti binası, yeraltı alışveriş merkezi ve büyüleyici çeşmeler burada yer alır.",
+      "ipucu": "Akşam saatlerinde meydanın ışıklandırılması muhteşem manzaralar sunar. Yeraltı alışveriş merkezinde yemek molası verebilirsiniz."
+    },
+    {
+      "isim": "Belarusian Devlet Müzesi",
+      "aciklama": "Belarus'un en kapsamlı müzesi olarak ülkenin tarihini, kültürünü ve doğal mirasını sergiler. Antik eserlerden modern sanata kadar geniş bir koleksiyon barındırır.",
+      "ipucu": "Müze oldukça büyük olduğu için en az 3 saat ayırın. Ses rehberi kiralayarak geziniz daha verimli olacaktır."
+    },
+    {
+      "isim": "Svislač Nehri ve Gorky Parkı",
+      "aciklama": "Şehrin içinden geçen Svislač Nehri kenarındaki bu park, yerel halkın ve turistlerin buluşma noktasıdır. Yürüyüş yolları, göletler ve rekreasyon alanları ile doludur.",
+      "ipucu": "Nehir kenarında tekne turlarına katılabilir veya bisiklet kiralayarak parkı gezebilirsiniz. Piknik için ideal bir alandır."
+    },
+    {
+      "isim": "Trinity Mahallesi (Trojeckaje Pradmescie)",
+      "aciklama": "Minsk'in en pittoresk bölgesi olan bu tarihi mahalle, 19. yüzyıl mimarisi ile büyüler. Renkli evler, el sanatları dükkanları ve geleneksel kafeler burada yer alır.",
+      "ipucu": "Bu bölgede yürüyerek gezmek en idealidir. Yerel sanatçıların eserlerini satın alabileceğiniz küçük butikler bulunur."
+    },
+    {
+      "isim": "Belarus Büyük Vatanseverlik Savaşı Müzesi",
+      "aciklama": "İkinci Dünya Savaşı sırasında Belarus halkının yaşadıklarını anlatan etkileyici bir müze. Savaş dönemine ait eşyalar, belgeler ve interaktif sergiler yer alır.",
+      "ipucu": "Duygusal olarak yoğun bir deneyim olduğu için ziyaret öncesi hazırlıklı olun. Rehberli tur almanızı öneriyoruz."
+    }
+  ],
+  "yemekler": [
+    {
+      "isim": "Draniki",
+      "aciklama": "Belarus'un milli yemeği sayılan patates köftesi. Rendelenmiş patates ile yapılır ve genellikle ekşi krema (smetana) ile servis edilir."
+    },
+    {
+      "isim": "Machanka",
+      "aciklama": "Domuz eti ve sosislerin un bazlı kremalı sosla pişirildiği geleneksel yemek. Genellikle patates püresi ile birlikte servis edilir."
+    },
+    {
+      "isim": "Solyanka",
+      "aciklama": "Çeşitli etler, turşu ve sebzelerle yapılan asidik ve zengin lezzetli çorba. Belarus mutfağının vazgeçilmez lezzetlerinden biridir."
+    },
+    {
+      "isim": "Babka",
+      "aciklama": "Patates ile yapılan geleneksel Belarus ekmeği. Fırında pişirilir ve çeşitli soslarla birlikte tüketilir."
+    },
+    {
+      "isim": "Syrniki",
+      "aciklama": "Tvorog (süzme peynir) ile yapılan tatlı köftecikler. Genellikle kahvaltıda tüketilir ve bal, reçel veya ekşi krema ile servis edilir."
+    }
+  ],
+  "ipuclari": {
+    "ulasim": "Metro sistemi modern ve temiz, biletler çok uygun fiyatlı. Otobüs ve tramvaylar yaygın. Taksi uygulamaları (Yandex Taxi) güvenilir. Şehir merkezi yürüyerek gezilebilir.",
+    "para": "Belarus Rublesi (BYN) kullanılır. Euro ve USD yaygın kabul edilir. ATM'ler çok sayıda mevcut. Nakit ödeme daha yaygın, kart kullanımı büyük yerlerde mümkün.",
+    "dil": "Resmi diller Belarus ve Rusça. İngilizce genç nüfus arasında bilinir, turistik yerlerde temel İngilizce konuşulur. Rusça bilmek avantaj sağlar.",
+    "guvenlik": "Minsk çok güvenli bir şehir. Gece bile rahatça dolaşabilirsiniz. Küçük çaplı hırsızlıklara karşı standart önlemler alın. Polis yardımcı ve güvenilirdir."
+  },
+  "en_iyi_zaman": "Mayıs-Eylül arası ideal. Yaz aylarında (Haziran-Ağustos) hava sıcak ve güneşli. Kış soğuk ama karlı manzaralar güzel. Nisan-Mayıs ve Eylül-Ekim arası kalabalık az.",
+  "butce": {
+    "ekonomik": "25-35 EUR/gün (hostel, sokak yemekleri, toplu taşıma)",
+    "orta": "50-70 EUR/gün (orta seviye otel, restoran yemekleri, müze girişleri)",
+    "luks": "100-150 EUR/gün (lüks otel, fine dining, özel turlar, taksi)"
+  },
+  "meta_description": "Minsk seyahat rehberi: Belarus'un büyüleyici başkentinde gezilecek yerler, yerel lezzetler ve praktik seyahat ipuçları. Detaylı bütçe önerileri.",
+  "iata": "MSQ",
+  "olusturulma": "2026-04-15T13:14:49.008465"
+}

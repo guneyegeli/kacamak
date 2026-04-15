@@ -1,0 +1,69 @@
+{
+  "sehir": "Batman",
+  "ulke": "Türkiye",
+  "tanitim": "Batman, Güneydoğu Anadolu Bölgesi'nde yer alan genç bir şehirdir. 1957 yılında il statüsü kazanan Batman, petrol endüstrisi ile hızla gelişmiş ve modern bir kent haline gelmiştir. Dicle Nehri kıyısında kurulu olan şehir, hem tarihi hem de doğal güzellikleriyle ziyaretçilerini büyülemektedir.\n\nŞehir, antik dönemlerden kalma tarihi yapıları ve modern altyapısı ile dikkat çekmektedir. Hasankeyf'e yakınlığı sayesinde tarihi medeniyetlerin izlerini taşıyan Batman, aynı zamanda Mezopotamya kültürünün etkisinde kalmış zengin bir mutfağa sahiptir. Misafirperver halkı ve özgün kültürel dokusu ile unutulmaz bir seyahat deneyimi sunar.",
+  "gezilecek_yerler": [
+    {
+      "isim": "Hasankeyf Ören Yeri",
+      "aciklama": "12.000 yıllık tarihi geçmişe sahip antik kent. Dicle Nehri kenarında konumlanan bu UNESCO Dünya Mirası aday alanı, El Rızk Camii, kaya mezarları ve ortaçağ kalıntıları ile büyüleyici bir atmosfer sunar.",
+      "ipucu": "Sabah erken saatlerde ziyaret edin, güneş doğuşu manzarası nefes kesicidir. Rahat ayakkabı giymeyi unutmayın."
+    },
+    {
+      "isim": "Malabadi Köprüsü",
+      "aciklama": "1147 yılında Artuklu döneminde inşa edilen tarihi taş köprü. Batman Çayı üzerindeki bu mühendislik harikası, dönemin en büyük tek kemerli köprüsü olma özelliği taşır ve mükemmel bir fotoğraf noktasıdır.",
+      "ipucu": "Akşam saatlerinde ziyaret edin, ışıklandırma altında köprü çok etkileyici görünür."
+    },
+    {
+      "isim": "Zerzevan Kalesi",
+      "aciklama": "Roma dönemine ait askeri garnizon kalıntıları. Dağlık arazide konumlanan kale, underground mithraeum (Mithra tapınağı) ve su sarnıçları ile arkeoloji meraklıları için benzersiz bir deneyim sunar.",
+      "ipucu": "Rehberle gezin, kalenin tarihi detaylarını öğrenmek deneyimi çok daha zenginleştirir."
+    },
+    {
+      "isim": "Batman Müzesi",
+      "aciklama": "Bölgenin zengin arkeolojik mirasını sergileyen modern müze. Paleolitik çağdan İslami döneme kadar uzanan eserleri, etnografik koleksiyonu ve interaktif sunumlarıyla bölge tarihini anlamak için ideal bir başlangıç noktasıdır.",
+      "ipucu": "Salı günleri ücretsizdir. Müze gezisi sonrası yakındaki Kültür Parkı'nda dinlenebilirsiniz."
+    },
+    {
+      "isim": "Ilısu Baraj Gölü",
+      "aciklama": "Türkiye'nin en büyük barajlarından biri olan Ilısu Barajı'nın oluşturduğu muhteşem göl. Su sporları, tekne turları ve doğa yürüyüşleri için ideal. Çevresindeki dağlarla birlikte nefes kesici manzaralar sunar.",
+      "ipucu": "Bahar ve sonbahar aylarında su seviyesi daha yüksek olur, manzara daha etkileyicidir."
+    }
+  ],
+  "yemekler": [
+    {
+      "isim": "Kaburga Dolması",
+      "aciklama": "Kuzu kaburgasının iç kısmına pilav, badem, kuş üzümü ve baharatların doldurulmasıyla hazırlanan geleneksel Batman yemeği. Özel günlerde servilen bu lezzet, bölgenin mutfak kültürünün en seçkin örneklerindendir."
+    },
+    {
+      "isim": "Bulgur Pilavı",
+      "aciklama": "Batman mutfağının vazgeçilmez yanı. Özellikle hazırlanmış bulgur ile soğan, salça ve baharatların uyumundan oluşan, et yemekleriyle mükemmel uyum sağlayan geleneksel pilav çeşidi."
+    },
+    {
+      "isim": "Kürt Böreği",
+      "aciklama": "İnce yufka ile hazırlanan, arası peynir, ıspanak veya kıyma ile doldurulan ve tavada kızartılan börek. Kahvaltı ve ara öğünlerde tüketilen bu lezzet, çıtır dokusu ile ünlüdür."
+    },
+    {
+      "isim": "İçli Köfte",
+      "aciklama": "Bulgur ve semolina karışımından yapılan dış kabuğun içine baharatlı kıyma harcının doldurulmasıyla hazırlanan geleneksel köfte. Yöresel baharatlarla lezzetlendirilen bu köfte, bölgenin gurme lezzetlerindendir."
+    },
+    {
+      "isim": "Ayva Tatlısı",
+      "aciklama": "Bölgede yetişen kaliteli ayvalardan yapılan geleneksel tatlı. Şeker şerbeti içinde pişirilen ayva, kaymak veya dondurma ile servilerek unutulmaz bir lezzet deneyimi sunar."
+    }
+  ],
+  "ipuclari": {
+    "ulasim": "Batman Havalimanı şehir merkezine 20 km uzaklıkta. Şehir içi ulaşım minibüs ve otobüslerle sağlanır. Araç kiralama geziler için tavsiye edilir. Ankara ve İstanbul'dan direkt uçuş mevcuttur.",
+    "para": "Türk Lirası kullanılır. ATM'ler yaygın, kredi kartı kabul edilir. Nakit para bulundurun, küçük işletmeler nakit tercih eder. Pazarlık alışveriş merkezleri dışında mümkündür.",
+    "dil": "Türkçe resmi dil. Kürtçe de yaygın konuşulur. Turizm bölgelerinde temel İngilizce anlaşılır. Çeviri uygulaması indirmeniz faydalı olacaktır.",
+    "guvenlik": "Genel olarak güvenlidir. Kişisel eşyalarınıza dikkat edin. Gece dışarı çıkarken dikkatli olun. Turistik bölgelerde polis devriyesi düzenlidir. Acil durum: 112"
+  },
+  "en_iyi_zaman": "Nisan-Haziran ve Eylül-Kasım ayları ideal. İlkbahar ve sonbahar mevsimlerinde hava sıcaklığı geziler için uygundur. Yaz ayları çok sıcak (40°C+), kış ayları soğuk ve yağışlı geçer.",
+  "butce": {
+    "ekonomik": "25-35 EUR/gün",
+    "orta": "50-70 EUR/gün",
+    "luks": "100-150 EUR/gün"
+  },
+  "meta_description": "Batman seyahat rehberi: Hasankeyf, Malabadi Köprüsü ve Zerzevan Kalesi gibi tarihi yerleri keşfedin. Yerel lezzetler, ulaşım ve bütçe bilgileri.",
+  "iata": "BAL",
+  "olusturulma": "2026-04-15T13:09:30.709175"
+}
