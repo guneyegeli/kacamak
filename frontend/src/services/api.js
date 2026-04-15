@@ -73,4 +73,6 @@ export const api = {
     if (yetiskin) params.set('yetiskin', yetiskin)
     return fetch(`${BASE}/api/canli-fiyat?${params}`).then(r => r.json())
   },
+  rehberler: () => fetch(`${BASE}/api/rehberler`).then(r => r.json()),
+  rehber: (iata) => fetch(`${BASE}/api/rehber/${iata}`).then(r => r.json()),
 }

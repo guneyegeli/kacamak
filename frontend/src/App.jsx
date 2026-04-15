@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import AnaSayfa from './pages/AnaSayfa'
 import Tercihler from './pages/Tercihler'
 import FirsatDetay from './pages/FirsatDetay'
+import Rehberler from './pages/Rehberler'
+import Rehber from './pages/Rehber'
 import { bildirimIzniIste, bildirimDinle } from './services/firebase'
 import { api } from './services/api'
 import './App.css'
@@ -9,6 +11,7 @@ import './App.css'
 export default function App() {
   const [sayfa, setSayfa] = useState('ana')
   const [seciliFirsat, setSeciliFirsat] = useState(null)
+  const [seciliRehber, setSeciliRehber] = useState(null)
   const [bildirim, setBildirim] = useState(null)
 
   useEffect(() => {
@@ -31,6 +34,7 @@ export default function App() {
 
   const sayfaGoster = (s, veri = null) => {
     setSeciliFirsat(veri)
+    if (s === 'rehber') setSeciliRehber(veri)
     setSayfa(s)
   }
 
@@ -42,9 +46,11 @@ export default function App() {
           <div style={{fontSize:13,color:'var(--text-secondary)'}}>{bildirim.mesaj}</div>
         </div>
       )}
-      {sayfa === 'ana' && <AnaSayfa onFirsat={(f) => sayfaGoster('detay', f)} onTercih={() => sayfaGoster('tercihler')} />}
+      {sayfa === 'ana' && <AnaSayfa onFirsat={(f) => sayfaGoster('detay', f)} onTercih={() => sayfaGoster('tercihler')} onRehberler={() => sayfaGoster('rehberler')} />}
       {sayfa === 'tercihler' && <Tercihler onGeri={() => sayfaGoster('ana')} />}
       {sayfa === 'detay' && <FirsatDetay firsat={seciliFirsat} onGeri={() => sayfaGoster('ana')} onFirsat={(f) => sayfaGoster('detay', f)} />}
+      {sayfa === 'rehberler' && <Rehberler onRehber={(iata) => sayfaGoster('rehber', iata)} onGeri={() => sayfaGoster('ana')} />}
+      {sayfa === 'rehber' && <Rehber iata={seciliRehber} onGeri={() => sayfaGoster('rehberler')} onFirsat={(f) => sayfaGoster('detay', f)} />}
     </div>
   )
 }

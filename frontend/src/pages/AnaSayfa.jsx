@@ -348,12 +348,12 @@ function FirsatKart({ f, fotolar, altTarihler, onFirsat, yolcu }) {
           <span style={{fontSize:12,color:'rgba(255,255,255,0.6)',fontWeight:500}}><span style={{fontSize:15,lineHeight:1}}>🏨</span> Otel{gece ? ` · ${gece} gece` : ''}</span>
           <span style={{fontSize:12,color:'rgba(255,255,255,0.35)',fontWeight:500}}>Detayda görün</span>
         </div>
-        {!YURTICI_KODLARI.has(f.varis) && vizeDetay(f.varis) && (
+        {!YURTICI_KODLARI.has(f.varis) && (
           <div style={{marginTop:6,paddingTop:6,borderTop:'1px solid rgba(255,255,255,0.08)'}}>
             <div style={{display:'flex',alignItems:'flex-start',gap:6}}>
               <span style={{fontSize:13,lineHeight:1,flexShrink:0}}>🛂</span>
               <div>
-                <div style={{fontSize:11,color:'rgba(255,255,255,0.55)',lineHeight:1.5}}>{vizeDetay(f.varis)}</div>
+                <div style={{fontSize:11,color:'rgba(255,255,255,0.55)',lineHeight:1.5}}>{vizeDetay(f.varis) || 'Vize bilgisi için T.C. Dışişleri Bakanlığı web sitesini kontrol edin.'}</div>
                 <div style={{fontSize:9,color:'rgba(255,255,255,0.25)',marginTop:3,fontStyle:'italic'}}>Kaynak: T.C. Dışişleri Bakanlığı</div>
               </div>
             </div>
@@ -600,7 +600,7 @@ function toggleListe(liste, deger) {
   return liste.includes(deger) ? liste.filter(x => x !== deger) : [...liste, deger]
 }
 
-export default function AnaSayfa({ onFirsat, onTercih }) {
+export default function AnaSayfa({ onFirsat, onTercih, onRehberler }) {
   const [firsatlar, setFirsatlar] = useState([])
   const [yukleniyor, setYukleniyor] = useState(true)
   const [hata, setHata] = useState(null)
@@ -733,7 +733,10 @@ export default function AnaSayfa({ onFirsat, onTercih }) {
         <div style={{display:'flex',flexDirection:'column',alignItems:'center',background:'none'}}>
           <img src="/logo.png" alt="Dedektif Gezgin" style={{height:160,background:'transparent',border:'none',boxShadow:'none',padding:0}} />
           <div style={{textAlign:'center',marginTop:16}}>
-            <button onClick={onTercih} style={{background:'var(--bg-secondary)',border:'1px solid var(--border-light)',borderRadius:12,padding:'10px 16px',color:'var(--text-primary)',fontSize:13,fontWeight:500,cursor:'pointer'}}>Dedektif Gezgin Tercihleri</button>
+            <div style={{display:'flex',gap:8,flexWrap:'wrap',justifyContent:'center'}}>
+              <button onClick={onTercih} style={{background:'var(--bg-secondary)',border:'1px solid var(--border-light)',borderRadius:12,padding:'10px 16px',color:'var(--text-primary)',fontSize:13,fontWeight:500,cursor:'pointer'}}>Dedektif Gezgin Tercihleri</button>
+              <button onClick={onRehberler} style={{background:'var(--bg-secondary)',border:'1px solid var(--border-light)',borderRadius:12,padding:'10px 16px',color:'var(--accent-green)',fontSize:13,fontWeight:500,cursor:'pointer'}}>📖 Seyahat Rehberleri</button>
+            </div>
             <p style={{fontSize:11,color:'var(--text-muted)',marginTop:6,lineHeight:1.4}}>Dedektif Gezgin'in yakalayacağı fırsatları buradan özelleştirebilirsiniz</p>
           </div>
         </div>
