@@ -6,4 +6,6 @@ __pycache__/
 *.pyc
 .DS_Store
 data/rehberler_backup_*
+data/rehberler_prompt1_yedek_*
+data/test_ciktilari/
 agents/rehber_uretici.py.bak_prompt1

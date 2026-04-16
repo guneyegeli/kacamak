@@ -291,8 +291,16 @@ def rehber_uret(iata, sehir_adi):
     return sonuc
 
 
+LOCK_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                         "logs", ".rebuild_running.lock")
+
+
 def rehberleri_guncelle(limit=3):
     """Öncelik sırasına göre rehber üret/güncelle. Günlük limit varsayılan 3."""
+    if os.path.exists(LOCK_FILE):
+        log.info("Rebuild batch çalışıyor (lock: %s) — cron atlanıyor", LOCK_FILE)
+        return {"uretilen": 0, "atlanan": 0, "kalan": 0}
+
     os.makedirs(REHBER_DIR, exist_ok=True)
 
     # --- 1. DB'deki aktif fırsatlardan şehir listesi ---
