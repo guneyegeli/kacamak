@@ -24,13 +24,35 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from services.claude_service import claude_sor
+from services.bolge import YURTICI
 
 DB = os.getenv("DATABASE_PATH", "data/kacamak.db")
 REHBER_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "rehberler")
 log = logging.getLogger("rehber_uretici")
 
+# Yurtiçi rehberler üretilmez — Dedektif Gezgin yurtdışı fırsatlarına odaklanır
+# YURTICI: services/bolge.py'deki 44 Türk havalimanı (uçuş tarama sistemiyle senkronize)
+# airportsdata: tüm Türk IATA kodları (BAL, OGU gibi bolge.py'de olmayanlar dahil)
+# IZM, ANK gibi metropol şehir kodları da eklenir (airportsdata'da yok ama Türkiye rehberi üretebilir)
+try:
+    import airportsdata
+    _ap = airportsdata.load('IATA')
+    _airportsdata_tr = {code for code, info in _ap.items() if info['country'] == 'TR'}
+except ImportError:
+    log.warning(
+        "airportsdata paketi bulunamadı. Yurtiçi rehber filtresi "
+        "sadece services/bolge.py YURTICI setine dayanacak. "
+        "pip install airportsdata ile kurulabilir."
+    )
+    _airportsdata_tr = set()
+
+TURKIYE_IATA = YURTICI | _airportsdata_tr | {'IZM', 'ANK'}
+assert len(TURKIYE_IATA) >= 44, (
+    f"TURKIYE_IATA seti beklenenden küçük: {len(TURKIYE_IATA)} eleman. "
+    "services/bolge.py YURTICI seti (44 havalimanı) import edildi mi?"
+)
+
 SEHIR_ADLARI = {
-    'IST':'İstanbul','SAW':'İstanbul','ADB':'İzmir','AYT':'Antalya','ESB':'Ankara',
     'BCN':'Barselona','MAD':'Madrid','PAR':'Paris','CDG':'Paris','ORY':'Paris',
     'LHR':'Londra','LON':'Londra','BER':'Berlin','MUC':'Münih','FRA':'Frankfurt',
     'ROM':'Roma','FCO':'Roma','MXP':'Milano','AMS':'Amsterdam','PRG':'Prag',
@@ -193,6 +215,9 @@ def rehberleri_guncelle(limit=3):
         if iata not in eklenen:
             kuyruk.append((iata, sehir))
             eklenen.add(iata)
+
+    # Yurtiçi rehberler üretilmez — Dedektif Gezgin yurtdışı fırsatlarına odaklanır
+    kuyruk = [(iata, sehir) for iata, sehir in kuyruk if iata not in TURKIYE_IATA]
 
     # --- 3. Üretim / güncelleme döngüsü ---
     uretilen = 0
