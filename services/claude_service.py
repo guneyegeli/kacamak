@@ -9,13 +9,19 @@ log = logging.getLogger("claude_service")
 
 client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
-def claude_sor(prompt: str, json_mod: bool = False, max_tokens: int = 4096) -> dict | str:
+def claude_sor(prompt: str, json_mod: bool = False, max_tokens: int = 4096,
+               system: str = None, temperature: float = None) -> dict | str:
     try:
-        mesaj = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=max_tokens,
-            messages=[{"role": "user", "content": prompt}]
-        )
+        kwargs = {
+            "model": "claude-sonnet-4-20250514",
+            "max_tokens": max_tokens,
+            "messages": [{"role": "user", "content": prompt}],
+        }
+        if system:
+            kwargs["system"] = system
+        if temperature is not None:
+            kwargs["temperature"] = temperature
+        mesaj = client.messages.create(**kwargs)
     except Exception as e:
         log.error("İstek hatası: %s: %s", type(e).__name__, e)
         return {} if json_mod else ""
