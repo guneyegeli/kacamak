@@ -40,12 +40,16 @@ LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 # --- Yardımcılar ---
 
 def yeni_tonda_mi(dosya_yolu):
-    """Rehber zaten Prompt 2.1 tonunda mı kontrol et."""
+    """Rehber zaten Prompt 2.1 tonunda mı kontrol et.
+    Kesin imzalar kullanır — 'araştır' gibi genel kelimeler false positive verir.
+    """
     try:
         with open(dosya_yolu, 'r', encoding='utf-8') as f:
             data = json.load(f)
         tanitim = data.get('tanitim', '').lower()
-        imzalar = ['dedektif gezgin', 'ekibimiz', 'araştır', 'incelediğimiz']
+        # Kesin imzalar: sadece Prompt 2.1 çıktısında bulunabilecek ifadeler
+        imzalar = ['dedektif gezgin', 'ekibimiz', 'ekibinin', 'incelediğimiz',
+                   'tespit ettiğimiz', 'araştırmamız']
         return any(s in tanitim for s in imzalar)
     except Exception:
         return False
