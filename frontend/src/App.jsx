@@ -6,6 +6,7 @@ import Rehberler from './pages/Rehberler'
 import Rehber from './pages/Rehber'
 import { bildirimIzniIste, bildirimDinle } from './services/firebase'
 import { api } from './services/api'
+import { useGoogleAnalytics } from './hooks/useGoogleAnalytics'
 import './App.css'
 
 export default function App() {
@@ -13,6 +14,10 @@ export default function App() {
   const [seciliFirsat, setSeciliFirsat] = useState(null)
   const [seciliRehber, setSeciliRehber] = useState(null)
   const [bildirim, setBildirim] = useState(null)
+
+  // Sayfa state'i değiştikçe GA4'e page_view gönderir
+  const gaEkVeri = sayfa === 'rehber' ? seciliRehber : sayfa === 'detay' ? seciliFirsat : null
+  useGoogleAnalytics(sayfa, gaEkVeri)
 
   useEffect(() => {
     bildirimIzniIste().then((token) => {
