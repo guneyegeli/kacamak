@@ -31,6 +31,7 @@ from api.foto import bp as medya_bp
 from api.otel import bp as otel_bp
 from api.canli_fiyat import bp as canli_fiyat_bp
 from api.rehberler import bp as rehberler_bp
+from api.seo import bp as seo_bp
 
 app.register_blueprint(kullanici_bp)
 app.register_blueprint(tercihler_bp)
@@ -41,6 +42,7 @@ app.register_blueprint(medya_bp)
 app.register_blueprint(otel_bp)
 app.register_blueprint(canli_fiyat_bp)
 app.register_blueprint(rehberler_bp)
+app.register_blueprint(seo_bp)
 
 @app.route("/")
 def index():
