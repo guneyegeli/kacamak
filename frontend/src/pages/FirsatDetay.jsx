@@ -514,7 +514,7 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
               <div style={{ ...lbl, marginBottom: 12 }}>🛡 Seyahat Sigortası</div>
               <div style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 12 }}>
                 {isSchengen(firsat?.varis)
-                  ? 'Schengen vize başvurularında seyahat sağlık sigortası zorunludur. Diğer ülkelere seyahatlerde zorunlu olmasa da, yurtdışında yaşayabileceğiniz sağlık sorunları, bagaj kaybı veya uçuş iptali gibi risklere karşı sizi ekonomik olarak güvende tutar.'
+                  ? 'Schengen vize başvurularında seyahat sağlık sigortası zorunludur. Bunun ötesinde, güzel bir seyahatte hiçbir şeyin ters gitmeyeceğini umarız ama sağlık sorunları, bagaj kaybı veya uçuş iptali gibi beklenmedik sürprizler ciddi maliyetlere yol açabilir. Seyahat sigortası bu risklere karşı sizi ekonomik olarak güvende tutar.'
                   : 'Güzel bir seyahatte hiçbir şeyin ters gitmeyeceğini umarız ama beklenmedik durumlar her zaman olabilir. Yurtdışında sağlık sorunları, bagaj kaybı veya uçuş iptali gibi sürprizler ciddi maliyetlere yol açabilir; seyahat sigortası bu risklere karşı sizi ekonomik olarak güvende tutar.'}
               </div>
               <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 14, lineHeight: 1.5 }}>
