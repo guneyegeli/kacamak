@@ -1,10 +1,12 @@
 // Affiliate link tıklamalarını GA4'e özel event olarak gönderir
 // Kullanım: trackAffiliateClick('aviasales', 'BCN', firsat.id)
-export function trackAffiliateClick(provider, destination, dealId) {
+// Veya:    trackAffiliateClick(null, null, null, { partner: 'ekta', placement: 'detay-yurtdisi' })
+export function trackAffiliateClick(provider, destination, dealId, ekstra) {
   const veri = {
     provider: provider || 'bilinmiyor',
     destination: destination || null,
     deal_id: dealId || null,
+    ...(ekstra && typeof ekstra === 'object' ? ekstra : {}),
   }
 
   if (typeof window !== 'undefined' && typeof window.gtag === 'function') {

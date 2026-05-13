@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { api } from '../services/api'
 import { generateAllLinks, openAffiliate } from '../utils/affiliateLinks'
 import YURTICI_KODLARI from '../utils/yurticiKodlari'
+import trackAffiliateClick from '../utils/trackAffiliate'
 
 const isMobile = window.innerWidth < 768
 
@@ -501,15 +502,49 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
             </div>
           </div>
 
+          {/* EKTA Seyahat Sigortası — sadece yurtdışı */}
+          {!YURTICI_KODLARI.has(firsat?.varis) && (
+            <div style={{
+              ...cs,
+              padding: 20,
+              marginBottom: 16,
+              borderLeft: '3px solid var(--accent-green)',
+            }}>
+              <div style={{ ...lbl, marginBottom: 12 }}>🛡 Seyahat Sigortası</div>
+              <div style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 12 }}>
+                Schengen vize başvurularında seyahat sağlık sigortası zorunludur. Diğer ülkelere seyahatlerde zorunlu olmasa da, yurtdışında yaşayabileceğiniz sağlık sorunları, bagaj kaybı veya uçuş iptali gibi risklere karşı sizi ekonomik olarak güvende tutar.
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 14, lineHeight: 1.5 }}>
+                EKTA Traveling • 4.9/5 ⭐ • 2.6M+ müşteri • COVID-19 kapsamı
+              </div>
+              <a
+                href="https://ektatraveling.tpk.mx/5WRO1JgY"
+                target="_blank"
+                rel="noopener noreferrer sponsored"
+                onClick={() => trackAffiliateClick(null, null, null, { partner: 'ekta', placement: 'detay-yurtdisi' })}
+                style={{
+                  display: 'inline-block',
+                  background: 'var(--accent-orange)',
+                  color: '#fff',
+                  padding: '10px 22px',
+                  borderRadius: 10,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                }}
+              >
+                Sigorta Al →
+              </a>
+            </div>
+          )}
+
           {/* Seyahat Hazırlıkları — sadece yurtdışı */}
           {!YURTICI_KODLARI.has(firsat?.varis) && (() => {
-            const gece = geceSay(firsat?.ucus_tarihi, firsat?.donus_tarihi)
             const hizmetSiralama = it?.hizmet_siralama || null
 
             const hizmetler = [
               { id:'esim', ikon:'📶', baslik:'Yurt dışı internet', aciklama:'Roaming yerine eSIM — varışta anında aktif', fiyat:'7 günlük paket ~150₺\'den', link:`https://tp.media/r?marker=${mk}&trs=267485&p=4114&u=https%3A%2F%2Fwww.airalo.com%2F&campaign_id=100` },
               { id:'arac', ikon:'🚗', baslik:'Araç kirala', aciklama:'Şehri özgürce gezmek için', fiyat:'Günlük ~800₺\'den', link:`https://tp.media/r?marker=${mk}&trs=267485&p=7584&u=https%3A%2F%2Fwww.discovercars.com%2F&campaign_id=100` },
-              { id:'sigorta', ikon:'🛡', baslik:'Seyahat sigortası', aciklama:'Sağlık, bagaj, iptal güvencesi', fiyat:'3 günlük ~120₺\'den', link:`https://tp.media/r?marker=${mk}&trs=267485&p=4592&u=https%3A%2F%2Fwww.worldnomads.com%2F&campaign_id=100` },
               { id:'valiz', ikon:'🧳', baslik:'Valiz emanet', aciklama:'Otele erken varışta veya geç çıkışta', fiyat:'Saatlik ~30₺\'den', link:`https://tp.media/r?marker=${mk}&trs=267485&p=8236&u=https%3A%2F%2Fstasher.com%2F&campaign_id=100` },
               { id:'transfer', ikon:'🚖', baslik:'Havalimanı transferi', aciklama:'Varışta taksimetre sürprizi olmasın', fiyat:'Sabit fiyatlı transfer', link:`https://tp.media/r?marker=${mk}&trs=267485&p=2074&u=https%3A%2F%2Fkiwitaxi.com%2F&campaign_id=100` },
             ]
@@ -529,13 +564,12 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
                 return ai - bi
               })
             } else {
-              // Varsayılan akıllı sıralama — uzak rotalar için eSIM, sigorta, araç önce
+              // Varsayılan akıllı sıralama — uzak rotalar için eSIM, araç önce
               const oncelik = []
               if (uzakMi) {
-                oncelik.push('esim', 'sigorta', 'arac', 'transfer', 'valiz')
+                oncelik.push('esim', 'arac', 'transfer', 'valiz')
               } else {
-                if (gece && gece >= 7) oncelik.push('sigorta')
-                oncelik.push('esim', 'transfer', 'arac', 'valiz', 'sigorta')
+                oncelik.push('esim', 'transfer', 'arac', 'valiz')
               }
               const benzersiz = [...new Set(oncelik)]
               const siraMap = {}
@@ -547,8 +581,8 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
               })
             }
 
-            const hizmetRenkleri = { esim: '#7C3AED', arac: '#FF5C1A', sigorta: '#00C896', valiz: '#F43F5E', transfer: '#0066FF' }
-            const hizmetPastel = { esim: 'rgba(124,58,237,0.15)', arac: 'rgba(255,92,26,0.15)', sigorta: 'rgba(0,200,150,0.15)', valiz: 'rgba(244,63,94,0.15)', transfer: 'rgba(0,102,255,0.15)' }
+            const hizmetRenkleri = { esim: '#7C3AED', arac: '#FF5C1A', valiz: '#F43F5E', transfer: '#0066FF' }
+            const hizmetPastel = { esim: 'rgba(124,58,237,0.15)', arac: 'rgba(255,92,26,0.15)', valiz: 'rgba(244,63,94,0.15)', transfer: 'rgba(0,102,255,0.15)' }
 
             return (
               <div style={{ marginBottom: 16 }}>
