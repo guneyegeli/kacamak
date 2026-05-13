@@ -222,8 +222,6 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
   const hotellookLink = `https://search.hotellook.com/?destination=${encodeURIComponent(sehirAd)}&checkIn=${gidisTarih}&checkOut=${donusTarih}${yolcuParam}&marker=${mk}&locale=tr&currency=try`
   const platformlar = [
     { isim: 'Aviasales', fiyatYazi: `${fiyatGosterim} ₺'den başlayan fiyatlar`, buton: 'Sitede güncel fiyatı gör', emoji: '🔥', renk: '#FF5C1A', link: links.aviasales },
-    { isim: 'Skyscanner', fiyatYazi: 'Fiyatları karşılaştır →', buton: 'Sitede güncel fiyatı gör', emoji: '🔍', renk: '#00B2E2', link: links.skyscanner },
-    { isim: 'Kiwi.com', fiyatYazi: 'Esnek arama yap →', buton: 'Sitede güncel fiyatı gör', emoji: '🌍', renk: '#00A991', link: links.kiwi },
   ]
 
   const GunKart = ({ gun }) => {

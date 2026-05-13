@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { api } from '../services/api'
-import { generateAllLinks, openAffiliate } from '../utils/affiliateLinks'
 
 const isMobile = window.innerWidth < 768
 
