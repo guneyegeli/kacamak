@@ -38,7 +38,6 @@ export default function AviasalesModal({ acik, onKapat, aviasalesUrl, destinatio
     }
     trackAffiliateClick('aviasales', destination || null, dealId || null)
     window.open(aviasalesUrl, '_blank')
-    onKapat()
   }
 
   return (
