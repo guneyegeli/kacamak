@@ -205,7 +205,7 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
   }, [firsat])
 
   const it = detay?.paket
-  const mk = import.meta.env.VITE_TRAVELPAYOUTS_MARKER
+  const mk = import.meta.env.VITE_TRAVELPAYOUTS_MARKER || '518734'
   const o = firsat?.cikis || '', d = firsat?.varis || ''
   const cikisSehir = CIKIS_SEHIRLERI[o] || o
   const sehirAd = firsat?.varis_sehir || firsat?.varis
