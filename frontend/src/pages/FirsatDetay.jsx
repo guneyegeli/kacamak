@@ -524,7 +524,7 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
                 href="https://ektatraveling.tpk.mx/5WRO1JgY"
                 target="_blank"
                 rel="noopener noreferrer sponsored"
-                onClick={() => trackAffiliateClick(null, null, null, { partner: 'ekta', placement: 'detay-yurtdisi' })}
+                onClick={() => trackAffiliateClick(null, null, null, { partner: 'ekta', placement: 'detay-yurtdisi', destination: firsat?.varis || null, deal_id: firsat?.id || null })}
                 style={{
                   display: 'inline-block',
                   background: 'var(--accent-orange)',
@@ -541,12 +541,47 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
             </div>
           )}
 
+          {/* Yesim eSIM — sadece yurtdışı */}
+          {!YURTICI_KODLARI.has(firsat?.varis) && (
+            <div style={{
+              ...cs,
+              padding: 20,
+              marginBottom: 16,
+              borderLeft: '3px solid var(--accent-green)',
+            }}>
+              <div style={{ ...lbl, marginBottom: 12 }}>📱 Yurtdışında İnternet</div>
+              <div style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 12 }}>
+                Yurtdışında internet ihtiyacı için Yesim eSIM. Roaming faturasından kaçının, telefonunuza dakikalar içinde aktive olur. 180+ ülkede çalışır, Türkçe destek.
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 14, lineHeight: 1.5 }}>
+                Yesim eSIM • 180+ ülke • Anında aktivasyon • Türkçe destek
+              </div>
+              <a
+                href="https://yesim.tpk.mx/7vQWKJBF"
+                target="_blank"
+                rel="noopener noreferrer sponsored"
+                onClick={() => trackAffiliateClick(null, null, null, { partner: 'yesim', placement: 'detay-yurtdisi', destination: firsat?.varis || null, deal_id: firsat?.id || null })}
+                style={{
+                  display: 'inline-block',
+                  background: 'var(--accent-orange)',
+                  color: '#fff',
+                  padding: '10px 22px',
+                  borderRadius: 10,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                }}
+              >
+                Yesim'i Keşfet →
+              </a>
+            </div>
+          )}
+
           {/* Seyahat Hazırlıkları — sadece yurtdışı */}
           {!YURTICI_KODLARI.has(firsat?.varis) && (() => {
             const hizmetSiralama = it?.hizmet_siralama || null
 
             const hizmetler = [
-              { id:'esim', ikon:'📶', baslik:'Yurt dışı internet', aciklama:'Roaming yerine eSIM — varışta anında aktif', fiyat:'7 günlük paket ~150₺\'den', link:`https://tp.media/r?marker=${mk}&trs=267485&p=4114&u=https%3A%2F%2Fwww.airalo.com%2F&campaign_id=100` },
               { id:'arac', ikon:'🚗', baslik:'Araç kirala', aciklama:'Şehri özgürce gezmek için', fiyat:'Günlük ~800₺\'den', link:`https://tp.media/r?marker=${mk}&trs=267485&p=7584&u=https%3A%2F%2Fwww.discovercars.com%2F&campaign_id=100` },
               { id:'valiz', ikon:'🧳', baslik:'Valiz emanet', aciklama:'Otele erken varışta veya geç çıkışta', fiyat:'Saatlik ~30₺\'den', link:`https://tp.media/r?marker=${mk}&trs=267485&p=8236&u=https%3A%2F%2Fstasher.com%2F&campaign_id=100` },
               { id:'transfer', ikon:'🚖', baslik:'Havalimanı transferi', aciklama:'Varışta taksimetre sürprizi olmasın', fiyat:'Sabit fiyatlı transfer', link:`https://tp.media/r?marker=${mk}&trs=267485&p=2074&u=https%3A%2F%2Fkiwitaxi.com%2F&campaign_id=100` },
@@ -567,12 +602,12 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
                 return ai - bi
               })
             } else {
-              // Varsayılan akıllı sıralama — uzak rotalar için eSIM, araç önce
+              // Varsayılan akıllı sıralama — uzak rotalar için araç önce
               const oncelik = []
               if (uzakMi) {
-                oncelik.push('esim', 'arac', 'transfer', 'valiz')
+                oncelik.push('arac', 'transfer', 'valiz')
               } else {
-                oncelik.push('esim', 'transfer', 'arac', 'valiz')
+                oncelik.push('transfer', 'arac', 'valiz')
               }
               const benzersiz = [...new Set(oncelik)]
               const siraMap = {}

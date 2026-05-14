@@ -17,6 +17,7 @@ function parseTarih(dateStr) {
 const TURKCE_DESTEKLI = [
   'aviasales.com',
   'hotellook.com',
+  'tpk.mx',
 ]
 
 /**

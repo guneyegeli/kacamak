@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { api } from '../services/api'
+import YURTICI_KODLARI from '../utils/yurticiKodlari'
+import trackAffiliateClick from '../utils/trackAffiliate'
 
 const isMobile = window.innerWidth < 768
 
@@ -109,6 +111,42 @@ export default function Rehber({ iata, onGeri, onFirsat }) {
             {rehber.ipuclari.para && <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 10, lineHeight: 1.6 }}>💰 <strong style={{ color: 'var(--text-primary)' }}>Para:</strong> {rehber.ipuclari.para}</div>}
             {rehber.ipuclari.dil && <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 10, lineHeight: 1.6 }}>🗣️ <strong style={{ color: 'var(--text-primary)' }}>Dil:</strong> {rehber.ipuclari.dil}</div>}
             {rehber.ipuclari.guvenlik && <div style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>🛡️ <strong style={{ color: 'var(--text-primary)' }}>Güvenlik:</strong> {rehber.ipuclari.guvenlik}</div>}
+          </div>
+        )}
+
+        {/* Yesim eSIM — sadece yurtdışı */}
+        {!YURTICI_KODLARI.has(iata) && (
+          <div style={{
+            ...cs,
+            padding: 16,
+            marginBottom: 16,
+            borderLeft: '3px solid var(--accent-green)',
+          }}>
+            <div style={{ ...lbl, marginBottom: 10 }}>📱 Yurtdışında İnternet</div>
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 10 }}>
+              Yurtdışında internet ihtiyacı için Yesim eSIM. Roaming faturasından kaçının, telefonunuza dakikalar içinde aktive olur. 180+ ülkede çalışır, Türkçe destek.
+            </div>
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 12, lineHeight: 1.5 }}>
+              Yesim eSIM • 180+ ülke • Anında aktivasyon • Türkçe destek
+            </div>
+            <a
+              href="https://yesim.tpk.mx/7vQWKJBF"
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              onClick={() => trackAffiliateClick(null, null, null, { partner: 'yesim', placement: 'rehber-yurtdisi', destination: iata || null })}
+              style={{
+                display: 'inline-block',
+                background: 'var(--accent-orange)',
+                color: '#fff',
+                padding: '9px 18px',
+                borderRadius: 10,
+                fontSize: 13,
+                fontWeight: 600,
+                textDecoration: 'none',
+              }}
+            >
+              Yesim'i Keşfet →
+            </a>
           </div>
         )}
 
