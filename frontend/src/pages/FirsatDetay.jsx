@@ -3,7 +3,6 @@ import { api } from '../services/api'
 import { generateAllLinks, openAffiliate } from '../utils/affiliateLinks'
 import YURTICI_KODLARI from '../utils/yurticiKodlari'
 import trackAffiliateClick from '../utils/trackAffiliate'
-import AviasalesModal from '../components/AviasalesModal'
 import isSchengen from '../utils/schengen'
 
 const isMobile = window.innerWidth < 768
@@ -161,19 +160,8 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
   const [otelLinkler, setOtelLinkler] = useState(null)
   const [canliFiyat, setCanliFiyat] = useState(null)
   const [canliFiyatYukleniyor, setCanliFiyatYukleniyor] = useState(false)
-  const [aviasalesModalUrl, setAviasalesModalUrl] = useState(null)
 
-  const acAviasales = (url) => {
-    if (!url) return
-    let gizli = false
-    try { gizli = localStorage.getItem('aviasales_modal_hidden') === 'true' } catch {}
-    if (gizli) {
-      trackAffiliateClick('aviasales', firsat?.varis || null, firsat?.id || null)
-      window.open(url, '_blank')
-      return
-    }
-    setAviasalesModalUrl(url)
-  }
+  useEffect(() => { try { localStorage.removeItem('aviasales_modal_hidden') } catch {} }, [])
 
   useEffect(() => {
     if (!firsat?.id) return
@@ -480,7 +468,7 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
 
                 {/* Deep link */}
                 <div style={{ marginTop: 10, textAlign: 'center' }}>
-                  <span onClick={(e) => { e.stopPropagation(); acAviasales(links.aviasales) }} style={{ fontSize: 13, color: 'var(--accent-orange)', fontWeight: 600, cursor: 'pointer' }}>Detaylı uçuş bilgisi → Aviasales</span>
+                  <span onClick={(e) => { e.stopPropagation(); trackAffiliateClick('aviasales', firsat?.varis || null, firsat?.id || null, { placement: 'detay-ucus-deep-link' }); window.open(links.aviasales, '_blank', 'noopener,noreferrer') }} style={{ fontSize: 13, color: 'var(--accent-orange)', fontWeight: 600, cursor: 'pointer' }}>Detaylı uçuş bilgisi → Aviasales</span>
                 </div>
               </div>
             )
@@ -491,7 +479,7 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
             <div style={{ ...lbl, marginBottom: 10 }}>✈️ Bilet Satın Al</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? 8 : 10 }}>
               {platformlar.map((p, i) => isMobile ? (
-                <div key={i} onClick={() => acAviasales(p.link)} style={{ ...cs, padding: 14, cursor: 'pointer', borderLeft: `4px solid ${p.renk}`, overflow: 'hidden', maxWidth: '100%' }}>
+                <div key={i} onClick={() => { trackAffiliateClick('aviasales', firsat?.varis || null, firsat?.id || null, { placement: 'detay-platform-karti-mobile' }); window.open(p.link, '_blank', 'noopener,noreferrer') }} style={{ ...cs, padding: 14, cursor: 'pointer', borderLeft: `4px solid ${p.renk}`, overflow: 'hidden', maxWidth: '100%' }}>
                   <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>{p.emoji} {p.isim}</div>
                   <div style={{ fontSize: 13, fontWeight: 600, color: p.renk, marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.fiyatYazi}</div>
                   <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>{tarihBilgi}</div>
@@ -500,7 +488,7 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
                   </div>
                 </div>
               ) : (
-                <div key={i} onClick={() => acAviasales(p.link)} style={{ ...cs, padding: '16px 18px', cursor: 'pointer', borderLeft: `4px solid ${p.renk}`, display: 'flex', alignItems: 'center', gap: 14, transition: 'border-color 0.15s', overflow: 'hidden', maxWidth: '100%' }}>
+                <div key={i} onClick={() => { trackAffiliateClick('aviasales', firsat?.varis || null, firsat?.id || null, { placement: 'detay-platform-karti-desktop' }); window.open(p.link, '_blank', 'noopener,noreferrer') }} style={{ ...cs, padding: '16px 18px', cursor: 'pointer', borderLeft: `4px solid ${p.renk}`, display: 'flex', alignItems: 'center', gap: 14, transition: 'border-color 0.15s', overflow: 'hidden', maxWidth: '100%' }}>
                   <div style={{ fontSize: 28, flexShrink: 0 }}>{p.emoji}</div>
                   <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
                     <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>{p.isim}</div>
@@ -655,7 +643,8 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
                     if (a.id) {
                       onFirsat?.({ ...firsat, id: a.id, ucus_tarihi: a.ucus_tarihi, donus_tarihi: a.donus_tarihi, fiyat: a.fiyat, indirim_orani: a.indirim_orani })
                     } else {
-                      acAviasales(altLinks.aviasales)
+                      trackAffiliateClick('aviasales', firsat?.varis || null, firsat?.id || null, { placement: 'detay-alt-firsat-fallback' })
+                      window.open(altLinks.aviasales, '_blank', 'noopener,noreferrer')
                     }
                   }
                   return (
@@ -801,9 +790,10 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
       <div className="detay-sticky-bar" style={isMobile ? { padding: '6px 16px 8px' } : undefined}>
         <div style={{ padding: isMobile ? '3px 16px' : '4px 12px 0', textAlign: 'center', overflow: 'hidden' }}>
           <p style={{ fontSize: isMobile ? 9 : 12, color: isMobile ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.55)', fontStyle: 'italic', whiteSpace: isMobile ? 'nowrap' : undefined, overflow: isMobile ? 'hidden' : undefined, textOverflow: isMobile ? 'ellipsis' : undefined, margin: 0, lineHeight: isMobile ? undefined : 1.4 }}>Uçuş fiyatı Aviasales üzerinden alınmıştır. Otel fiyatları için Hotellook'u ziyaret edin. Fiyatlar değişkenlik gösterebilir. Dedektif Gezgin aracı platformdur, bilet veya otel satışı yapmaz.</p>
+          <p style={{ fontSize: isMobile ? 10 : 12, color: 'var(--text-secondary)', margin: '4px 0 0', lineHeight: 1.4 }}>ℹ️ Aviasales'e yönlendirilirsiniz (İngilizce site). Bagaj kontrolü: "Baggage included" = bagaj dahil, "Personal item permitted" = sadece el çantası.</p>
         </div>
         <div className="detay-sticky-inner" style={{ padding: isMobile ? '10px 0' : '8px 16px 12px', gap: isMobile ? 8 : undefined }}>
-          <button style={{ flex: 1, padding: isMobile ? 10 : 12, background: 'var(--accent-orange)', border: 'none', borderRadius: 'var(--radius)', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 20px rgba(255,92,26,0.4)' }} onClick={() => acAviasales(links.aviasales)}>✈️ Bilet ara</button>
+          <button style={{ flex: 1, padding: isMobile ? 10 : 12, background: 'var(--accent-orange)', border: 'none', borderRadius: 'var(--radius)', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 20px rgba(255,92,26,0.4)' }} onClick={() => { trackAffiliateClick('aviasales', firsat?.varis || null, firsat?.id || null, { placement: 'detay-sticky-bilet-ara' }); window.open(links.aviasales, '_blank', 'noopener,noreferrer') }}>✈️ Bilet ara</button>
           <button style={{ flex: 1, padding: isMobile ? 10 : 12, background: 'var(--accent-green)', border: 'none', borderRadius: 'var(--radius)', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,200,150,0.4)' }} onClick={() => openAffiliate(hotellookLink)}>🏨Otel bul</button>
         </div>
       </div>
@@ -816,14 +806,6 @@ export default function FirsatDetay({ firsat, onGeri, onFirsat }) {
           {buyukFoto.fotograf && <div style={{ position: 'absolute', bottom: 20, textAlign: 'center', width: '100%', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>📷 {buyukFoto.fotograf}</div>}
         </div>
       )}
-
-      <AviasalesModal
-        acik={!!aviasalesModalUrl}
-        onKapat={() => setAviasalesModalUrl(null)}
-        aviasalesUrl={aviasalesModalUrl}
-        destination={firsat?.varis}
-        dealId={firsat?.id}
-      />
     </div>
   )
 }
