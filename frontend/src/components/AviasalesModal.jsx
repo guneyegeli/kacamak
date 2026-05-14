@@ -61,36 +61,25 @@ export default function AviasalesModal({ acik, onKapat, aviasalesUrl, destinatio
 
         <div style={{ padding: '16px 22px 22px' }}>
           <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginTop: 0, marginBottom: 18 }}>
-            Aviasales arayüzü İngilizcedir ama çok basittir. Birkaç önemli kelime ve adımı bilmek yeterli.
+            Aviasales İngilizce ama 1 dakikada çözülür. En önemli iki şey:
           </p>
 
           <div style={{ marginBottom: 18 }}>
-            <div style={SECTION_TITLE}>🔀 Uçuş sıralama sekmeleri</div>
-            <div style={ITEM}><span style={CODE}>Cheapest</span> → En ucuz fiyatlı uçuşlar</div>
-            <div style={ITEM}><span style={CODE}>Fastest</span> → En hızlı uçuşlar (en kısa süreli)</div>
-            <div style={ITEM}><span style={CODE}>Best</span> → Fiyat ve süre dengesi en iyi olanlar</div>
+            <div style={SECTION_TITLE}>📦 BAGAJ KONTROLÜ</div>
+            <div style={{ ...ITEM, marginBottom: 8 }}>Uçuş kartında şunları gör:</div>
+            <div style={ITEM}><span style={CODE}>Baggage included</span> → Bagaj dahil</div>
+            <div style={ITEM}><span style={CODE}>Personal item only</span> → Sadece el çantası (bavul ekstra ücretli)</div>
           </div>
 
           <div style={{ marginBottom: 18 }}>
-            <div style={SECTION_TITLE}>🧳 Bagaj bilgileri (her uçuş kartında)</div>
-            <div style={ITEM}><span style={CODE}>Baggage included</span> → Bagaj fiyata dahil</div>
-            <div style={ITEM}><span style={CODE}>Personal item permitted</span> → Sadece el çantası dahil (büyük bagaj ekstra)</div>
-            <div style={ITEM}><span style={CODE}>1×22lb</span> / <span style={CODE}>1×44lb</span> → 1 adet bagaj, 10kg / 20kg</div>
-          </div>
-
-          <div style={{ marginBottom: 18 }}>
-            <div style={SECTION_TITLE}>⏱️ Uçuş süresi ve aktarma</div>
-            <div style={ITEM}><span style={CODE}>Travel time: 2h 30m</span> → Toplam yolculuk süresi</div>
-            <div style={ITEM}><span style={CODE}>Direct</span> → Direkt uçuş, aktarmasız</div>
-            <div style={ITEM}><span style={CODE}>1 layover</span> / <span style={CODE}>2 layovers</span> → 1 veya 2 aktarmalı</div>
+            <div style={SECTION_TITLE}>⚙️ SIRALAMA</div>
+            <div style={{ ...ITEM, marginBottom: 8 }}>Üstteki sekmeler:</div>
+            <div style={ITEM}><span style={CODE}>Cheapest</span> → En ucuz</div>
+            <div style={ITEM}><span style={CODE}>Fastest</span> → En hızlı</div>
           </div>
 
           <div style={{ marginBottom: 22, background: 'rgba(0,200,150,0.08)', border: '1px solid rgba(0,200,150,0.2)', borderRadius: 10, padding: '14px 16px' }}>
-            <div style={{ ...SECTION_TITLE, color: 'var(--accent-green)' }}>✓ Dikkat edilmesi gerekenler</div>
-            <div style={ITEM}>✓ Fiyatlar TRY (₺) cinsindendir</div>
-            <div style={ITEM}>✓ "Show me" / sağdaki turuncu butona basınca havayolu sitesine yönlendirilir</div>
-            <div style={ITEM}>✓ Bagaj dahil mi kontrol edin — sonradan ekstra ücret çıkmasın</div>
-            <div style={ITEM}>✓ Aktarma süresine bakın — çok kısa olmamalı</div>
+            <div style={ITEM}>💡 Sağdaki turuncu "Show" butonu seni en uygun bilete götürür.</div>
           </div>
 
           <label style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, cursor: 'pointer', userSelect: 'none' }}>
