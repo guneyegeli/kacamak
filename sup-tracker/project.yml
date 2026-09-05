@@ -6,12 +6,20 @@ options:
     watchOS: "10.0"
   createIntermediateGroups: true
 
+# Secrets.xcconfig gerçek değerleri sağlar (DEVELOPMENT_TEAM, STRAVA_CLIENT_ID/SECRET).
+# Yerelde: `cp Secrets.xcconfig.example Secrets.xcconfig` ile doldurun (git'e commit'lenmez).
+# CI'da: fastlane/GitHub Actions bu dosyayı secrets'tan üretir (bkz. README "TestFlight" bölümü).
+configFiles:
+  Debug: Secrets.xcconfig
+  Release: Secrets.xcconfig
+
 settings:
   base:
     SWIFT_VERSION: "5.0"
     MARKETING_VERSION: "1.0.0"
     CURRENT_PROJECT_VERSION: "1"
     DEVELOPMENT_TEAM: "$(DEVELOPMENT_TEAM)"
+    CODE_SIGN_STYLE: Automatic
 
 targets:
   KacamakSUPWatch:
