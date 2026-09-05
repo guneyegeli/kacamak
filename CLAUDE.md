@@ -69,6 +69,18 @@ React 19 + React Router + Axios. Pages: `AnaSayfa` (home/deal list), `Tercihler`
 - `bildirimler` — notification dedup tracking
 - `yenileme_kuyrugu` — package refresh queue
 
+## Alt Projeler
+
+### sup-tracker/ — Kaçamak SUP Takip (native iOS + watchOS)
+
+Kaçamak seyahat uygulamasından bağımsız, ayrı bir ürün: SUP/kano/kürek/yelken/açık
+su yüzme gibi su sporları için GPS rota kaydı yapan native Swift/SwiftUI iPhone +
+Apple Watch uygulaması. Capacitor watchOS'u desteklemediği için `frontend/`
+altındaki React/Capacitor uygulamasından ayrı, kendi `project.yml` (XcodeGen)
+ile tanımlı bir Xcode projesi olarak yazıldı. Apple Sağlık ve Strava entegrasyonu,
+acil durum SOS akışı (Sahil Güvenliği 158 / 112) içerir. Detaylar ve kurulum için
+bkz. `sup-tracker/README.md`.
+
 ## Environment Variables (.env)
 
 ### Backend (.env)
