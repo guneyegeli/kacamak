@@ -1,0 +1,60 @@
+name: KacamakSUP
+options:
+  bundleIdPrefix: com.kacamak
+  deploymentTarget:
+    iOS: "17.0"
+    watchOS: "10.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: "$(DEVELOPMENT_TEAM)"
+
+targets:
+  KacamakSUPWatch:
+    type: application.watchapp2
+    platform: watchOS
+    bundleIdPrefix: com.kacamak
+    sources:
+      - path: Shared
+      - path: WatchApp
+        excludes:
+          - "Info.plist"
+          - "KacamakSUPWatch.entitlements"
+    info:
+      path: WatchApp/Info.plist
+    entitlements:
+      path: WatchApp/KacamakSUPWatch.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kacamak.suptakip.watchkitapp
+        TARGETED_DEVICE_FAMILY: "4"
+        SDKROOT: watchos
+        WATCHOS_DEPLOYMENT_TARGET: "10.0"
+        ENABLE_PREVIEWS: YES
+
+  KacamakSUP:
+    type: application
+    platform: iOS
+    sources:
+      - path: Shared
+      - path: iOS
+        excludes:
+          - "Info.plist"
+          - "KacamakSUP.entitlements"
+    info:
+      path: iOS/Info.plist
+    entitlements:
+      path: iOS/KacamakSUP.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kacamak.suptakip
+        TARGETED_DEVICE_FAMILY: "1"
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        ENABLE_PREVIEWS: YES
+    dependencies:
+      - target: KacamakSUPWatch
+        embed: true

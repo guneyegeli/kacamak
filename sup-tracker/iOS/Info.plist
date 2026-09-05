@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDisplayName</key>
+	<string>Kaçamak SUP</string>
+
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Rotanı kaydedebilmek ve haritada gösterebilmek için konumuna ihtiyacımız var.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Uygulama arka plandayken de rota kaydına devam edebilmek ve acil durumda konumunu paylaşabilmek için sürekli konum erişimine ihtiyacımız var.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Aktivite ve kalori hesaplaması için hareket verilerine ihtiyacımız var.</string>
+
+	<key>NSHealthShareUsageDescription</key>
+	<string>Antrenman geçmişini ve nabız verilerini gösterebilmek için Sağlık verilerini okuruz.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Tamamladığın SUP/su sporu antrenmanlarını Sağlık uygulamasına kaydederiz.</string>
+
+	<key>NSContactsUsageDescription</key>
+	<string>Acil durum kişisi eklerken rehberinden seçim yapabilmen için kişilerine erişiriz.</string>
+
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+		<string>workout-processing</string>
+	</array>
+
+	<key>WKCompanionAppBundleIdentifier</key>
+	<string>com.kacamak.suptakip</string>
+
+	<key>STRAVA_CLIENT_ID</key>
+	<string>$(STRAVA_CLIENT_ID)</string>
+	<key>STRAVA_CLIENT_SECRET</key>
+	<string>$(STRAVA_CLIENT_SECRET)</string>
+
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kacamaksup</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
