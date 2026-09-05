@@ -10,6 +10,9 @@ final class SaglikYoneticisi: NSObject, ObservableObject {
 
     @Published private(set) var yetkiliMi = false
 
+    /// watchOS'ta canlı oturum sırasında nabız/kalori her güncellendiğinde ana kuyrukta tetiklenir.
+    var canliVeriGuncellendi: ((_ nabiz: Double?, _ aktifKaloriKcal: Double?) -> Void)?
+
     #if os(watchOS)
     private var aktifOturum: HKWorkoutSession?
     private var aktifBuilder: HKLiveWorkoutBuilder?
@@ -26,6 +29,9 @@ final class SaglikYoneticisi: NSObject, ObservableObject {
         if let kalori = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) {
             turler.insert(kalori)
         }
+        if let nabiz = HKObjectType.quantityType(forIdentifier: .heartRate) {
+            turler.insert(nabiz)
+        }
         return turler
     }
 
@@ -33,6 +39,9 @@ final class SaglikYoneticisi: NSObject, ObservableObject {
         var turler: Set<HKObjectType> = [HKObjectType.workoutType()]
         if let nabiz = HKObjectType.quantityType(forIdentifier: .heartRate) {
             turler.insert(nabiz)
+        }
+        if let kalori = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) {
+            turler.insert(kalori)
         }
         return turler
     }
@@ -60,7 +69,15 @@ final class SaglikYoneticisi: NSObject, ObservableObject {
 
         let oturum = try HKWorkoutSession(healthStore: healthStore, configuration: yapilandirma)
         let builder = oturum.associatedWorkoutBuilder()
-        builder.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore, workoutConfiguration: yapilandirma)
+        let veriKaynagi = HKLiveWorkoutDataSource(healthStore: healthStore, workoutConfiguration: yapilandirma)
+        if let nabiz = HKObjectType.quantityType(forIdentifier: .heartRate) {
+            veriKaynagi.enableCollection(for: nabiz, predicate: nil)
+        }
+        if let kalori = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) {
+            veriKaynagi.enableCollection(for: kalori, predicate: nil)
+        }
+        builder.dataSource = veriKaynagi
+        builder.delegate = self
 
         aktifOturum = oturum
         aktifBuilder = builder
@@ -142,3 +159,31 @@ final class SaglikYoneticisi: NSObject, ObservableObject {
         }
     }
 }
+
+// MARK: - Canlı oturum verisi (watchOS)
+
+#if os(watchOS)
+extension SaglikYoneticisi: HKLiveWorkoutBuilderDelegate {
+    func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>) {
+        for tur in collectedTypes {
+            guard let kantitatif = tur as? HKQuantityType,
+                  let istatistik = workoutBuilder.statistics(for: kantitatif) else { continue }
+
+            if kantitatif == HKObjectType.quantityType(forIdentifier: .heartRate) {
+                let birim = HKUnit.count().unitDivided(by: .minute())
+                let nabiz = istatistik.mostRecentQuantity()?.doubleValue(for: birim)
+                DispatchQueue.main.async {
+                    self.canliVeriGuncellendi?(nabiz, nil)
+                }
+            } else if kantitatif == HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) {
+                let kalori = istatistik.sumQuantity()?.doubleValue(for: .kilocalorie())
+                DispatchQueue.main.async {
+                    self.canliVeriGuncellendi?(nil, kalori)
+                }
+            }
+        }
+    }
+
+    func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {}
+}
+#endif

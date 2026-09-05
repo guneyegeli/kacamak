@@ -16,6 +16,9 @@ final class BaglantiKoprusu: NSObject, ObservableObject, WCSessionDelegate {
     /// Tamamlanan bir oturum karşı cihazdan geldiğinde tetiklenir (ör. Watch -> iPhone).
     var oturumAlindi: ((RotaOturumu) -> Void)?
 
+    /// Karşı cihazdan güncel rüzgar tahmin seti geldiğinde tetiklenir.
+    var ruzgarAlindi: ((RuzgarTahminSeti) -> Void)?
+
     private override init() {
         super.init()
         guard WCSession.isSupported() else { return }
@@ -73,12 +76,24 @@ final class BaglantiKoprusu: NSObject, ObservableObject, WCSessionDelegate {
         WCSession.default.transferUserInfo(["tip": "oturum", "veri": veri])
     }
 
+    /// Güncel rüzgar tahmin setini karşı cihaza iter. `updateApplicationContext` yalnızca
+    /// en son değeri tutar (pil dostu, kuyruklanmaz) — sık güncellenen ama "son hali yeterli"
+    /// veriler (rüzgar) için `transferUserInfo`'dan daha uygun.
+    func ruzgarGonder(_ set: RuzgarTahminSeti) {
+        guard let veri = try? JSONEncoder().encode(set) else { return }
+        try? WCSession.default.updateApplicationContext(["tip": "ruzgar", "veri": veri])
+    }
+
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
         isle(mesaj: message)
     }
 
     func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
         isle(mesaj: userInfo)
+    }
+
+    func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
+        isle(mesaj: applicationContext)
     }
 
     private func isle(mesaj: [String: Any]) {
@@ -94,6 +109,10 @@ final class BaglantiKoprusu: NSObject, ObservableObject, WCSessionDelegate {
             guard let veri = mesaj["veri"] as? Data,
                   let oturum = try? JSONDecoder().decode(RotaOturumu.self, from: veri) else { return }
             DispatchQueue.main.async { self.oturumAlindi?(oturum) }
+        case "ruzgar":
+            guard let veri = mesaj["veri"] as? Data,
+                  let set = try? JSONDecoder().decode(RuzgarTahminSeti.self, from: veri) else { return }
+            DispatchQueue.main.async { self.ruzgarAlindi?(set) }
         default:
             break
         }

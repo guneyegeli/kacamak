@@ -19,6 +19,8 @@
 	<string>Nabız verisini gösterebilmek için Sağlık verilerini okuruz.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Antrenmanı Sağlık uygulamasına kaydederiz.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Kürek çekme sayını ve temponu bilekteki hareketten tespit edebilmek için hareket verilerine ihtiyacımız var.</string>
 
 	<key>UIBackgroundModes</key>
 	<array>
