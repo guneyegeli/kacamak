@@ -41,4 +41,16 @@ enum Bicimlendirici {
         guard dakika > 0 else { return "—" }
         return String(format: "%.0f/dk", dakika)
     }
+
+    /// Always-On (Luminance Reduced) modda saniye hanesi gizli, kaba süre gösterimi
+    /// ("1:02:03" yerine "1:02"; "12:34" yerine "12 dk").
+    static func sureKisa(_ saniye: TimeInterval) -> String {
+        let toplamSaniye = Int(saniye.rounded(.down))
+        let saat = toplamSaniye / 3600
+        let dakika = (toplamSaniye % 3600) / 60
+        if saat > 0 {
+            return String(format: "%d:%02d", saat, dakika)
+        }
+        return String(format: "%d dk", dakika)
+    }
 }

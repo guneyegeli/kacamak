@@ -144,16 +144,3 @@ private struct MetrikKarosu: View {
         .accessibilityLabel("\(baslik): \(deger) \(birim)")
     }
 }
-
-private extension Bicimlendirici {
-    /// Always-On modda saniye hanesi gizli süre gösterimi ("12:34" yerine "12" dk gibi kaba gösterim).
-    static func sureKisa(_ saniye: TimeInterval) -> String {
-        let toplamSaniye = Int(saniye.rounded(.down))
-        let saat = toplamSaniye / 3600
-        let dakika = (toplamSaniye % 3600) / 60
-        if saat > 0 {
-            return String(format: "%d:%02d", saat, dakika)
-        }
-        return String(format: "%d dk", dakika)
-    }
-}
