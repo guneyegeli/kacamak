@@ -3,6 +3,7 @@ import MapKit
 
 struct RotaTakipView: View {
     @EnvironmentObject private var antrenmanYoneticisi: AntrenmanYoneticisi
+    @ObservedObject private var kurekSayaci = AntrenmanYoneticisi.shared.kurekSayaci
     @State private var seciliSpor: SporTuru = .sup
     @State private var kameraPozisyonu: MapCameraPosition = .automatic
     @State private var gosterilecekOzet: RotaOturumu?
@@ -10,16 +11,23 @@ struct RotaTakipView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                Map(position: $kameraPozisyonu) {
-                    if let oturum = antrenmanYoneticisi.aktifOturum, oturum.noktalar.count > 1 {
-                        MapPolyline(coordinates: oturum.noktalar.map(\.koordinat))
-                            .stroke(.orange, lineWidth: 4)
+                ZStack(alignment: .topTrailing) {
+                    Map(position: $kameraPozisyonu) {
+                        if let oturum = antrenmanYoneticisi.aktifOturum, oturum.noktalar.count > 1 {
+                            MapPolyline(coordinates: oturum.noktalar.map(\.koordinat))
+                                .stroke(.orange, lineWidth: 4)
+                        }
+                        if let sonNokta = antrenmanYoneticisi.aktifOturum?.noktalar.last {
+                            Marker("Konum", coordinate: sonNokta.koordinat)
+                        }
                     }
-                    if let sonNokta = antrenmanYoneticisi.aktifOturum?.noktalar.last {
-                        Marker("Konum", coordinate: sonNokta.koordinat)
+                    .frame(height: 320)
+
+                    if let ruzgar = antrenmanYoneticisi.anlikRuzgar {
+                        ruzgarRozeti(ruzgar)
+                            .padding(10)
                     }
                 }
-                .frame(height: 320)
 
                 istatistikPaneli
                     .padding()
@@ -52,12 +60,30 @@ struct RotaTakipView: View {
     }
 
     private func istatistikGrid(_ oturum: RotaOturumu) -> some View {
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
             istatistikKart("Mesafe", String(format: "%.2f km", oturum.toplamMesafeMetre / 1000))
             istatistikKart("Süre", sureFormatla(oturum.sureSaniye))
             istatistikKart("Ort. Hız", String(format: "%.1f km/s", oturum.ortalamaHizMS * 3.6))
             istatistikKart("Maks. Hız", String(format: "%.1f km/s", oturum.maksimumHizMS * 3.6))
+            if let kalori = antrenmanYoneticisi.anlikKaloriKcal {
+                istatistikKart("Kalori", String(format: "%.0f kcal", kalori))
+            }
+            if oturum.sporTuru.kurekSayimiDestekleniyor {
+                istatistikKart("Kürek Hızı", String(format: "%.0f/dk", kurekSayaci.kurekHiziDakika))
+            }
         }
+    }
+
+    private func ruzgarRozeti(_ ruzgar: RuzgarBilgisi) -> some View {
+        HStack(spacing: 4) {
+            RuzgarOku(yonOkuDerece: ruzgar.yonOkuDerece)
+                .frame(width: 14, height: 14)
+            Text("\(Int(ruzgar.hizKnot.rounded())) kn")
+                .font(.caption.bold())
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
+        .background(.thinMaterial, in: Capsule())
     }
 
     private func istatistikKart(_ baslik: String, _ deger: String) -> some View {

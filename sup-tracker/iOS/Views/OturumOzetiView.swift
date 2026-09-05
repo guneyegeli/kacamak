@@ -32,6 +32,32 @@ struct OturumOzetiView: View {
                     }
                     ozetSatiri("Kaydeden Cihaz", oturum.kaydedenCihaz)
 
+                    if oturum.kurekSayisi > 0 {
+                        Divider()
+
+                        Text("Kürek").font(.headline)
+                        ozetSatiri("Toplam Kürek", "\(oturum.kurekSayisi)")
+                        if let ortalama = oturum.ortalamaKurekHizi {
+                            ozetSatiri("Ortalama Kürek Hızı", String(format: "%.0f/dk", ortalama))
+                        }
+                        if let maksimum = oturum.maksimumKurekHizi {
+                            ozetSatiri("Maksimum Kürek Hızı", String(format: "%.0f/dk", maksimum))
+                        }
+                        if let verimlilik = oturum.kurekVerimlilikMetreBasi {
+                            ozetSatiri("Kürek Başına Mesafe", String(format: "%.1f m", verimlilik))
+                        }
+                    }
+
+                    if let ruzgarOzeti = oturum.ruzgarOzeti {
+                        Divider()
+
+                        Text("Koşullar").font(.headline)
+                        ozetSatiri("Rüzgar", ruzgarOzeti)
+                        if let gust = oturum.maksimumGustMS {
+                            ozetSatiri("Maksimum Gust", String(format: "%.0f kn", gust * 1.943844))
+                        }
+                    }
+
                     Divider()
 
                     Label("Apple Sağlık'a kaydedildi", systemImage: "checkmark.seal.fill")

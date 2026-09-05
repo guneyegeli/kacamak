@@ -5,10 +5,25 @@ struct AyarlarView: View {
     @StateObject private var stravaServisi = StravaServisi.shared
     @EnvironmentObject private var koprusu: BaglantiKoprusu
     @State private var sunanPencere = SunumBaglami()
+    @AppStorage("ruzgarBirimi") private var ruzgarBirimi = "knot"
 
     var body: some View {
         NavigationStack {
             Form {
+                Section("Rüzgar") {
+                    Text("Rüzgar tahmini Open-Meteo.com'dan alınır.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    Picker("Hız Birimi", selection: $ruzgarBirimi) {
+                        Text("Knot").tag("knot")
+                        Text("km/s").tag("kmh")
+                    }
+                    .pickerStyle(.segmented)
+                    Text("Rüzgar verisi: Open-Meteo.com (CC BY 4.0)")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+
                 Section("Strava") {
                     if stravaServisi.baglıMi {
                         Label("Strava'ya bağlı", systemImage: "checkmark.circle.fill")

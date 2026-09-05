@@ -37,6 +37,42 @@ struct OturumDetayView: View {
                     GridRow {
                         Text("Maksimum Hız"); Text(String(format: "%.1f km/s", oturum.maksimumHizMS * 3.6)).bold()
                     }
+                    if oturum.kurekSayisi > 0 {
+                        GridRow {
+                            Text("Kürek").font(.headline).gridCellColumns(2)
+                        }
+                        GridRow {
+                            Text("Toplam Kürek"); Text("\(oturum.kurekSayisi)").bold()
+                        }
+                        if let ortalama = oturum.ortalamaKurekHizi {
+                            GridRow {
+                                Text("Ort. Kürek Hızı"); Text(String(format: "%.0f/dk", ortalama)).bold()
+                            }
+                        }
+                        if let maksimum = oturum.maksimumKurekHizi {
+                            GridRow {
+                                Text("Maks. Kürek Hızı"); Text(String(format: "%.0f/dk", maksimum)).bold()
+                            }
+                        }
+                        if let verimlilik = oturum.kurekVerimlilikMetreBasi {
+                            GridRow {
+                                Text("Kürek Başına Mesafe"); Text(String(format: "%.1f m", verimlilik)).bold()
+                            }
+                        }
+                    }
+                    if let ruzgarOzeti = oturum.ruzgarOzeti {
+                        GridRow {
+                            Text("Koşullar").font(.headline).gridCellColumns(2)
+                        }
+                        GridRow {
+                            Text("Rüzgar"); Text(ruzgarOzeti).bold()
+                        }
+                        if let gust = oturum.maksimumGustMS {
+                            GridRow {
+                                Text("Maksimum Gust"); Text(String(format: "%.0f kn", gust * 1.943844)).bold()
+                            }
+                        }
+                    }
                 }
                 .font(.subheadline)
 
