@@ -64,7 +64,7 @@ struct WatchBaslangicView: View {
     @ViewBuilder
     private var ruzgarOnizlemeSatiri: some View {
         if let ruzgar = ruzgarServisi.anlikRuzgar {
-            RuzgarSeridi(ruzgar, dokun: {
+            RuzgarSeridi(ruzgar: ruzgar, sporTuru: seciliSpor, dokun: {
                 ruzgarDetayAcik = true
             })
         } else if ruzgarServisi.yukleniyor {

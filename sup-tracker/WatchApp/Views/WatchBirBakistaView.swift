@@ -60,7 +60,7 @@ struct WatchBirBakistaView: View {
             }
 
             if let guncelRuzgar {
-                RuzgarSeridi(guncelRuzgar, dokun: {
+                RuzgarSeridi(ruzgar: guncelRuzgar, sporTuru: oturum?.sporTuru ?? .sup, dokun: {
                     ruzgarDetayAcik = true
                 })
             }
